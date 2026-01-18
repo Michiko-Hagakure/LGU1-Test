@@ -3,6 +3,11 @@
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Admin\TransactionController;
+use App\Http\Controllers\Admin\ReportController;
+use App\Http\Controllers\Admin\SettingsController;
+
+
 
 /*
 |--------------------------------------------------------------------------
@@ -1511,6 +1516,13 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     // Admin Calendar
     Route::get('/calendar', [\App\Http\Controllers\Admin\CalendarController::class, 'index'])->name('calendar');
     Route::get('/calendar/events', [\App\Http\Controllers\Admin\CalendarController::class, 'getEvents'])->name('calendar.events');
+
+    // System Settings & Profile Update
+    Route::get('/settings', [SettingsController::class, 'index'])->name('settings');
+    Route::post('/settings/profile', [SettingsController::class, 'updateProfile'])->name('profile.update');
+    Route::post('/settings/password', [SettingsController::class, 'updatePassword'])->name('password.update');
+    Route::post('/settings/lgu-update', [SettingsController::class, 'updateLguSettings'])->name('settings.lgu.update');
+
 });
 
 // Default Dashboard Route (redirects based on role)
