@@ -26,46 +26,29 @@ class BookingVerificationController extends Controller
         }
 
         // Get stats for dashboard
-        // Use hybrid approach: audit logs + fallback to booking table for older verifications
-        $verifiedFromAudit = DB::connection('auth_db')
-            ->table('audit_logs')
-            ->where('user_id', $userId)
-            ->where('action', 'verify')
-            ->where('model', 'Booking')
-            ->whereDate('created_at', Carbon::today())
-            ->count();
-        
-        $verifiedFromBookings = DB::connection('facilities_db')
-            ->table('bookings')
-            ->where('staff_verified_by', $userId)
-            ->whereDate('staff_verified_at', Carbon::today())
-            ->count();
-        
-        $rejectedFromAudit = DB::connection('auth_db')
-            ->table('audit_logs')
-            ->where('user_id', $userId)
-            ->where('action', 'reject')
-            ->where('model', 'Booking')
-            ->whereDate('created_at', Carbon::today())
-            ->count();
-        
-        $rejectedFromBookings = DB::connection('facilities_db')
-            ->table('bookings')
-            ->where('status', 'rejected')
-            ->where('staff_verified_by', $userId)
-            ->whereDate('staff_verified_at', Carbon::today())
-            ->count();
-        
         $stats = [
             'pending_verification' => DB::connection('facilities_db')
                 ->table('bookings')
                 ->where('status', 'pending')
                 ->count(),
             
-            // Use max of audit logs or booking table (hybrid approach)
-            'verified_today' => max($verifiedFromAudit, $verifiedFromBookings),
-            'rejected_today' => max($rejectedFromAudit, $rejectedFromBookings),
-            'total_processed' => max($verifiedFromAudit, $verifiedFromBookings) + max($rejectedFromAudit, $rejectedFromBookings),
+            'verified_today' => DB::connection('facilities_db')
+                ->table('bookings')
+                ->where('status', 'staff_verified')
+                ->whereDate('updated_at', Carbon::today())
+                ->count(),
+            
+            'rejected_today' => DB::connection('facilities_db')
+                ->table('bookings')
+                ->where('status', 'rejected')
+                ->whereDate('updated_at', Carbon::today())
+                ->count(),
+            
+            'total_processed' => DB::connection('facilities_db')
+                ->table('bookings')
+                ->whereIn('status', ['staff_verified', 'rejected'])
+                ->whereDate('updated_at', Carbon::today())
+                ->count(),
         ];
 
         return view('staff.dashboard', compact('stats'));
@@ -211,23 +194,6 @@ class BookingVerificationController extends Controller
                 'status' => 'unpaid',
             ]);
 
-            // Log the verification action
-            DB::connection('auth_db')->table('audit_logs')->insert([
-                'user_id' => $userId,
-                'action' => 'verify',
-                'model' => 'Booking',
-                'model_id' => $bookingId,
-                'changes' => json_encode([
-                    'status' => 'staff_verified',
-                    'staff_notes' => $validated['staff_notes'] ?? null,
-                    'payment_slip' => $paymentSlip->slip_number,
-                ]),
-                'ip_address' => $request->ip(),
-                'user_agent' => $request->userAgent(),
-                'created_at' => now(),
-                'updated_at' => now()
-            ]);
-
             // Send notification to citizen with payment deadline
             try {
                 $user = User::find($booking->user_id);
@@ -288,22 +254,6 @@ class BookingVerificationController extends Controller
                     'rejected_reason' => $validated['rejection_reason'],
                     'updated_at' => now()
                 ]);
-
-            // Log the rejection action
-            DB::connection('auth_db')->table('audit_logs')->insert([
-                'user_id' => $userId,
-                'action' => 'reject',
-                'model' => 'Booking',
-                'model_id' => $bookingId,
-                'changes' => json_encode([
-                    'status' => 'rejected',
-                    'rejection_reason' => $validated['rejection_reason'],
-                ]),
-                'ip_address' => $request->ip(),
-                'user_agent' => $request->userAgent(),
-                'created_at' => now(),
-                'updated_at' => now()
-            ]);
 
             // Send rejection notification to citizen
             try {

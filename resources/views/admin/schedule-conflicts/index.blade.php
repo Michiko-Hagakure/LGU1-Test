@@ -17,12 +17,8 @@
                 <div class="text-h2 font-bold text-lgu-tertiary">{{ $totalConflicts }}</div>
             </div>
             <div class="bg-white rounded-xl shadow-sm border border-gray-200 px-gr-md py-gr-sm">
-                <div class="text-caption text-gray-600 uppercase mb-1">Pending</div>
-                <div class="text-h2 font-bold text-amber-600">{{ $pendingConflicts }}</div>
-            </div>
-            <div class="bg-white rounded-xl shadow-sm border border-gray-200 px-gr-md py-gr-sm">
-                <div class="text-caption text-gray-600 uppercase mb-1">Resolved</div>
-                <div class="text-h2 font-bold text-green-600">{{ $resolvedConflicts }}</div>
+                <div class="text-caption text-gray-600 uppercase mb-1">Future Conflicts</div>
+                <div class="text-h2 font-bold text-amber-600">{{ $futureConflicts }}</div>
             </div>
         </div>
     </div>
@@ -30,7 +26,7 @@
     {{-- Filters --}}
     <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-gr-lg">
         <form method="GET" action="{{ route('admin.schedule-conflicts.index') }}" class="space-y-gr-md">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-gr-md">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-gr-md">
                 {{-- Facility Filter --}}
                 <div>
                     <label for="facility_id" class="block text-small font-semibold text-lgu-headline mb-gr-xs">Facility</label>
@@ -48,19 +44,9 @@
                 <div>
                     <label for="date_filter" class="block text-small font-semibold text-lgu-headline mb-gr-xs">Time Period</label>
                     <select id="date_filter" name="date_filter" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-lgu-highlight focus:border-transparent">
-                        <option value="all" {{ ($dateFilter ?? 'all') == 'all' ? 'selected' : '' }}>All Time</option>
                         <option value="future" {{ $dateFilter == 'future' ? 'selected' : '' }}>Future Conflicts</option>
+                        <option value="all" {{ $dateFilter == 'all' ? 'selected' : '' }}>All Time</option>
                         <option value="past" {{ $dateFilter == 'past' ? 'selected' : '' }}>Past Conflicts</option>
-                    </select>
-                </div>
-
-                {{-- Status Filter --}}
-                <div>
-                    <label for="status" class="block text-small font-semibold text-lgu-headline mb-gr-xs">Status</label>
-                    <select id="status" name="status" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-lgu-highlight focus:border-transparent">
-                        <option value="">All Statuses</option>
-                        <option value="pending" {{ ($statusFilter ?? '') == 'pending' ? 'selected' : '' }}>Pending</option>
-                        <option value="resolved" {{ ($statusFilter ?? '') == 'resolved' ? 'selected' : '' }}>Resolved</option>
                     </select>
                 </div>
 
@@ -79,91 +65,82 @@
     </div>
 
     {{-- Conflicts List --}}
-    @if($conflicts->count() > 0)
+    @if(count($conflictDetails) > 0)
         <div class="space-y-gr-md">
-            @foreach($conflicts as $conflict)
+            @foreach($conflictDetails as $conflict)
                 <div class="bg-white rounded-xl shadow-sm border border-lgu-tertiary p-gr-lg">
-                    {{-- Conflict Status Badge --}}
+                    {{-- Main Booking Info --}}
                     <div class="flex items-start justify-between mb-gr-md pb-gr-md border-b border-gray-200">
                         <div class="flex-1">
                             <div class="flex items-center gap-gr-sm mb-gr-sm">
-                                @if($conflict->status === 'pending')
-                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-800">
-                                        <i data-lucide="alert-triangle" class="w-3 h-3 mr-1"></i>
-                                        Pending Response
-                                    </span>
-                                @else
-                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800">
-                                        <i data-lucide="check-circle" class="w-3 h-3 mr-1"></i>
-                                        Resolved
-                                    </span>
-                                @endif
-                                <span class="text-small text-gray-600">Conflict #{{ $conflict->id }}</span>
+                                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-800">
+                                    <i data-lucide="alert-triangle" class="w-3 h-3 mr-1"></i>
+                                    {{ $conflict['conflict_count'] }} Conflict(s)
+                                </span>
+                                <span class="text-small text-gray-600">Booking #{{ $conflict['main_booking']->id }}</span>
                             </div>
-                            
-                            {{-- City Event Info --}}
-                            <h3 class="text-h3 font-bold text-lgu-button mb-gr-xs">
-                                <i data-lucide="flag" class="w-5 h-5 inline mr-2"></i>
-                                {{ $conflict->cityEvent->event_title }}
-                            </h3>
-                            <div class="grid grid-cols-2 gap-gr-md text-small mb-gr-md">
+                            <h3 class="text-h3 font-bold text-lgu-headline mb-gr-xs">{{ $conflict['main_booking']->facility->name }}</h3>
+                            <div class="grid grid-cols-2 gap-gr-md text-small">
                                 <div class="flex items-center text-gray-600">
                                     <i data-lucide="calendar" class="w-4 h-4 mr-2"></i>
-                                    <span>{{ $conflict->cityEvent->start_time->format('F j, Y') }}</span>
+                                    <span>{{ \Carbon\Carbon::parse($conflict['main_booking']->event_date)->format('F j, Y') }}</span>
                                 </div>
                                 <div class="flex items-center text-gray-600">
                                     <i data-lucide="clock" class="w-4 h-4 mr-2"></i>
-                                    <span>{{ $conflict->cityEvent->start_time->format('g:i A') }} - {{ $conflict->cityEvent->end_time->format('g:i A') }}</span>
+                                    <span>{{ \Carbon\Carbon::parse($conflict['main_booking']->start_time)->format('g:i A') }} - {{ \Carbon\Carbon::parse($conflict['main_booking']->end_time)->format('g:i A') }}</span>
                                 </div>
                                 <div class="flex items-center text-gray-600">
-                                    <i data-lucide="map-pin" class="w-4 h-4 mr-2"></i>
-                                    <span>{{ $conflict->cityEvent->facility->name }}</span>
+                                    <i data-lucide="user" class="w-4 h-4 mr-2"></i>
+                                    <span>{{ $conflict['main_booking']->user_name ?? 'N/A' }}</span>
                                 </div>
                                 <div class="flex items-center text-gray-600">
                                     <i data-lucide="tag" class="w-4 h-4 mr-2"></i>
-                                    <span>{{ ucfirst($conflict->cityEvent->event_type) }}</span>
+                                    <span class="px-2 py-0.5 rounded-full text-xs font-semibold 
+                                        @if($conflict['main_booking']->status == 'confirmed') bg-green-100 text-green-800
+                                        @elseif($conflict['main_booking']->status == 'paid') bg-blue-100 text-blue-800
+                                        @else bg-gray-100 text-gray-800
+                                        @endif">
+                                        {{ ucfirst(str_replace('_', ' ', $conflict['main_booking']->status)) }}
+                                    </span>
                                 </div>
-                            </div>
-
-                            {{-- Affected Booking Info --}}
-                            <div class="bg-red-50 rounded-lg p-gr-sm border border-red-200">
-                                <h4 class="text-small font-semibold text-red-800 mb-2">Affected Citizen Booking:</h4>
-                                <div class="grid grid-cols-2 gap-gr-md text-small">
-                                    <div class="flex items-center text-gray-700">
-                                        <i data-lucide="bookmark" class="w-4 h-4 mr-2"></i>
-                                        <span>Booking #{{ $conflict->booking->id }}</span>
-                                    </div>
-                                    <div class="flex items-center text-gray-700">
-                                        <i data-lucide="user" class="w-4 h-4 mr-2"></i>
-                                        <span>{{ $conflict->booking->user_name ?? 'N/A' }}</span>
-                                    </div>
-                                    <div class="flex items-center text-gray-700">
-                                        <i data-lucide="clock" class="w-4 h-4 mr-2"></i>
-                                        <span>{{ \Carbon\Carbon::parse($conflict->booking->start_time)->format('g:i A') }} - {{ \Carbon\Carbon::parse($conflict->booking->end_time)->format('g:i A') }}</span>
-                                    </div>
-                                    <div class="flex items-center text-gray-700">
-                                        <i data-lucide="credit-card" class="w-4 h-4 mr-2"></i>
-                                        <span>₱{{ number_format($conflict->booking->total_amount, 2) }}</span>
-                                    </div>
-                                </div>
-                                
-                                @if($conflict->status === 'resolved')
-                                    <div class="mt-gr-sm pt-gr-sm border-t border-red-200">
-                                        <span class="text-xs font-semibold text-green-700">
-                                            <i data-lucide="check" class="w-3 h-3 inline mr-1"></i>
-                                            Resolution: {{ ucfirst($conflict->citizen_choice) }}
-                                            @if($conflict->citizen_choice === 'refund' && $conflict->refund_method)
-                                                ({{ ucfirst($conflict->refund_method) }})
-                                            @endif
-                                        </span>
-                                    </div>
-                                @endif
                             </div>
                         </div>
-                        <a href="{{ route('admin.schedule-conflicts.show', $conflict->id) }}" class="inline-flex items-center px-gr-md py-gr-sm bg-lgu-button text-lgu-button-text font-semibold rounded-lg hover:bg-opacity-90 transition-colors duration-200">
+                        <a href="{{ route('admin.schedule-conflicts.show', $conflict['main_booking']->id) }}" class="inline-flex items-center px-gr-md py-gr-sm bg-lgu-button text-lgu-button-text font-semibold rounded-lg hover:bg-opacity-90 transition-colors duration-200">
                             <i data-lucide="eye" class="w-5 h-5 mr-gr-xs"></i>
                             View Details
                         </a>
+                    </div>
+
+                    {{-- Conflicting Bookings --}}
+                    <div>
+                        <h4 class="text-small font-semibold text-lgu-headline uppercase mb-gr-sm">Conflicting Bookings:</h4>
+                        <div class="space-y-gr-sm">
+                            @foreach($conflict['conflicts'] as $conflicting)
+                                <div class="bg-gray-50 rounded-lg p-gr-sm border border-gray-200">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex-1">
+                                            <div class="flex items-center gap-gr-sm mb-1">
+                                                <span class="text-small font-semibold text-gray-900">Booking #{{ $conflicting->id }}</span>
+                                                <span class="text-xs text-gray-600">{{ $conflicting->user_name ?? 'N/A' }}</span>
+                                            </div>
+                                            <div class="flex items-center gap-gr-md text-xs text-gray-600">
+                                                <span>{{ \Carbon\Carbon::parse($conflicting->start_time)->format('g:i A') }} - {{ \Carbon\Carbon::parse($conflicting->end_time)->format('g:i A') }}</span>
+                                                <span class="px-2 py-0.5 rounded-full text-xs font-semibold 
+                                                    @if($conflicting->status == 'confirmed') bg-green-100 text-green-800
+                                                    @elseif($conflicting->status == 'paid') bg-blue-100 text-blue-800
+                                                    @else bg-gray-100 text-gray-800
+                                                    @endif">
+                                                    {{ ucfirst(str_replace('_', ' ', $conflicting->status)) }}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <a href="{{ route('admin.bookings.review', $conflicting->id) }}" class="text-lgu-button hover:underline text-small">
+                                            View →
+                                        </a>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
                     </div>
                 </div>
             @endforeach

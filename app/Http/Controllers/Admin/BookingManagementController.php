@@ -81,6 +81,15 @@ class BookingManagementController extends Controller
 
         return view('admin.bookings.index', compact('bookings', 'facilities'));
     }
+    // For Data
+    public function show($id)
+    {
+        $booking = Booking::with(['facility', 'user'])->find($id);
+        if (!$booking) {
+            abort(404, 'Booking record not found.');
+        }
+        return view('admin.bookings.show', compact('booking'));
+    }
 
     /**
      * Display booking review page for admin
@@ -223,4 +232,3 @@ class BookingManagementController extends Controller
             ->with('success', 'Booking confirmed! Citizen will be notified.');
     }
 }
-

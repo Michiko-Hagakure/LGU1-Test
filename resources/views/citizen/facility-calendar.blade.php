@@ -71,14 +71,6 @@
                     <div class="w-4 h-4 bg-purple-500 rounded"></div>
                     <span class="text-sm text-gray-600">Under Verification</span>
                 </div>
-                <div class="flex items-center space-x-2">
-                    <div class="w-4 h-4 bg-gradient-to-br from-lgu-button to-lgu-highlight rounded"></div>
-                    <span class="text-sm text-gray-600 font-semibold">City Event</span>
-                </div>
-                <div class="flex items-center space-x-2">
-                    <div class="w-4 h-4 bg-lgu-green rounded"></div>
-                    <span class="text-sm text-gray-600 font-semibold">Government Program</span>
-                </div>
             </div>
         </div>
     </div>
@@ -113,67 +105,27 @@
                             @endif
                         </div>
                         
-                        @if($day['hasCityEvents'] || $day['hasBookings'] || $day['hasGovPrograms'])
+                        @if($day['hasBookings'])
                             <div class="space-y-1">
-                                {{-- City Events First (Higher Priority) --}}
-                                @if($day['hasCityEvents'])
-                                    @foreach($day['cityEvents']->take(1) as $event)
-                                        <div class="p-1.5 bg-yellow-100 text-lgu-headline border-2 border-lgu-highlight rounded text-xs">
-                                            <div class="font-bold truncate">[CITY EVENT]</div>
-                                            <div class="truncate text-xs font-semibold">{{ $event->event_title }}</div>
-                                        </div>
-                                    @endforeach
-                                @endif
-                                
-                                {{-- Government Programs (High Priority) --}}
-                                @if($day['hasGovPrograms'])
+                                @foreach($day['bookings']->take(2) as $booking)
                                     @php
-                                        $govDisplayLimit = $day['hasCityEvents'] ? 0 : 1;
+                                        $statusColors = [
+                                            'reserved' => 'bg-blue-100 text-blue-800 border-blue-300',
+                                            'tentative' => 'bg-yellow-100 text-yellow-800 border-yellow-300',
+                                            'confirmed' => 'bg-red-100 text-red-800 border-red-300',
+                                            'staff_verified' => 'bg-purple-100 text-purple-800 border-purple-300',
+                                            'payment_pending' => 'bg-orange-100 text-orange-800 border-orange-300',
+                                        ];
+                                        $colorClass = $statusColors[$booking->status] ?? 'bg-gray-100 text-gray-800 border-gray-300';
                                     @endphp
-                                    @foreach($day['govPrograms']->take($govDisplayLimit) as $program)
-                                        <div class="p-1.5 bg-green-100 text-green-900 border-2 border-green-600 rounded text-xs">
-                                            <div class="font-bold truncate">[GOV PROGRAM]</div>
-                                            <div class="truncate text-xs font-semibold">{{ $program->program_title }}</div>
-                                        </div>
-                                    @endforeach
-                                @endif
-                                
-                                {{-- Regular Bookings --}}
-                                @if($day['hasBookings'])
-                                    @php
-                                        $usedSlots = ($day['hasCityEvents'] ? 1 : 0) + ($day['hasGovPrograms'] && !$day['hasCityEvents'] ? 1 : 0);
-                                        $displayLimit = max(0, 2 - $usedSlots);
-                                    @endphp
-                                    @foreach($day['bookings']->take($displayLimit) as $booking)
-                                        @php
-                                            $statusColors = [
-                                                'reserved' => 'bg-blue-100 text-blue-800 border-blue-300',
-                                                'tentative' => 'bg-yellow-100 text-yellow-800 border-yellow-300',
-                                                'confirmed' => 'bg-red-100 text-red-800 border-red-300',
-                                                'staff_verified' => 'bg-purple-100 text-purple-800 border-purple-300',
-                                                'payment_pending' => 'bg-orange-100 text-orange-800 border-orange-300',
-                                            ];
-                                            $colorClass = $statusColors[$booking->status] ?? 'bg-gray-100 text-gray-800 border-gray-300';
-                                        @endphp
-                                        <div class="p-1.5 {{ $colorClass }} border rounded text-xs">
-                                            <div class="font-semibold truncate">{{ \Carbon\Carbon::parse($booking->start_time)->format('g:i A') }}</div>
-                                            <div class="truncate text-xs">{{ $booking->facility_name }}</div>
-                                        </div>
-                                    @endforeach
-                                    @if($day['bookingCount'] > $displayLimit)
-                                        <div class="text-xs text-gray-500 text-center mt-1">
-                                            +{{ $day['bookingCount'] - $displayLimit }} more
-                                        </div>
-                                    @endif
-                                @endif
-                                
-                                @php
-                                    $moreCount = ($day['cityEventCount'] > 1 ? $day['cityEventCount'] - 1 : 0) 
-                                                + ($day['hasGovPrograms'] && $day['hasCityEvents'] ? $day['govProgramCount'] : 0);
-                                @endphp
-                                @if($moreCount > 0)
+                                    <div class="p-1.5 {{ $colorClass }} border rounded text-xs">
+                                        <div class="font-semibold truncate">{{ \Carbon\Carbon::parse($booking->start_time)->format('g:i A') }}</div>
+                                        <div class="truncate text-xs">{{ $booking->facility_name }}</div>
+                                    </div>
+                                @endforeach
+                                @if($day['bookingCount'] > 2)
                                     <div class="text-xs text-gray-500 text-center mt-1">
-                                        +{{ $moreCount }} more
+                                        +{{ $day['bookingCount'] - 2 }} more
                                     </div>
                                 @endif
                             </div>
@@ -190,68 +142,24 @@
     <div class="bg-white shadow rounded-lg p-6">
         <div class="flex items-center justify-between mb-6">
             <h2 class="text-2xl font-bold text-gray-900">
-                {{ $currentDate->format('F Y') }} Events & Reservations
+                {{ $currentDate->format('F Y') }} Reservations
             </h2>
             <span class="px-4 py-2 bg-lgu-button text-lgu-button-text font-bold rounded-lg text-lg">
-                {{ $bookings->count() + $govPrograms->count() }} Total
+                {{ $bookings->count() }} Total
             </span>
         </div>
 
-        @if($bookings->isEmpty() && $govPrograms->isEmpty())
+        @if($bookings->isEmpty())
             <div class="text-center py-12">
                 <div class="mx-auto w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
                     <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                     </svg>
                 </div>
-                <h3 class="text-lg font-medium text-gray-900 mb-2">No Events Found</h3>
-                <p class="text-gray-600">There are no reservations or government programs for this month{{ $selectedFacilityId ? ' and facility' : '' }}.</p>
+                <h3 class="text-lg font-medium text-gray-900 mb-2">No Reservations Found</h3>
+                <p class="text-gray-600">There are no reservations for this month{{ $selectedFacilityId ? ' and facility' : '' }}.</p>
             </div>
         @else
-            <div class="space-y-3">
-                {{-- Government Programs First --}}
-                @foreach($govPrograms as $program)
-                    <div class="flex items-center justify-between p-4 border-2 border-green-600 rounded-lg hover:shadow-md transition-shadow bg-green-50">
-                        <div class="flex items-center space-x-4 flex-1">
-                            <!-- Date Badge -->
-                            <div class="flex-shrink-0 text-center rounded-lg p-3 min-w-[80px] shadow-md border-2 border-green-600" style="background-color: #15803d;">
-                                <div class="text-2xl font-bold text-white">{{ \Carbon\Carbon::parse($program->event_date)->format('d') }}</div>
-                                <div class="text-xs uppercase text-white">{{ \Carbon\Carbon::parse($program->event_date)->format('M') }}</div>
-                            </div>
-                            
-                            <!-- Program Details -->
-                            <div class="flex-1 min-w-0">
-                                <div class="flex items-center gap-2 mb-1">
-                                    <span class="px-3 py-1 bg-green-100 text-green-900 text-xs font-bold rounded border-2 border-green-600">GOV PROGRAM</span>
-                                    <h3 class="text-lg font-bold text-gray-900 truncate">{{ $program->program_title }}</h3>
-                                </div>
-                                <div class="flex items-center space-x-4 mt-1 text-sm text-gray-700">
-                                    <div class="flex items-center">
-                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                        </svg>
-                                        <span class="font-semibold">{{ \Carbon\Carbon::parse($program->event_date . ' ' . $program->start_time)->format('g:i A') }} - {{ \Carbon\Carbon::parse($program->event_date . ' ' . $program->end_time)->format('g:i A') }}</span>
-                                    </div>
-                                    <div class="flex items-center">
-                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-                                        </svg>
-                                        <span>{{ $program->facility_name }}</span>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <!-- Status Badge -->
-                            <div class="flex-shrink-0">
-                                <span class="inline-flex items-center px-4 py-2 rounded-full text-sm font-bold bg-green-100 text-green-800 border-2 border-green-300">
-                                    Confirmed
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                @endforeach
-                
-                {{-- Regular Bookings --}}
             <div class="space-y-3">
                 @foreach($bookings as $booking)
                     @php
@@ -304,7 +212,6 @@
         @endif
     </div>
 </div>
-</div>
 
 <!-- Day Details Modal -->
 <div id="dayDetailsModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
@@ -344,11 +251,7 @@ function showDayDetails(dateString) {
     fetch(`{{ route('citizen.facility-calendar.bookings') }}?date=${dateString}&facility_id=${facilityId}`)
         .then(response => response.json())
         .then(data => {
-            const hasAnyEvents = data.bookings.length > 0 || 
-                                (data.cityEvents && data.cityEvents.length > 0) || 
-                                (data.govPrograms && data.govPrograms.length > 0);
-                                
-            if (!hasAnyEvents) {
+            if (data.bookings.length === 0) {
                 modalContent.innerHTML = `
                     <div class="text-center py-8">
                         <div class="mx-auto w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
@@ -356,82 +259,12 @@ function showDayDetails(dateString) {
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                             </svg>
                         </div>
-                        <h3 class="text-lg font-medium text-gray-900 mb-2">No Events</h3>
-                        <p class="text-gray-600">There are no reservations, city events, or government programs for this date.</p>
+                        <h3 class="text-lg font-medium text-gray-900 mb-2">No Reservations</h3>
+                        <p class="text-gray-600">There are no reservations for this date.</p>
                     </div>
                 `;
             } else {
                 let html = '<div class="space-y-3">';
-                
-                // Display city events first
-                if (data.cityEvents && data.cityEvents.length > 0) {
-                    data.cityEvents.forEach(event => {
-                        const startTime = new Date(event.start_time).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
-                        const endTime = new Date(event.end_time).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
-                        
-                        html += `
-                            <div class="p-4 border-4 border-lgu-highlight bg-yellow-50 rounded-lg shadow-lg">
-                                <div class="flex items-center justify-between mb-3">
-                                    <h4 class="font-bold text-lg text-lgu-headline">[CITY EVENT] ${event.event_title}</h4>
-                                    <span class="px-3 py-1 bg-lgu-button text-white rounded-full text-xs font-bold uppercase">${event.status}</span>
-                                </div>
-                                <div class="text-sm space-y-2 text-gray-700">
-                                    <div class="flex items-center">
-                                        <svg class="w-4 h-4 mr-2 text-lgu-headline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                        </svg>
-                                        <span class="font-semibold">${startTime} - ${endTime}</span>
-                                    </div>
-                                    <div class="flex items-center">
-                                        <svg class="w-4 h-4 mr-2 text-lgu-headline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-                                        </svg>
-                                        <span class="font-semibold">${event.facility_name}</span>
-                                    </div>
-                                </div>
-                            </div>
-                        `;
-                    });
-                }
-                
-                // Display government programs
-                if (data.govPrograms && data.govPrograms.length > 0) {
-                    data.govPrograms.forEach(program => {
-                        const eventTime = new Date(program.event_date + ' ' + program.start_time).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
-                        const endTime = new Date(program.event_date + ' ' + program.end_time).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
-                        
-                        html += `
-                            <div class="p-4 border-4 border-green-600 bg-green-50 rounded-lg shadow-lg">
-                                <div class="flex items-center justify-between mb-3">
-                                    <h4 class="font-bold text-lg text-green-800">[GOV PROGRAM] ${program.program_title}</h4>
-                                    <span class="px-3 py-1 bg-green-100 text-green-900 rounded-full text-xs font-bold uppercase border-2 border-green-600">${program.coordination_status}</span>
-                                </div>
-                                <div class="text-sm space-y-2 text-gray-700">
-                                    <div class="flex items-center">
-                                        <svg class="w-4 h-4 mr-2 text-green-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                        </svg>
-                                        <span class="font-semibold">${eventTime} - ${endTime}</span>
-                                    </div>
-                                    <div class="flex items-center">
-                                        <svg class="w-4 h-4 mr-2 text-green-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-                                        </svg>
-                                        <span class="font-semibold">${program.facility_name}</span>
-                                    </div>
-                                    <div class="flex items-center">
-                                        <svg class="w-4 h-4 mr-2 text-green-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-                                        </svg>
-                                        <span>Organizer: ${program.organizer_name}</span>
-                                    </div>
-                                </div>
-                            </div>
-                        `;
-                    });
-                }
-                
-                // Display regular bookings
                 data.bookings.forEach(booking => {
                     const statusColors = {
                         'reserved': 'bg-blue-100 text-blue-800 border-blue-300',

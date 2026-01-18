@@ -137,12 +137,17 @@
                         <th class="px-gr-md py-gr-sm text-left text-caption font-semibold text-gray-700">Amount</th>
                         <th class="px-gr-md py-gr-sm text-left text-caption font-semibold text-gray-700">Payment Method</th>
                         <th class="px-gr-md py-gr-sm text-left text-caption font-semibold text-gray-700">Status</th>
+                        <th class="px-gr-md py-gr-sm text-left text-caption font-semibold text-gray-700">AI Audit</th>
                         <th class="px-gr-md py-gr-sm text-left text-caption font-semibold text-gray-700">Actions</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-200">
                     @forelse($transactions as $transaction)
-                    <tr class="hover:bg-gray-50 transition-colors">
+                    <tr class="hover:bg-gray-50 transition-colors transaction-row"
+                    data-amount="{{ $transaction->amount_due }}"
+                    data-facility="{{ $transaction->facility_id ?? 1 }}"
+                    data-status="{{ strtolower($transaction->status) }}"
+                    data-unpaid-history="{{ $transaction->unpaid_count ?? 0 }}">
                         <td class="px-gr-md py-gr-sm">
                             <span class="font-mono text-small font-semibold text-gray-900">{{ $transaction->slip_number ?? $transaction->or_number ?? 'N/A' }}</span>
                         </td>
@@ -189,6 +194,12 @@
                             </span>
                         </td>
                         <td class="px-gr-md py-gr-sm">
+                            <span class="ai-status-badge inline-flex items-center px-gr-xs py-gr-3xs rounded-full text-caption font-medium bg-gray-100 text-gray-600">
+                                <i data-lucide="loader-2" class="w-3 h-3 mr-gr-3xs animate-spin"></i>
+                                Scanning...
+                            </span>
+                        </td>
+                        <td class="px-gr-md py-gr-sm">
                             <a href="{{ route('admin.transactions.show', $transaction->id) }}" class="text-lgu-green hover:text-lgu-green-dark font-medium text-small">
                                 View Details
                             </a>
@@ -215,27 +226,87 @@
     </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest"></script>
 <script>
-function exportTransactions() {
-    // Get current filter values
-    const startDate = document.querySelector('input[name="start_date"]')?.value || '';
-    const endDate = document.querySelector('input[name="end_date"]')?.value || '';
-    const status = document.querySelector('select[name="status"]')?.value || '';
-    const paymentMethod = document.querySelector('select[name="payment_method"]')?.value || '';
-    
-    // Build query string
-    const params = new URLSearchParams();
-    if (startDate) params.append('start_date', startDate);
-    if (endDate) params.append('end_date', endDate);
-    if (status) params.append('status', status);
-    if (paymentMethod) params.append('payment_method', paymentMethod);
-    
-    // Download CSV
-    window.location.href = '{{ route("admin.transactions.export.csv") }}?' + params.toString();
-}
+    async function runAIAudit() {
+        console.log("🚀 AI Audit: Initializing Strict Security Model...");
 
-// Initialize Lucide icons
-lucide.createIcons();
+        // 1. NEURAL NETWORK ARCHITECTURE
+        const model = tf.sequential();
+        model.add(tf.layers.dense({units: 12, inputShape: [3], activation: 'relu'}));
+        model.add(tf.layers.dense({units: 1, activation: 'sigmoid'}));
+        model.compile({optimizer: 'adam', loss: 'binaryCrossentropy'});
+
+        // 2. TRAINING DATA (Teaching patterns)
+        const xs = tf.tensor2d([
+            [0.1, 1, 0],  // Small amount, Paid -> Verified (1)
+            [0.9, 1, 0],  // Huge amount, Paid -> Verified (1)
+            [0.8, 0, 5],  // Large amount, Unpaid, High History -> Risk (0)
+            [0.05, 0, 10], // Small amount, Unpaid, Spammer -> Risk (0)
+            [0.05, 0, 0]   // Small amount, Unpaid, New User -> Safe (1)
+        ]);
+        const ys = tf.tensor2d([[1], [1], [0], [0], [1]]); 
+
+        await model.fit(xs, ys, {epochs: 50, verbose: 0});
+        console.log("✅ AI Training Complete.");
+
+        const rows = document.querySelectorAll('.transaction-row');
+
+        for (let row of rows) {
+            const amount = parseFloat(row.dataset.amount) || 0;
+            const status = (row.dataset.status || '').toLowerCase();
+            const unpaidHistory = parseInt(row.dataset.unpaidHistory || 0);
+            const badge = row.querySelector('.ai-status-badge');
+
+            if (!badge) continue;
+
+            // Logic Flags
+            const isPaid = (status === 'paid' || status === 'approved' || status === 'verified');
+            const normalizedAmount = amount / 100000;
+
+            // Generate AI Prediction
+            const prediction = model.predict(tf.tensor2d([[normalizedAmount, isPaid ? 1 : 0, unpaidHistory]]));
+            const scoreData = await prediction.data();
+            const safetyScore = scoreData[0];
+
+            /**
+             * 3. FINAL UI UPDATE (STRICT ENFORCEMENT)
+             * - We check 'isPaid' first. If it is true, we ignore the AI score to stop flickering.
+             * - AI score is only used to flag "Unpaid" items as High Risk.
+             */
+            if (isPaid) {
+                // LOCK to Verified for all Paid transactions
+                badge.className = "ai-status-badge inline-flex items-center px-gr-xs py-gr-3xs rounded-full text-caption font-medium bg-green-100 text-green-700";
+                badge.innerHTML = '<i data-lucide="shield-check" class="w-3 h-3 mr-gr-3xs"></i> Verified';
+            } else if (!isPaid && safetyScore < 0.5) {
+                // FLAG as High Risk for suspicious Unpaid items
+                badge.className = "ai-status-badge inline-flex items-center px-gr-xs py-gr-3xs rounded-full text-caption font-medium bg-red-100 text-red-700";
+                badge.innerHTML = '<i data-lucide="shield-alert" class="w-3 h-3 mr-gr-3xs"></i> High Risk';
+            } else {
+                // New or small Unpaid items that aren't flagged yet
+                badge.className = "ai-status-badge inline-flex items-center px-gr-xs py-gr-3xs rounded-full text-caption font-medium bg-green-100 text-green-700";
+                badge.innerHTML = '<i data-lucide="shield-check" class="w-3 h-3 mr-gr-3xs"></i> Verified';
+            }
+        }
+        
+        if (window.lucide) lucide.createIcons();
+        console.log("🏁 Audit Finished.");
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        if (typeof tf !== 'undefined') {
+            setTimeout(runAIAudit, 1500); 
+        }
+    });
+
+    function exportTransactions() {
+        const params = new URLSearchParams({
+            start_date: document.querySelector('input[name="start_date"]')?.value || '',
+            end_date: document.querySelector('input[name="end_date"]')?.value || '',
+            status: document.querySelector('select[name="status"]')?.value || '',
+            payment_method: document.querySelector('select[name="payment_method"]')?.value || ''
+        });
+        window.location.href = '{{ route("admin.transactions.export.csv") }}?' + params.toString();
+    }
 </script>
 @endsection
-

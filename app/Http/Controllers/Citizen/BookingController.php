@@ -560,10 +560,10 @@ class BookingController extends Controller
             // Fallback to old calculation if no pricing model is set
             $baseRate = 7000.00; // Default ₱7,000 for 3 hours
             $extensionRatePerTwoHours = 3000.00;
-        $baseHours = 3;
-        $extensionHours = max(0, $totalHours - $baseHours);
-        $extensionBlocks = ceil($extensionHours / 2);
-        $extensionRate = $extensionBlocks * $extensionRatePerTwoHours;
+            $baseHours = 3;
+            $extensionHours = max(0, $totalHours - $baseHours);
+            $extensionBlocks = ceil($extensionHours / 2);
+            $extensionRate = $extensionBlocks * $extensionRatePerTwoHours;
         }
 
         // Calculate equipment total
@@ -627,7 +627,7 @@ class BookingController extends Controller
                     // Check if new booking overlaps with existing booking + buffer
                     $q->whereRaw('? < DATE_ADD(end_time, INTERVAL ? HOUR)', [$startDateTime, $bufferHours])
                       ->whereRaw('? > start_time', [$endDateTime]);
-                      });
+                });
             })
             ->select('start_time', 'end_time', 'status')
             ->orderBy('start_time')

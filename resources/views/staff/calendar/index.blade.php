@@ -378,112 +378,55 @@ document.addEventListener('DOMContentLoaded', function() {
             
             currentBookingId = event.id;
 
-            // Check if this is a city event
-            if (props.event_type === 'city_event') {
-                // City Event modal content
-                modalContent.innerHTML = `
-                    <div class="space-y-4">
-                        <div class="grid grid-cols-2 gap-4">
-                            <div>
-                                <p class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">Event Type</p>
-                                <p class="text-body font-bold text-lgu-button">City Event</p>
-                            </div>
-                            <div>
-                                <p class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">Status</p>
-                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium" style="background-color: ${event.backgroundColor}; color: ${event.textColor};">
-                                    ${props.status.toUpperCase()}
-                                </span>
-                            </div>
-                        </div>
-
+            // Build modal content
+            modalContent.innerHTML = `
+                <div class="space-y-4">
+                    <div class="grid grid-cols-2 gap-4">
                         <div>
-                            <p class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">Event Title</p>
-                            <p class="text-body font-semibold text-gray-900">${event.title.replace('[CITY EVENT] ', '')}</p>
+                            <p class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">Booking Reference</p>
+                            <p class="text-body font-bold text-lgu-headline">${props.bookingId}</p>
                         </div>
-
                         <div>
-                            <p class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">Facility</p>
-                            <p class="text-body font-semibold text-gray-900">${props.facility_name}</p>
-                        </div>
-
-                        <div class="grid grid-cols-2 gap-4">
-                            <div>
-                                <p class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">Date & Time</p>
-                                <p class="text-small text-gray-900">
-                                    ${new Date(event.start).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-                                </p>
-                                <p class="text-small text-gray-600">
-                                    ${formatTime(props.startTime)} - ${formatTime(props.endTime)}
-                                </p>
-                            </div>
-                            <div>
-                                <p class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">Category</p>
-                                <p class="text-body font-bold text-lgu-headline">${props.category}</p>
-                            </div>
-                        </div>
-
-                        <div>
-                            <p class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">Description</p>
-                            <p class="text-small text-gray-900">${props.event_description || 'No description provided'}</p>
-                        </div>
-
-                        <div>
-                            <p class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">Affected Bookings</p>
-                            <p class="text-small text-gray-900">${props.affected_bookings} citizen booking(s) affected</p>
+                            <p class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">Status</p>
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium" style="background-color: ${event.backgroundColor}; color: ${event.textColor};">
+                                ${props.statusLabel}
+                            </span>
                         </div>
                     </div>
-                `;
-            } else {
-                // Build modal content for regular bookings
-                modalContent.innerHTML = `
-                    <div class="space-y-4">
-                        <div class="grid grid-cols-2 gap-4">
-                            <div>
-                                <p class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">Booking Reference</p>
-                                <p class="text-body font-bold text-lgu-headline">${props.bookingId}</p>
-                            </div>
-                            <div>
-                                <p class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">Status</p>
-                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium" style="background-color: ${event.backgroundColor}; color: ${event.textColor};">
-                                    ${props.statusLabel}
-                                </span>
-                            </div>
-                        </div>
 
+                    <div>
+                        <p class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">Facility</p>
+                        <p class="text-body font-semibold text-gray-900">${props.facilityName}</p>
+                        <p class="text-small text-gray-600">${props.cityName}</p>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
                         <div>
-                            <p class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">Facility</p>
-                            <p class="text-body font-semibold text-gray-900">${props.facilityName}</p>
-                            <p class="text-small text-gray-600">${props.cityName}</p>
+                            <p class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">Date & Time</p>
+                            <p class="text-small text-gray-900">
+                                ${new Date(event.start).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                            </p>
+                            <p class="text-small text-gray-600">
+                                ${formatTime(props.startTime)} - ${formatTime(props.endTime)}
+                            </p>
                         </div>
-
-                        <div class="grid grid-cols-2 gap-4">
-                            <div>
-                                <p class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">Date & Time</p>
-                                <p class="text-small text-gray-900">
-                                    ${new Date(event.start).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-                                </p>
-                                <p class="text-small text-gray-600">
-                                    ${formatTime(props.startTime)} - ${formatTime(props.endTime)}
-                                </p>
-                            </div>
-                            <div>
-                                <p class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">Expected Attendees</p>
-                                <p class="text-body font-bold text-lgu-headline">${props.attendees.toLocaleString()}</p>
-                            </div>
-                        </div>
-
                         <div>
-                            <p class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">Purpose/Event</p>
-                            <p class="text-small text-gray-900">${props.purpose}</p>
-                        </div>
-
-                        <div>
-                            <p class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">Booked By</p>
-                            <p class="text-small text-gray-900">${props.userName}</p>
+                            <p class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">Expected Attendees</p>
+                            <p class="text-body font-bold text-lgu-headline">${props.attendees.toLocaleString()}</p>
                         </div>
                     </div>
-                `;
-            }
+
+                    <div>
+                        <p class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">Purpose/Event</p>
+                        <p class="text-small text-gray-900">${props.purpose}</p>
+                    </div>
+
+                    <div>
+                        <p class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">Booked By</p>
+                        <p class="text-small text-gray-900">${props.userName}</p>
+                    </div>
+                </div>
+            `;
 
             // Show modal
             eventModal.style.display = 'flex';

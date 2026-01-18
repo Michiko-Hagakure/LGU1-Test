@@ -35,16 +35,4 @@ return [
         ],
     ],
 
-    /*
-    |--------------------------------------------------------------------------
-    | Energy Efficiency System Integration
-    |--------------------------------------------------------------------------
-    */
-    'energy_efficiency' => [
-        'enabled' => env('ENERGY_EFFICIENCY_ENABLED', false),
-        'url' => env('ENERGY_EFFICIENCY_URL', 'https://energy.local-government-unit-1-ph.com'),
-        'api_key' => env('ENERGY_EFFICIENCY_API_KEY'),
-        'timeout' => env('ENERGY_EFFICIENCY_TIMEOUT', 30),
-    ],
-
 ];

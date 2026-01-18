@@ -63,7 +63,7 @@
                     @endif
                 </div>
 
-                @if($transaction->proof_of_payment)
+                @if(isset($transaction->payment_receipt_url) && $transaction->payment_receipt_url)
                 <div class="mt-gr-md pt-gr-md border-t border-gray-200">
                     <p class="text-caption text-gray-600 mb-gr-sm">Proof of Payment</p>
                     <a href="{{ asset('storage/' . $transaction->proof_of_payment) }}" target="_blank" class="inline-flex items-center text-lgu-green hover:text-lgu-green-dark font-medium">
@@ -95,7 +95,7 @@
                     <div class="grid grid-cols-2 gap-gr-md pt-gr-sm border-t border-gray-200">
                         <div>
                             <p class="text-caption text-gray-600 mb-gr-3xs">Event Date</p>
-                            <p class="text-body font-medium text-gray-900">{{ \Carbon\Carbon::parse($booking->start_date)->format('F d, Y') }}</p>
+                            <p class="text-body font-medium text-gray-900">{{ \Carbon\Carbon::parse($booking->start_time)->format('F d, Y') }}</p>
                         </div>
                         <div>
                             <p class="text-caption text-gray-600 mb-gr-3xs">Time</p>
@@ -106,7 +106,7 @@
                         </div>
                         <div>
                             <p class="text-caption text-gray-600 mb-gr-3xs">Attendees</p>
-                            <p class="text-body font-medium text-gray-900">{{ number_format($booking->num_attendees) }}</p>
+                            <p class="text-body font-medium text-gray-900">{{ number_format($booking->attendees ?? 0) }}</p>
                         </div>
                         <div>
                             <p class="text-caption text-gray-600 mb-gr-3xs">Booking Status</p>
@@ -242,20 +242,50 @@ function printTransaction() {
 function sendReceipt() {
     Swal.fire({
         title: 'Send Receipt',
-        text: 'Send receipt to citizen\'s email?',
+        text: "Send the digital receipt to {{ $citizen->email ?? 'this citizen' }}?",
         icon: 'question',
         showCancelButton: true,
         confirmButtonColor: '#047857',
         cancelButtonColor: '#6b7280',
-        confirmButtonText: 'Send',
+        confirmButtonText: 'Yes, Send it',
         cancelButtonText: 'Cancel'
     }).then((result) => {
         if (result.isConfirmed) {
+            // Show loading state
             Swal.fire({
-                title: 'Coming Soon',
-                text: 'Email functionality will be available soon!',
-                icon: 'info',
-                confirmButtonColor: '#047857'
+                title: 'Sending...',
+                text: 'Please wait while the email is being processed.',
+                allowOutsideClick: false,
+                didOpen: () => { Swal.showLoading(); }
+            });
+
+            // AJAX Call to Backend
+            fetch("{{ route('admin.transactions.email', $transaction->id) }}", {
+                method: 'GET',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire({
+                        title: 'Email Sent!',
+                        text: data.message,
+                        icon: 'success',
+                        confirmButtonColor: '#047857'
+                    });
+                } else {
+                    throw new Error(data.message);
+                }
+            })
+            .catch(error => {
+                Swal.fire({
+                    title: 'Error',
+                    text: 'The email could not be sent: ' + error.message,
+                    icon: 'error',
+                    confirmButtonColor: '#047857'
+                });
             });
         }
     });
@@ -288,4 +318,3 @@ function markAsPaid() {
 lucide.createIcons();
 </script>
 @endsection
-

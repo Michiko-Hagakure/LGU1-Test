@@ -5,6 +5,10 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\OfficialReceiptMail;
+use App\Mail\PaymentReminderMail;
+
 
 class TransactionController extends Controller
 {
@@ -122,6 +126,68 @@ class TransactionController extends Controller
 
         return view('admin.transactions.show', compact('transaction', 'booking', 'citizen'));
     }
+    public function sendEmailReceipt($id)
+    {
+        // This method would contain logic to send an email receipt for the transaction.
+        // Implementation depends on the email service and templates used in the application.
+
+        // 1. Retrieve the specific transaction record from the facilities database.
+        // We use direct DB query builder as no Eloquent Model is defined for this table.
+        $transaction = DB::connection('facilities_db')->table('payment_slips')
+        ->where('id', $id)
+        ->first();
+        
+        // 2. Return a 404 error if the transaction reference does not exist.
+        if (!$transaction) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Transaction record not found in the database.'
+            ], 404);
+        }
+        // 3. Fetch associated booking details to identify the owner of the transaction.
+        $booking = DB::connection('facilities_db')->table('bookings')
+        ->where('id', $transaction->booking_id)
+        ->first();
+        // 4. Access the authentication database to retrieve the citizen's contact information.
+        if ($booking && $booking->user_id) {
+            $citizen = DB::connection('auth_db')->table('users')
+            ->where('id', $booking->user_id)
+            ->select('id', 'full_name', 'email')
+            ->first();
+        }
+        // 5. Extract the email address and determine the payment status.
+        $email = $citizen ? $citizen->email : null;
+        $isPaid = ($transaction->status === 'paid');
+        try {
+            // Validation: Ensure an email address exists before attempting to send.
+            if (!$email) {
+                throw new \Exception("The citizen profile is missing a valid email address.");
+            }
+            /**
+            * 6. Logic Branching:
+            * If the status is 'Paid', prepare an Official Digital Receipt.
+            * If the status is 'Unpaid' (Flagged as High Risk by AI), prepare a Payment Reminder.
+            */
+            if ($isPaid) {
+                Mail::to($email)->send(new OfficialReceiptMail($transaction, $citizen));
+                $message = "Digital receipt successfully dispatched to " . $email;
+            } else {
+                Mail::to($email)->send(new OfficialReceiptMail($transaction, $citizen));
+                $message = "Urgent payment reminder dispatched to " . $email;
+            }
+            // 7. Return a JSON response for the SweetAlert frontend handler.
+            return response()->json([
+                'success' => true,
+                'message' => $message
+            ]);
+        } catch (\Exception $e) {
+            // Handle mail server failures or logic errors gracefully.
+            return response()->json([
+                'success' => false,
+                'message' => 'Communication error: ' . $e->getMessage()
+            ], 500);
+        }
+    }
 
     /**
      * Export transactions as CSV
@@ -197,4 +263,3 @@ class TransactionController extends Controller
         return response()->stream($callback, 200, $headers);
     }
 }
-

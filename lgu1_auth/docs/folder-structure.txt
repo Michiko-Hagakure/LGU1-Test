@@ -1,0 +1,140 @@
+Each LGU subsystem should follow a consistent folder structure like below, with well-defined API endpoints per submodule.
+
+==========================
+🗂️ SUBSYSTEM STRUCTURE TEMPLATE (PER SUBSYSTEM)
+==========================
+/subsystem-name/
+├── config/
+│   ├── config.php
+│   ├── .env.local.php
+│   ├── .env.live.php
+├── api/
+│   ├── <api-endpoints>.php
+├── database/
+│   └── schema.sql
+├── public/
+│   └── dashboard.php
+├── utils/
+│   └── helpers.php
+└── logs/
+    └── api.log
+
+==========================
+📦 FOLDER + ENDPOINTS PER SUBSYSTEM
+==========================
+
+----------------------------------
+📁 infrastructure-project-management
+----------------------------------
+api/
+├── create_project.php
+├── get_projects.php
+├── update_project_status.php
+├── add_contractor.php
+├── list_contractors.php
+├── submit_bid.php
+├── track_progress.php
+├── log_materials.php
+├── monitor_equipment.php
+├── upload_completion_report.php
+
+----------------------------------
+📁 utility-billing-management
+----------------------------------
+api/
+├── read_meter.php
+├── generate_bill.php
+├── process_payment.php
+├── track_payment.php
+├── request_connection.php
+├── request_disconnection.php
+├── log_complaint.php
+├── get_complaints.php
+
+----------------------------------
+📁 road-infrastructure-monitoring
+----------------------------------
+api/
+├── schedule_maintenance.php
+├── report_road_damage.php
+├── inspect_bridge.php
+├── monitor_traffic.php
+├── list_projects.php
+
+----------------------------------
+📁 facilities-reservation
+----------------------------------
+api/
+├── list_facilities.php
+├── book_facility.php
+├── approve_booking.php
+├── calculate_fees.php
+├── report_usage.php
+├── check_conflicts.php
+
+----------------------------------
+📁 Community-infrastructure-maintenance
+----------------------------------
+api/
+├── tag_asset.php
+├── log_condition.php
+├── submit_maintenance_request.php
+├── assign_work_order.php
+├── schedule_maintenance.php
+├── track_preventive.php
+├── allocate_costs.php
+
+----------------------------------
+📁 urban-planning-development
+----------------------------------
+api/
+├── create_clup.php
+├── get_zoning_map.php
+├── classify_lot.php
+├── issue_permit.php
+├── check_compliance.php
+├── integrate_gis.php
+
+----------------------------------
+📁 land-registration
+----------------------------------
+api/
+├── register_landowner.php
+├── apply_title.php
+├── verify_title.php
+├── record_transfer.php
+├── integrate_survey.php
+├── get_title_status.php
+
+----------------------------------
+📁 housing-resettlement
+----------------------------------
+api/
+├── verify_beneficiary.php
+├── register_project.php
+├── assign_unit.php
+├── track_occupancy.php
+├── plan_resettlement.php
+├── track_loan_payment.php
+
+----------------------------------
+📁 renewable-energy-management
+----------------------------------
+api/
+├── submit_proposal.php
+├── evaluate_proposal.php
+├── select_site.php
+├── manage_partnership.php
+├── monitor_installation.php
+├── track_output.php
+├── log_training.php
+
+----------------------------------
+📁 energy-efficiency-management
+----------------------------------
+api/
+├── monitor_consumption.php
+├── generate_audit_report.php
+├── track_efficiency.php
+├── validate_green_compliance.php
+├── log_awareness_campaign.php
