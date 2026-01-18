@@ -32,6 +32,11 @@ Route::get('/csrf-token', function () {
     ]);
 });
 
+// Announcement dismissal (for all authenticated users)
+Route::post('/announcement/dismiss', [\App\Http\Controllers\AnnouncementController::class, 'dismiss'])
+    ->middleware('auth')
+    ->name('announcement.dismiss');
+
 // Public Facility Routes (No authentication required)
 Route::get('/facilities', [App\Http\Controllers\FacilityController::class, 'index'])->name('facilities.index');
 Route::get('/facilities/{id}', [App\Http\Controllers\FacilityController::class, 'show'])->name('facilities.show');
@@ -1192,8 +1197,13 @@ Route::middleware(['auth', 'role:Admin'])->group(function () {
     Route::get('/admin/analytics/facility-utilization', [\App\Http\Controllers\Admin\AnalyticsController::class, 'facilityUtilization'])->name('admin.analytics.facility-utilization');
     Route::get('/admin/analytics/citizen-analytics', [\App\Http\Controllers\Admin\AnalyticsController::class, 'citizenAnalytics'])->name('admin.analytics.citizen-analytics');
     Route::get('/admin/analytics/operational-metrics', [\App\Http\Controllers\Admin\AnalyticsController::class, 'operationalMetrics'])->name('admin.analytics.operational-metrics');
-    Route::get('/admin/analytics/audit-trail', [ReportController::class, 'auditIndex'])->name('admin.audit.trail');
-
+    
+    // Audit Trail
+    Route::get('/admin/audit-trail', [\App\Http\Controllers\Admin\AuditTrailController::class, 'index'])->name('admin.audit-trail.index');
+    Route::get('/admin/audit-trail/{id}', [\App\Http\Controllers\Admin\AuditTrailController::class, 'show'])->name('admin.audit-trail.show');
+    Route::get('/admin/audit-trail/export/csv', [\App\Http\Controllers\Admin\AuditTrailController::class, 'exportCsv'])->name('admin.audit-trail.export-csv');
+    Route::get('/admin/audit-trail/export/pdf', [\App\Http\Controllers\Admin\AuditTrailController::class, 'exportPdf'])->name('admin.audit-trail.export-pdf');
+    
     // Phase 5: Payment Analytics & Transactions
     Route::get('/admin/analytics/payments', [\App\Http\Controllers\Admin\PaymentAnalyticsController::class, 'index'])->name('admin.analytics.payments');
     Route::get('/admin/transactions', [\App\Http\Controllers\Admin\TransactionController::class, 'index'])->name('admin.transactions.index');
@@ -1233,7 +1243,20 @@ Route::middleware(['auth', 'role:Admin'])->group(function () {
     Route::delete('/admin/equipment/{id}', [\App\Http\Controllers\Admin\EquipmentController::class, 'destroy'])->name('admin.equipment.destroy');
     Route::post('/admin/equipment/{id}/restore', [\App\Http\Controllers\Admin\EquipmentController::class, 'restore'])->name('admin.equipment.restore');
     Route::post('/admin/equipment/{id}/toggle', [\App\Http\Controllers\Admin\EquipmentController::class, 'toggleAvailability'])->name('admin.equipment.toggle');
-
+    
+    // System Settings
+    Route::get('/admin/settings', [\App\Http\Controllers\Admin\SystemSettingsController::class, 'index'])->name('admin.settings.index');
+    Route::put('/admin/settings', [\App\Http\Controllers\Admin\SystemSettingsController::class, 'update'])->name('admin.settings.update');
+    Route::get('/admin/settings/clear-cache', [\App\Http\Controllers\Admin\SystemSettingsController::class, 'clearCache'])->name('admin.settings.clear-cache');
+    
+    // Backup & Restore
+    Route::get('/admin/backup', [\App\Http\Controllers\Admin\BackupController::class, 'index'])->name('admin.backup.index');
+    Route::post('/admin/backup/create', [\App\Http\Controllers\Admin\BackupController::class, 'create'])->name('admin.backup.create');
+    Route::post('/admin/backup/download/{fileName}', [\App\Http\Controllers\Admin\BackupController::class, 'download'])->name('admin.backup.download');
+    Route::delete('/admin/backup/{fileName}', [\App\Http\Controllers\Admin\BackupController::class, 'destroy'])->name('admin.backup.destroy');
+    Route::post('/admin/backup/clean', [\App\Http\Controllers\Admin\BackupController::class, 'clean'])->name('admin.backup.clean');
+    
+>>>>>>> Stashed changes
     // Pricing Management
     Route::get('/admin/pricing', [\App\Http\Controllers\Admin\PricingController::class, 'index'])->name('admin.pricing.index');
     Route::put('/admin/pricing/{id}', [\App\Http\Controllers\Admin\PricingController::class, 'update'])->name('admin.pricing.update');

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Citizen;
 
 use App\Http\Controllers\Controller;
+use App\Models\Booking;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -353,11 +354,11 @@ class BookingController extends Controller
             $totalDiscount = $residentDiscountAmount + $specialDiscountAmount;
             $totalAmount = $pricing['subtotal'] - $totalDiscount;
 
-            // Create booking
+            // Create booking using Eloquent for automatic audit logging
             $startDateTime = Carbon::parse($step1Data['booking_date'] . ' ' . $step1Data['start_time']);
             $endDateTime = Carbon::parse($step1Data['booking_date'] . ' ' . $step1Data['end_time']);
 
-            $bookingId = DB::connection('facilities_db')->table('bookings')->insertGetId([
+            $booking = Booking::create([
                 'user_id' => $userId,
                 'facility_id' => $step1Data['facility_id'],
                 'start_time' => $startDateTime,
@@ -385,9 +386,9 @@ class BookingController extends Controller
                 'valid_id_front_path' => $validIdFrontPath,
                 'valid_id_back_path' => $validIdBackPath,
                 'valid_id_selfie_path' => $validIdSelfiePath,
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
             ]);
+
+            $bookingId = $booking->id;
 
             // Add equipment to booking_equipment table
             if (!empty($selectedEquipment)) {

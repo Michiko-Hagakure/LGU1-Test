@@ -174,16 +174,13 @@ class BookingVerificationController extends Controller
             // Get booking details
             $booking = Booking::findOrFail($bookingId);
 
-            // Update booking status
-            DB::connection('facilities_db')->table('bookings')
-                ->where('id', $bookingId)
-                ->update([
-                    'status' => 'staff_verified',
-                    'staff_verified_by' => $userId,
-                    'staff_verified_at' => now(),
-                    'staff_notes' => $validated['staff_notes'] ?? null,
-                    'updated_at' => now()
-                ]);
+            // Update booking status using Eloquent for automatic audit logging
+            $booking->update([
+                'status' => 'staff_verified',
+                'staff_verified_by' => $userId,
+                'staff_verified_at' => now(),
+                'staff_notes' => $validated['staff_notes'] ?? null,
+            ]);
 
             // Auto-generate payment slip
             $paymentSlip = PaymentSlip::create([
@@ -236,24 +233,16 @@ class BookingVerificationController extends Controller
         ]);
 
         try {
-            // Get booking before updating
-            $booking = DB::connection('facilities_db')
-                ->table('bookings')
-                ->join('facilities', 'bookings.facility_id', '=', 'facilities.facility_id')
-                ->where('bookings.id', $bookingId)
-                ->select('bookings.*', 'facilities.name as facility_name')
-                ->first();
+            // Get booking using Eloquent
+            $booking = Booking::findOrFail($bookingId);
 
-            // Update booking status
-            DB::connection('facilities_db')->table('bookings')
-                ->where('id', $bookingId)
-                ->update([
-                    'status' => 'rejected',
-                    'staff_verified_by' => $userId,
-                    'staff_verified_at' => now(),
-                    'rejected_reason' => $validated['rejection_reason'],
-                    'updated_at' => now()
-                ]);
+            // Update booking status using Eloquent for automatic audit logging
+            $booking->update([
+                'status' => 'rejected',
+                'staff_verified_by' => $userId,
+                'staff_verified_at' => now(),
+                'rejected_reason' => $validated['rejection_reason'],
+            ]);
 
             // Send rejection notification to citizen
             try {

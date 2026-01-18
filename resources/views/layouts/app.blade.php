@@ -64,6 +64,8 @@
             </div>
         </header>
 
+        @include('components.announcement-banner')
+
         <main class="p-4 lg:p-6">
             @yield('content')
         </main>

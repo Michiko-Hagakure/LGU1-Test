@@ -79,6 +79,8 @@
         </div>
     </header>
 
+    @include('components.announcement-banner')
+
     <main class="min-h-screen bg-lgu-bg">
         <div class="container mx-auto px-gr-lg py-gr-xl">
             @yield('page-content')

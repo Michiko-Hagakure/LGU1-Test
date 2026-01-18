@@ -158,7 +158,7 @@
             </a>
         </li>
         <li>
-            <a href="{{ route('admin.audit.trail') }}" class="sidebar-link flex items-center px-gr-sm py-gr-xs text-small font-medium rounded-lg transition-colors duration-200 {{ request()->routeIs('admin.audit.trail') ? 'bg-emerald-800 text-white shadow-lg shadow-emerald-900/20' : 'text-gray-300 hover:bg-emerald-700' }}">
+            <a href="{{ route('admin.audit-trail.index') }}" class="sidebar-link flex items-center px-gr-sm py-gr-xs text-small font-medium rounded-lg transition-colors duration-200 {{ request()->routeIs('admin.audit-trail.*') ? 'active' : '' }}">
                 <i data-lucide="shield-check" class="w-5 h-5 mr-gr-xs flex-shrink-0"></i>
                 <span>Audit Trail</span>
             </a>
@@ -171,17 +171,15 @@
     <h4 class="text-gray-400 text-caption font-semibold uppercase tracking-wider mb-gr-xs">System</h4>
     <ul class="space-y-gr-xs">
         <li>
-            <a href="{{ route('admin.settings') }}" class="sidebar-link flex items-center px-gr-sm py-gr-xs text-small font-medium rounded-lg transition-colors duration-200 
-            {{ request()->routeIs('admin.settings') ? 'bg-green-800 text-white' : 'text-gray-300 hover:bg-green-700' }}">
-            <i data-lucide="settings" class="w-5 h-5 mr-gr-xs flex-shrink-0"></i>
-            <span>Settings</span>
-        </a>
+            <a href="{{ route('admin.settings.index') }}" class="sidebar-link flex items-center px-gr-sm py-gr-xs text-small font-medium rounded-lg transition-colors duration-200 {{ request()->routeIs('admin.settings.*') ? 'active' : '' }}">
+                <i data-lucide="settings" class="w-5 h-5 mr-gr-xs flex-shrink-0"></i>
+                <span>Settings</span>
+            </a>
         </li>
         <li>
-            <a href="#" onclick="showComingSoon('Backup & Restore'); return false;" class="sidebar-link flex items-center px-gr-sm py-gr-xs text-small font-medium rounded-lg transition-colors duration-200 opacity-60">
+            <a href="{{ route('admin.backup.index') }}" class="sidebar-link flex items-center px-gr-sm py-gr-xs text-small font-medium rounded-lg transition-colors duration-200 {{ request()->routeIs('admin.backup.*') ? 'active' : '' }}">
                 <i data-lucide="database" class="w-5 h-5 mr-gr-xs flex-shrink-0"></i>
-                <span>Backup</span>
-                <span class="ml-auto text-xs bg-gray-500 text-white px-2 py-0.5 rounded-full">Soon</span>
+                <span>Backup & Restore</span>
             </a>
         </li>
     </ul>

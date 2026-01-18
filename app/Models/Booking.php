@@ -2,13 +2,14 @@
 
 namespace App\Models;
 
+use App\Traits\LogsActivity;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Booking extends Model
 {
-    use HasFactory;
+    use HasFactory, LogsActivity;
 
     /**
      * The database connection that should be used by the model.
@@ -76,6 +77,8 @@ class Booking extends Model
         // Status and approval fields
         'status',
         'rejected_reason',
+        'canceled_reason',
+        'canceled_at',
         'staff_verified_by',
         'staff_verified_at',
         'staff_notes',
@@ -109,6 +112,7 @@ class Booking extends Model
         'staff_verified_at' => 'datetime',
         'admin_approved_at' => 'datetime',
         'reserved_until' => 'datetime',
+        'canceled_at' => 'datetime',
     ];
 
     /**

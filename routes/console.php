@@ -18,3 +18,10 @@ Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote');
 
+// Schedule automatic cancellation of overdue bookings
+use Illuminate\Support\Facades\Schedule;
+
+Schedule::command('bookings:cancel-overdue')
+    ->hourly()
+    ->withoutOverlapping()
+    ->runInBackground();
