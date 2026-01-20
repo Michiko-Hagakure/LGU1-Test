@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\LogsActivity;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -10,21 +11,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Facility extends Model
 {
-    use HasFactory, SoftDeletes;
-
-    /**
-     * The connection name for the model.
-     *
-     * @var string
-     */
-    protected $connection = 'facilities_db';
-
-    /**
-     * The primary key for the model.
-     *
-     * @var string
-     */
-    protected $primaryKey = 'facility_id';
+    use HasFactory, SoftDeletes, LogsActivity;
 
     /**
      * The attributes that are mass assignable.
@@ -33,7 +20,7 @@ class Facility extends Model
      */
     protected $fillable = [
         'location_id',
-        'name',
+        'facility_name',
         'facility_type',
         'description',
         'capacity',
@@ -81,15 +68,6 @@ class Facility extends Model
     protected $hidden = [
         'deleted_at',
     ];
-
-    /**
-     * Relationship: Facility belongs to an LGU City
-     * Note: LguCity is in auth_db, Facility is in facilities_db
-     */
-    public function lguCity(): BelongsTo
-    {
-        return $this->belongsTo(LguCity::class, 'lgu_city_id', 'id');
-    }
 
     /**
      * Relationship: Facility belongs to a location
@@ -152,7 +130,7 @@ class Facility extends Model
      */
     public function scopeOrdered($query)
     {
-        return $query->orderBy('display_order')->orderBy('name');
+        return $query->orderBy('display_order')->orderBy('facility_name');
     }
 
     /**

@@ -147,18 +147,21 @@ class BookingConflictController extends Controller
                     return back()->withErrors(['error' => 'Selected time slot is not available. Please choose another date/time.']);
                 }
 
-                // Create new booking
-                $newBookingId = DB::connection('facilities_db')
-                    ->table('bookings')
-                    ->insertGetId([
-                        'facility_id' => $booking->facility_id,
-                        'user_id' => $booking->user_id,
-                        'start_time' => $request->new_start_time,
-                        'end_time' => $request->new_end_time,
-                        'status' => $booking->status,
-                        'created_at' => now(),
-                        'updated_at' => now(),
-                    ]);
+                // Create new booking using Eloquent for audit logging
+                $newBooking = Booking::create([
+                    'facility_id' => $booking->facility_id,
+                    'user_id' => $booking->user_id,
+                    'user_name' => $booking->user_name,
+                    'start_time' => $request->new_start_time,
+                    'end_time' => $request->new_end_time,
+                    'status' => $booking->status,
+                    'base_rate' => $booking->base_rate ?? 0,
+                    'subtotal' => $booking->subtotal ?? 0,
+                    'total_amount' => $booking->total_amount ?? 0,
+                    'purpose' => $booking->purpose,
+                    'expected_attendees' => $booking->expected_attendees ?? 0,
+                ]);
+                $newBookingId = $newBooking->id;
             }
 
             // Store refund details if refund was chosen

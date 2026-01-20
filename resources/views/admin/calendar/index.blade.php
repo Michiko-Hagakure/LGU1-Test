@@ -196,22 +196,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Event details modal
     window.showEventDetails = function(event) {
-        const props = event.extendedProps;
-        
-        // Check if it's a government program
-        if (props.event_type === 'government_program') {
-            showGovernmentProgramDetails(event, props);
-            return;
-        }
-        
-        // Check if it's a city event
-        if (props.event_type === 'city_event') {
-            showCityEventDetails(event, props);
-            return;
-        }
-        
-        // Regular booking
-        const booking = props;
+        const booking = event.extendedProps;
         
         const statusConfig = {
             'pending': { bg: 'bg-yellow-100', text: 'text-yellow-800', label: 'Pending Verification' },
@@ -273,122 +258,6 @@ document.addEventListener('DOMContentLoaded', function() {
         
         document.getElementById('modalContent').innerHTML = modalContent;
         document.getElementById('viewDetailsButton').href = `/admin/bookings/${booking.booking_id}/review`;
-        document.getElementById('eventModal').classList.remove('hidden');
-        
-        // Reinitialize Lucide icons
-        lucide.createIcons();
-    };
-    
-    // Show government program details
-    window.showGovernmentProgramDetails = function(event, props) {
-        const statusConfig = {
-            'confirmed': { bg: 'bg-green-100', text: 'text-green-800', label: 'Confirmed' },
-            'completed': { bg: 'bg-purple-100', text: 'text-purple-800', label: 'Completed' }
-        };
-        
-        const status = statusConfig[props.status] || statusConfig['confirmed'];
-        
-        const modalContent = `
-            <div class="space-y-gr-md">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <h4 class="text-h4 font-bold text-lgu-headline">${event.title.replace('[GOV PROGRAM] ', '')}</h4>
-                        <p class="text-small text-lgu-paragraph">${props.facility_location}</p>
-                    </div>
-                    <span class="${status.bg} ${status.text} px-3 py-1 rounded-lg text-small font-semibold">${status.label}</span>
-                </div>
-                
-                <div class="bg-green-50 border border-green-200 rounded-lg p-gr-md space-y-gr-sm">
-                    <div class="flex items-center gap-2 text-small">
-                        <i data-lucide="calendar" class="w-4 h-4 text-green-700"></i>
-                        <span class="text-green-700">Date:</span>
-                        <span class="font-semibold text-green-900">${new Date(props.startTime).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
-                    </div>
-                    <div class="flex items-center gap-2 text-small">
-                        <i data-lucide="clock" class="w-4 h-4 text-green-700"></i>
-                        <span class="text-green-700">Time:</span>
-                        <span class="font-semibold text-green-900">${formatTime(props.startTime)} - ${formatTime(props.endTime)}</span>
-                    </div>
-                    <div class="flex items-center gap-2 text-small">
-                        <i data-lucide="building" class="w-4 h-4 text-green-700"></i>
-                        <span class="text-green-700">Source:</span>
-                        <span class="font-semibold text-green-900">${props.source_system}</span>
-                    </div>
-                    <div class="flex items-center gap-2 text-small">
-                        <i data-lucide="user" class="w-4 h-4 text-green-700"></i>
-                        <span class="text-green-700">Organizer:</span>
-                        <span class="font-semibold text-green-900">${props.organizer_name}</span>
-                    </div>
-                    <div class="flex items-center gap-2 text-small">
-                        <i data-lucide="users" class="w-4 h-4 text-green-700"></i>
-                        <span class="text-green-700">Expected Attendees:</span>
-                        <span class="font-semibold text-green-900">${props.expected_attendees} people</span>
-                    </div>
-                    <div class="flex items-center gap-2 text-small">
-                        <i data-lucide="mic" class="w-4 h-4 text-green-700"></i>
-                        <span class="text-green-700">Speakers:</span>
-                        <span class="font-semibold text-green-900">${props.speakers_count} speaker(s)</span>
-                    </div>
-                    <div class="flex items-center gap-2 text-small">
-                        <span class="w-4 h-4 flex items-center justify-center text-green-700 font-bold text-body">₱</span>
-                        <span class="text-green-700">Approved Budget:</span>
-                        <span class="font-semibold text-green-900">₱${parseFloat(props.approved_budget).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
-                    </div>
-                </div>
-                
-                ${props.program_description ? `
-                <div>
-                    <p class="text-caption text-gray-500 mb-1">Program Description</p>
-                    <p class="text-small text-lgu-paragraph">${props.program_description}</p>
-                </div>
-                ` : ''}
-            </div>
-        `;
-        
-        document.getElementById('modalContent').innerHTML = modalContent;
-        document.getElementById('viewDetailsButton').href = `/admin/government-programs/${props.program_id}`;
-        document.getElementById('eventModal').classList.remove('hidden');
-        
-        // Reinitialize Lucide icons
-        lucide.createIcons();
-    };
-    
-    // Show city event details
-    window.showCityEventDetails = function(event, props) {
-        const modalContent = `
-            <div class="space-y-gr-md">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <h4 class="text-h4 font-bold text-lgu-headline">${event.title.replace('[CITY EVENT] ', '')}</h4>
-                        <p class="text-small text-lgu-paragraph">${props.facility_name}</p>
-                    </div>
-                    <span class="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-lg text-small font-semibold">${props.category}</span>
-                </div>
-                
-                <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-gr-md space-y-gr-sm">
-                    <div class="flex items-center gap-2 text-small">
-                        <i data-lucide="calendar" class="w-4 h-4 text-yellow-700"></i>
-                        <span class="text-yellow-700">Date:</span>
-                        <span class="font-semibold text-yellow-900">${new Date(props.startTime).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
-                    </div>
-                    <div class="flex items-center gap-2 text-small">
-                        <i data-lucide="clock" class="w-4 h-4 text-yellow-700"></i>
-                        <span class="text-yellow-700">Time:</span>
-                        <span class="font-semibold text-yellow-900">${formatTime(props.startTime)} - ${formatTime(props.endTime)}</span>
-                    </div>
-                </div>
-                
-                ${props.event_description ? `
-                <div>
-                    <p class="text-caption text-gray-500 mb-1">Event Description</p>
-                    <p class="text-small text-lgu-paragraph">${props.event_description}</p>
-                </div>
-                ` : ''}
-            </div>
-        `;
-        
-        document.getElementById('modalContent').innerHTML = modalContent;
-        document.getElementById('viewDetailsButton').href = `/admin/city-events/${props.event_id}`;
         document.getElementById('eventModal').classList.remove('hidden');
         
         // Reinitialize Lucide icons

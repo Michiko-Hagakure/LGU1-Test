@@ -295,7 +295,7 @@ class ReservationController extends Controller
                 'lgu_cities.city_code'
             )
             ->where('bookings.user_id', $userId)
-            ->whereIn('bookings.status', ['completed', 'cancelled', 'rejected', 'expired'])
+            ->whereIn('bookings.status', ['completed', 'cancelled', 'canceled', 'rejected', 'expired'])
             ->orderBy('bookings.start_time', 'desc');
 
         if ($search) {

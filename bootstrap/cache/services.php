@@ -33,7 +33,9 @@
     29 => 'Carbon\\Laravel\\ServiceProvider',
     30 => 'NunoMaduro\\Collision\\Adapters\\Laravel\\CollisionServiceProvider',
     31 => 'Termwind\\Laravel\\TermwindServiceProvider',
-    32 => 'Spatie\\LaravelIgnition\\IgnitionServiceProvider',
+    32 => 'Spatie\\Backup\\BackupServiceProvider',
+    33 => 'Spatie\\LaravelIgnition\\IgnitionServiceProvider',
+    34 => 'Spatie\\SignalAwareCommand\\SignalAwareCommandServiceProvider',
   ),
   'eager' => 
   array (
@@ -54,7 +56,9 @@
     14 => 'Carbon\\Laravel\\ServiceProvider',
     15 => 'NunoMaduro\\Collision\\Adapters\\Laravel\\CollisionServiceProvider',
     16 => 'Termwind\\Laravel\\TermwindServiceProvider',
-    17 => 'Spatie\\LaravelIgnition\\IgnitionServiceProvider',
+    17 => 'Spatie\\Backup\\BackupServiceProvider',
+    18 => 'Spatie\\LaravelIgnition\\IgnitionServiceProvider',
+    19 => 'Spatie\\SignalAwareCommand\\SignalAwareCommandServiceProvider',
   ),
   'deferred' => 
   array (

@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Citizen;
 
 use App\Http\Controllers\Controller;
-use App\Models\GovernmentProgramBooking;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
@@ -61,58 +60,9 @@ class FacilityCalendarController extends Controller
         // Get all bookings for the month
         $bookings = $bookingsQuery->orderBy('bookings.start_time')->get();
         
-        // Get city events for the selected month
-        $cityEventsQuery = DB::connection('facilities_db')
-            ->table('city_events')
-            ->join('facilities', 'city_events.facility_id', '=', 'facilities.facility_id')
-            ->select(
-                'city_events.*',
-                'facilities.name as facility_name',
-                'facilities.address as facility_location'
-            )
-            ->whereYear('city_events.start_time', $year)
-            ->whereMonth('city_events.start_time', $month);
-        
-        // Filter by facility if selected
-        if ($selectedFacilityId) {
-            $cityEventsQuery->where('city_events.facility_id', $selectedFacilityId);
-        }
-        
-        $cityEvents = $cityEventsQuery->orderBy('city_events.start_time')->get();
-        
-        // Get government program bookings for the selected month
-        $govProgramsQuery = DB::connection('facilities_db')
-            ->table('government_program_bookings')
-            ->join('facilities', 'government_program_bookings.assigned_facility_id', '=', 'facilities.facility_id')
-            ->select(
-                'government_program_bookings.*',
-                'facilities.name as facility_name',
-                'facilities.address as facility_location'
-            )
-            ->where('government_program_bookings.coordination_status', 'confirmed')
-            ->whereYear('government_program_bookings.event_date', $year)
-            ->whereMonth('government_program_bookings.event_date', $month);
-        
-        // Filter by facility if selected
-        if ($selectedFacilityId) {
-            $govProgramsQuery->where('government_program_bookings.assigned_facility_id', $selectedFacilityId);
-        }
-        
-        $govPrograms = $govProgramsQuery->orderBy('government_program_bookings.event_date')->get();
-        
         // Group bookings by date
         $bookingsByDate = $bookings->groupBy(function($booking) {
             return Carbon::parse($booking->start_time)->format('Y-m-d');
-        });
-        
-        // Group city events by date
-        $cityEventsByDate = $cityEvents->groupBy(function($event) {
-            return Carbon::parse($event->start_time)->format('Y-m-d');
-        });
-        
-        // Group government programs by date
-        $govProgramsByDate = $govPrograms->groupBy(function($program) {
-            return Carbon::parse($program->event_date)->format('Y-m-d');
         });
         
         // Get previous and next month navigation
@@ -120,17 +70,13 @@ class FacilityCalendarController extends Controller
         $nextMonth = $currentDate->copy()->addMonth();
         
         // Generate calendar data
-        $calendarData = $this->generateCalendarData($currentDate, $bookingsByDate, $cityEventsByDate, $govProgramsByDate);
+        $calendarData = $this->generateCalendarData($currentDate, $bookingsByDate);
         
         return view('citizen.facility-calendar', [
             'currentDate' => $currentDate,
             'calendarData' => $calendarData,
             'bookings' => $bookings,
             'bookingsByDate' => $bookingsByDate,
-            'cityEvents' => $cityEvents,
-            'cityEventsByDate' => $cityEventsByDate,
-            'govPrograms' => $govPrograms,
-            'govProgramsByDate' => $govProgramsByDate,
             'facilities' => $facilities,
             'selectedFacilityId' => $selectedFacilityId,
             'prevMonth' => $prevMonth,
@@ -139,19 +85,15 @@ class FacilityCalendarController extends Controller
     }
     
     /**
-     * Generate calendar data with booking, city event, and government program information.
+     * Generate calendar data with booking information.
      *
      * @param  \Carbon\Carbon  $currentDate
      * @param  \Illuminate\Support\Collection  $bookingsByDate
-     * @param  \Illuminate\Support\Collection  $cityEventsByDate
-     * @param  \Illuminate\Support\Collection  $govProgramsByDate
      * @return array
      */
-    private function generateCalendarData($currentDate, $bookingsByDate, $cityEventsByDate = null, $govProgramsByDate = null)
+    private function generateCalendarData($currentDate, $bookingsByDate)
     {
         $calendarData = [];
-        $cityEventsByDate = $cityEventsByDate ?? collect();
-        $govProgramsByDate = $govProgramsByDate ?? collect();
         
         // Get the first day of the month
         $firstDay = $currentDate->copy()->startOfMonth();
@@ -168,10 +110,6 @@ class FacilityCalendarController extends Controller
                 'isToday' => false,
                 'hasBookings' => false,
                 'bookingCount' => 0,
-                'hasCityEvents' => false,
-                'cityEventCount' => 0,
-                'hasGovPrograms' => false,
-                'govProgramCount' => 0,
             ];
         }
         
@@ -180,8 +118,6 @@ class FacilityCalendarController extends Controller
             $date = $currentDate->copy()->setDay($day);
             $dateString = $date->format('Y-m-d');
             $bookingsForDay = $bookingsByDate->get($dateString, collect());
-            $cityEventsForDay = $cityEventsByDate->get($dateString, collect());
-            $govProgramsForDay = $govProgramsByDate->get($dateString, collect());
             
             $calendarData[] = [
                 'date' => $date,
@@ -192,12 +128,6 @@ class FacilityCalendarController extends Controller
                 'hasBookings' => $bookingsForDay->isNotEmpty(),
                 'bookingCount' => $bookingsForDay->count(),
                 'bookings' => $bookingsForDay,
-                'hasCityEvents' => $cityEventsForDay->isNotEmpty(),
-                'cityEventCount' => $cityEventsForDay->count(),
-                'cityEvents' => $cityEventsForDay,
-                'hasGovPrograms' => $govProgramsForDay->isNotEmpty(),
-                'govProgramCount' => $govProgramsForDay->count(),
-                'govPrograms' => $govProgramsForDay,
             ];
         }
         
@@ -205,7 +135,7 @@ class FacilityCalendarController extends Controller
     }
     
     /**
-     * Get bookings, city events, and government programs for a specific date (AJAX endpoint).
+     * Get bookings for a specific date (AJAX endpoint).
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\JsonResponse
@@ -219,7 +149,6 @@ class FacilityCalendarController extends Controller
             return response()->json(['error' => 'Date is required'], 400);
         }
         
-        // Get bookings
         $query = DB::connection('facilities_db')
             ->table('bookings')
             ->join('facilities', 'bookings.facility_id', '=', 'facilities.facility_id')
@@ -238,48 +167,9 @@ class FacilityCalendarController extends Controller
         
         $bookings = $query->get();
         
-        // Get city events
-        $cityEventsQuery = DB::connection('facilities_db')
-            ->table('city_events')
-            ->join('facilities', 'city_events.facility_id', '=', 'facilities.facility_id')
-            ->select(
-                'city_events.*',
-                'facilities.name as facility_name',
-                'facilities.address as facility_location'
-            )
-            ->whereDate('city_events.start_time', $date)
-            ->orderBy('city_events.start_time');
-        
-        if ($facilityId) {
-            $cityEventsQuery->where('city_events.facility_id', $facilityId);
-        }
-        
-        $cityEvents = $cityEventsQuery->get();
-        
-        // Get government programs
-        $govProgramsQuery = DB::connection('facilities_db')
-            ->table('government_program_bookings')
-            ->join('facilities', 'government_program_bookings.assigned_facility_id', '=', 'facilities.facility_id')
-            ->select(
-                'government_program_bookings.*',
-                'facilities.name as facility_name',
-                'facilities.address as facility_location'
-            )
-            ->where('government_program_bookings.coordination_status', 'confirmed')
-            ->whereDate('government_program_bookings.event_date', $date)
-            ->orderBy('government_program_bookings.event_date');
-        
-        if ($facilityId) {
-            $govProgramsQuery->where('government_program_bookings.assigned_facility_id', $facilityId);
-        }
-        
-        $govPrograms = $govProgramsQuery->get();
-        
         return response()->json([
             'date' => $date,
             'bookings' => $bookings,
-            'cityEvents' => $cityEvents,
-            'govPrograms' => $govPrograms,
         ]);
     }
 }

@@ -62,6 +62,11 @@ return [
             'options' => extension_loaded('pdo_mysql') ? array_filter([
                 PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
             ]) : [],
+            'dump' => [
+                'dump_binary_path' => env('DB_DUMP_PATH', 'C:/laragon/bin/mysql/mysql-8.0.42-winx64/bin'),
+                'use_single_transaction' => true,
+                'timeout' => 60 * 5,
+            ],
         ],
 
         // Facilities Database (Public Facilities Reservation System only)
@@ -83,26 +88,11 @@ return [
             'options' => extension_loaded('pdo_mysql') ? array_filter([
                 PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
             ]) : [],
-        ],
-
-        // Energy Efficiency Database (For Government Programs Integration)
-        'energy_efficiency' => [
-            'driver' => 'mysql',
-            'host' => env('EE_DB_HOST', '127.0.0.1'),
-            'port' => env('EE_DB_PORT', '3306'),
-            'database' => env('EE_DB_DATABASE', 'ener_nova_capri'),
-            'username' => env('EE_DB_USERNAME', 'root'),
-            'password' => env('EE_DB_PASSWORD', ''),
-            'unix_socket' => '',
-            'charset' => 'utf8mb4',
-            'collation' => 'utf8mb4_unicode_ci',
-            'prefix' => '',
-            'prefix_indexes' => true,
-            'strict' => true,
-            'engine' => null,
-            'options' => extension_loaded('pdo_mysql') ? array_filter([
-                PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
-            ]) : [],
+            'dump' => [
+                'dump_binary_path' => env('DB_DUMP_PATH', 'C:/laragon/bin/mysql/mysql-8.0.42-winx64/bin'),
+                'use_single_transaction' => true,
+                'timeout' => 60 * 5,
+            ],
         ],
 
         'pgsql' => [

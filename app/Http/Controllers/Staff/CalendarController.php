@@ -4,9 +4,7 @@ namespace App\Http\Controllers\Staff;
 
 use App\Http\Controllers\Controller;
 use App\Models\Booking;
-use App\Models\CityEvent;
 use App\Models\FacilityDb;
-use App\Models\GovernmentProgramBooking;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 
@@ -62,9 +60,7 @@ class CalendarController extends Controller
             $end = $request->input('end');
 
         // Build query for bookings
-        $query = Booking::with(['facility.lguCity'])
-            // Exclude refunded and rescheduled bookings (replaced by city events)
-            ->whereNotIn('status', ['refunded', 'rescheduled']);
+        $query = Booking::with(['facility.lguCity']);
 
         // Filter by date range (if provided by FullCalendar)
         // Use start_time since event_date may be NULL
@@ -98,50 +94,6 @@ class CalendarController extends Controller
 
         $bookings = $query->get();
 
-        // Get city events for the same date range
-        $cityEventsQuery = CityEvent::with('facility');
-        
-        if ($start && $end) {
-            $cityEventsQuery->where(function($q) use ($start, $end) {
-                $startClean = trim(preg_replace('/\s+.*$/', '', $start));
-                $endClean = trim(preg_replace('/\s+.*$/', '', $end));
-                
-                $startDate = Carbon::parse($startClean)->startOfDay();
-                $endDate = Carbon::parse($endClean)->endOfDay();
-                
-                $q->whereBetween('start_time', [$startDate, $endDate])
-                  ->orWhereBetween('end_time', [$startDate, $endDate]);
-            });
-        }
-        
-        if ($facilityId && $facilityId !== 'all') {
-            $cityEventsQuery->where('facility_id', $facilityId);
-        }
-        
-        $cityEvents = $cityEventsQuery->where('status', 'scheduled')->get();
-
-        // Get government program bookings for the same date range
-        $govProgramQuery = GovernmentProgramBooking::with(['assignedFacility.lguCity'])
-            ->whereIn('coordination_status', ['confirmed', 'completed']);
-        
-        if ($start && $end) {
-            $govProgramQuery->where(function($q) use ($start, $end) {
-                $startClean = trim(preg_replace('/\s+.*$/', '', $start));
-                $endClean = trim(preg_replace('/\s+.*$/', '', $end));
-                
-                $startDate = Carbon::parse($startClean)->startOfDay();
-                $endDate = Carbon::parse($endClean)->endOfDay();
-                
-                $q->whereBetween('event_date', [$startDate, $endDate]);
-            });
-        }
-        
-        if ($facilityId && $facilityId !== 'all') {
-            $govProgramQuery->where('assigned_facility_id', $facilityId);
-        }
-        
-        $govPrograms = $govProgramQuery->get();
-
         // Transform bookings to FullCalendar event format
         $events = $bookings->map(function ($booking) {
             // Determine event color based on status
@@ -165,76 +117,11 @@ class CalendarController extends Controller
                     'status' => $booking->status,
                     'statusLabel' => $this->getStatusLabel($booking->status),
                     'userName' => $booking->user_name ?? 'N/A',
-                    'startTime' => $booking->start_time->toIso8601String(),
-                    'endTime' => $booking->end_time->toIso8601String(),
                 ],
             ];
         });
 
-        // Transform city events to FullCalendar event format
-        $cityEventsList = $cityEvents->map(function ($cityEvent) {
-            return [
-                'id' => 'city_event_' . $cityEvent->id,
-                'title' => '[CITY EVENT] ' . $cityEvent->event_title,
-                'start' => $cityEvent->start_time->toIso8601String(),
-                'end' => $cityEvent->end_time->toIso8601String(),
-                'backgroundColor' => '#faae2b', // Golden yellow for city events
-                'borderColor' => '#00473e',      // Dark teal border
-                'textColor' => '#00473e',        // Dark teal text
-                'extendedProps' => [
-                    'event_id' => $cityEvent->id,
-                    'event_type' => 'city_event',
-                    'facility_name' => $cityEvent->facility->name ?? 'N/A',
-                    'event_description' => $cityEvent->event_description ?? '',
-                    'category' => ucfirst($cityEvent->event_type),
-                    'affected_bookings' => $cityEvent->affected_bookings_count ?? 0,
-                    'status' => $cityEvent->status,
-                    'startTime' => $cityEvent->start_time->toIso8601String(),
-                    'endTime' => $cityEvent->end_time->toIso8601String(),
-                ],
-            ];
-        });
-
-        // Transform government program bookings to FullCalendar event format
-        $govProgramsList = $govPrograms->map(function ($program) {
-            // Combine date and time properly
-            $eventDate = $program->event_date->format('Y-m-d');
-            $startTime = is_string($program->start_time) ? $program->start_time : $program->start_time->format('H:i:s');
-            $endTime = is_string($program->end_time) ? $program->end_time : $program->end_time->format('H:i:s');
-            
-            $startDateTime = Carbon::parse($eventDate . ' ' . $startTime);
-            $endDateTime = Carbon::parse($eventDate . ' ' . $endTime);
-            
-            return [
-                'id' => 'gov_program_' . $program->id,
-                'title' => '[GOV PROGRAM] ' . $program->program_title,
-                'start' => $startDateTime->toIso8601String(),
-                'end' => $endDateTime->toIso8601String(),
-                'backgroundColor' => '#10b981', // Green for government programs
-                'borderColor' => '#059669',      // Darker green border
-                'textColor' => '#ffffff',        // White text
-                'extendedProps' => [
-                    'program_id' => $program->id,
-                    'event_type' => 'government_program',
-                    'facilityName' => $program->assignedFacility->name ?? 'N/A',
-                    'cityName' => $program->assignedFacility->lguCity->name ?? 'N/A',
-                    'program_description' => $program->program_description ?? '',
-                    'source_system' => $program->source_system,
-                    'organizer_name' => $program->organizer_name,
-                    'attendees' => $program->expected_attendees,
-                    'speakers_count' => $program->number_of_speakers,
-                    'approved_budget' => $program->approved_amount,
-                    'status' => $program->coordination_status,
-                    'startTime' => $startDateTime->toIso8601String(),
-                    'endTime' => $endDateTime->toIso8601String(),
-                ],
-            ];
-        });
-
-        // Combine bookings, city events, and government programs
-        $allEvents = $events->concat($cityEventsList)->concat($govProgramsList);
-
-            return response()->json($allEvents);
+            return response()->json($events);
             
         } catch (\Exception $e) {
             // Log the error for debugging
