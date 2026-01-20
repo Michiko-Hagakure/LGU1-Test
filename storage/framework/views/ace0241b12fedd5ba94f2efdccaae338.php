@@ -39,25 +39,6 @@
                 <span>Maintenance Schedule</span>
             </a>
         </li>
-        <li>
-            <a href="<?php echo e(route('admin.city-events.index')); ?>" class="sidebar-link flex items-center px-gr-sm py-gr-xs text-small font-medium rounded-lg transition-colors duration-200 <?php echo e(request()->routeIs('admin.city-events.*') ? 'active' : ''); ?>">
-                <i data-lucide="calendar-range" class="w-5 h-5 mr-gr-xs flex-shrink-0"></i>
-                <span>City Events</span>
-            </a>
-        </li>
-    </ul>
-</div>
-
-<!-- GOVERNMENT PROGRAMS SUBMODULE (Energy Efficiency Integration) -->
-<div class="px-gr-md mb-gr-lg">
-    <h4 class="text-gray-400 text-caption font-semibold uppercase tracking-wider mb-gr-xs">Government Programs</h4>
-    <ul class="space-y-gr-xs">
-        <li>
-            <a href="<?php echo e(route('admin.government-programs.index')); ?>" class="sidebar-link flex items-center px-gr-sm py-gr-xs text-small font-medium rounded-lg transition-colors duration-200 <?php echo e(request()->routeIs('admin.government-programs.*') ? 'active' : ''); ?>">
-                <i data-lucide="handshake" class="w-5 h-5 mr-gr-xs flex-shrink-0"></i>
-                <span>Program Requests</span>
-            </a>
-        </li>
     </ul>
 </div>
 
@@ -136,27 +117,6 @@
     </ul>
 </div>
 
-<!-- COMMUNICATIONS SUBMODULE (Coming Soon) -->
-<div class="px-gr-md mb-gr-lg">
-    <h4 class="text-gray-400 text-caption font-semibold uppercase tracking-wider mb-gr-xs">Communications</h4>
-    <ul class="space-y-gr-xs">
-        <li>
-            <a href="#" onclick="showComingSoon('Email Notifications'); return false;" class="sidebar-link flex items-center px-gr-sm py-gr-xs text-small font-medium rounded-lg transition-colors duration-200 opacity-60">
-                <i data-lucide="mail" class="w-5 h-5 mr-gr-xs flex-shrink-0"></i>
-                <span>Email Settings</span>
-                <span class="ml-auto text-xs bg-gray-500 text-white px-2 py-0.5 rounded-full">Soon</span>
-            </a>
-        </li>
-        <li>
-            <a href="#" onclick="showComingSoon('SMS Notifications'); return false;" class="sidebar-link flex items-center px-gr-sm py-gr-xs text-small font-medium rounded-lg transition-colors duration-200 opacity-60">
-                <i data-lucide="message-square" class="w-5 h-5 mr-gr-xs flex-shrink-0"></i>
-                <span>SMS Settings</span>
-                <span class="ml-auto text-xs bg-gray-500 text-white px-2 py-0.5 rounded-full">Soon</span>
-            </a>
-        </li>
-    </ul>
-</div>
-
 <!-- REPORTS & ANALYTICS SUBMODULE -->
 <div class="px-gr-md mb-gr-lg">
     <h4 class="text-gray-400 text-caption font-semibold uppercase tracking-wider mb-gr-xs">Reports & Analytics</h4>
@@ -210,6 +170,12 @@
 <div class="px-gr-md mb-gr-lg">
     <h4 class="text-gray-400 text-caption font-semibold uppercase tracking-wider mb-gr-xs">System</h4>
     <ul class="space-y-gr-xs">
+        <li>
+            <a href="<?php echo e(route('admin.profile')); ?>" class="sidebar-link flex items-center px-gr-sm py-gr-xs text-small font-medium rounded-lg transition-colors duration-200 <?php echo e(request()->routeIs('admin.profile') ? 'active' : ''); ?>">
+                <i data-lucide="user-cog" class="w-5 h-5 mr-gr-xs flex-shrink-0"></i>
+                <span>Profile</span>
+            </a>
+        </li>
         <li>
             <a href="<?php echo e(route('admin.settings.index')); ?>" class="sidebar-link flex items-center px-gr-sm py-gr-xs text-small font-medium rounded-lg transition-colors duration-200 <?php echo e(request()->routeIs('admin.settings.*') ? 'active' : ''); ?>">
                 <i data-lucide="settings" class="w-5 h-5 mr-gr-xs flex-shrink-0"></i>

@@ -30,6 +30,37 @@
     <!-- Lucide Icons (PROJECT_DESIGN_RULES.md requirement) -->
     <script src="https://unpkg.com/lucide@latest"></script>
     
+    <!-- Sidebar Link Styles -->
+    <style>
+        #admin-sidebar .sidebar-link,
+        #staff-sidebar .sidebar-link,
+        #citizen-sidebar .sidebar-link,
+        #treasurer-sidebar .sidebar-link,
+        #cbd-sidebar .sidebar-link {
+            color: #9CA3AF !important;
+            text-decoration: none !important;
+        }
+        
+        #admin-sidebar .sidebar-link:hover,
+        #staff-sidebar .sidebar-link:hover,
+        #citizen-sidebar .sidebar-link:hover,
+        #treasurer-sidebar .sidebar-link:hover,
+        #cbd-sidebar .sidebar-link:hover {
+            color: #FFFFFF !important;
+            background-color: #00332c !important;
+        }
+        
+        #admin-sidebar .sidebar-link.active,
+        #staff-sidebar .sidebar-link.active,
+        #citizen-sidebar .sidebar-link.active,
+        #treasurer-sidebar .sidebar-link.active,
+        #cbd-sidebar .sidebar-link.active {
+            color: #faae2b !important;
+            background-color: #00332c !important;
+            border-left: 3px solid #faae2b !important;
+        }
+    </style>
+    
     @stack('styles')
 </head>
 <body class="h-full">

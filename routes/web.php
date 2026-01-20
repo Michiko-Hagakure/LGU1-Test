@@ -5,7 +5,8 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Admin\TransactionController;
 use App\Http\Controllers\Admin\ReportController;
-use App\Http\Controllers\Admin\SettingsController;
+use App\Http\Controllers\Admin\SettingsController as ProfileSettingsController;
+use App\Http\Controllers\Admin\SystemSettingsController;
 
 
 
@@ -189,6 +190,38 @@ Route::post('/login/verify-otp', function () {
             ->first();
 
         if ($user) {
+            // Check if 2FA is enabled and device is trusted
+            if ($user->two_factor_enabled) {
+                $deviceFingerprint = hash('sha256', 
+                    request()->header('User-Agent') . 
+                    substr(request()->ip(), 0, strrpos(request()->ip(), '.'))
+                );
+                
+                $trustedDevice = DB::connection('auth_db')
+                    ->table('trusted_devices')
+                    ->where('user_id', $user->id)
+                    ->where('device_fingerprint', $deviceFingerprint)
+                    ->first();
+                
+                if (!$trustedDevice) {
+                    // Device not trusted - require 2FA PIN
+                    session(['pending_2fa_user_id' => $user->id]);
+                    session()->forget('pending_login_user_id');
+                    
+                    return response()->json([
+                        'success' => true,
+                        'requires_2fa' => true,
+                        'message' => 'Please enter your 6-digit PIN'
+                    ]);
+                } else {
+                    // Update last used timestamp
+                    DB::connection('auth_db')
+                        ->table('trusted_devices')
+                        ->where('id', $trustedDevice->id)
+                        ->update(['last_used_at' => now()]);
+                }
+            }
+            
             // Complete login - store user info in session
             session([
                 'user_id' => $user->id,
@@ -199,6 +232,48 @@ Route::post('/login/verify-otp', function () {
 
             // Clear pending login session
             session()->forget('pending_login_user_id');
+            
+            // Log login history
+            $location = ['country' => 'Unknown', 'city' => 'Unknown'];
+            try {
+                $response = \Http::get('http://ip-api.com/json/' . request()->ip());
+                if ($response->successful()) {
+                    $data = $response->json();
+                    $location = [
+                        'country' => $data['country'] ?? 'Unknown',
+                        'city' => $data['city'] ?? 'Unknown',
+                    ];
+                }
+            } catch (\Exception $e) {}
+            
+            DB::connection('auth_db')->table('login_history')->insert([
+                'user_id' => $user->id,
+                'device_name' => request()->header('User-Agent'),
+                'ip_address' => request()->ip(),
+                'country' => $location['country'],
+                'city' => $location['city'],
+                'status' => 'success',
+                'required_2fa' => $user->two_factor_enabled ? true : false,
+                'attempted_at' => now(),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+            
+            // Create user session
+            DB::connection('auth_db')->table('user_sessions')->insert([
+                'user_id' => $user->id,
+                'session_id' => session()->getId(),
+                'device_name' => request()->header('User-Agent'),
+                'ip_address' => request()->ip(),
+                'country' => $location['country'],
+                'city' => $location['city'],
+                'logged_in_at' => now(),
+                'last_active_at' => now(),
+                'expires_at' => now()->addMinutes(2),
+                'is_current' => true,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
 
             // Determine redirect URL based on role
             $redirectUrl = route('citizen.dashboard'); // default
@@ -228,6 +303,160 @@ Route::post('/login/verify-otp', function () {
         'message' => 'Invalid or expired OTP. Please try again.'
     ]);
 })->name('login.verify-otp');
+
+// Verify 2FA PIN
+Route::post('/login/verify-2fa', function () {
+    $pin = request('pin');
+    $userId = session('pending_2fa_user_id');
+
+    if (!$userId) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Session expired. Please try logging in again.'
+        ]);
+    }
+
+    $user = DB::connection('auth_db')
+        ->table('users')
+        ->select('users.*', 'roles.name as role_name', 'subsystem_roles.role_name as subsystem_role_name')
+        ->leftJoin('roles', 'users.role_id', '=', 'roles.id')
+        ->leftJoin('subsystem_roles', 'users.subsystem_role_id', '=', 'subsystem_roles.id')
+        ->where('users.id', $userId)
+        ->first();
+
+    if (!$user || !$user->two_factor_enabled) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Invalid session.'
+        ]);
+    }
+
+    if (!Hash::check($pin, $user->two_factor_pin)) {
+        // Log failed login attempt
+        $location = ['country' => 'Unknown', 'city' => 'Unknown'];
+        try {
+            $response = \Http::get('http://ip-api.com/json/' . request()->ip());
+            if ($response->successful()) {
+                $data = $response->json();
+                $location = [
+                    'country' => $data['country'] ?? 'Unknown',
+                    'city' => $data['city'] ?? 'Unknown',
+                ];
+            }
+        } catch (\Exception $e) {}
+        
+        DB::connection('auth_db')->table('login_history')->insert([
+            'user_id' => $user->id,
+            'device_name' => request()->header('User-Agent'),
+            'ip_address' => request()->ip(),
+            'country' => $location['country'],
+            'city' => $location['city'],
+            'status' => 'failed',
+            'failure_reason' => 'Invalid 2FA PIN',
+            'required_2fa' => true,
+            'attempted_at' => now(),
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+        
+        return response()->json([
+            'success' => false,
+            'message' => 'Invalid PIN. Please try again.'
+        ]);
+    }
+
+    // PIN is correct - trust this device
+    $deviceFingerprint = hash('sha256', 
+        request()->header('User-Agent') . 
+        substr(request()->ip(), 0, strrpos(request()->ip(), '.'))
+    );
+    
+    $location = ['country' => 'Unknown', 'city' => 'Unknown'];
+    try {
+        $response = \Http::get('http://ip-api.com/json/' . request()->ip());
+        if ($response->successful()) {
+            $data = $response->json();
+            $location = [
+                'country' => $data['country'] ?? 'Unknown',
+                'city' => $data['city'] ?? 'Unknown',
+            ];
+        }
+    } catch (\Exception $e) {}
+    
+    DB::connection('auth_db')->table('trusted_devices')->insert([
+        'user_id' => $user->id,
+        'device_fingerprint' => $deviceFingerprint,
+        'device_name' => request()->header('User-Agent'),
+        'ip_address' => request()->ip(),
+        'country' => $location['country'],
+        'city' => $location['city'],
+        'trusted_at' => now(),
+        'last_used_at' => now(),
+        'created_at' => now(),
+        'updated_at' => now(),
+    ]);
+
+    // Complete login
+    session([
+        'user_id' => $user->id,
+        'user_email' => $user->email,
+        'user_name' => $user->full_name,
+        'user_role' => $user->role_name ?? $user->subsystem_role_name ?? 'citizen',
+    ]);
+
+    session()->forget('pending_2fa_user_id');
+    
+    // Log successful login with 2FA
+    DB::connection('auth_db')->table('login_history')->insert([
+        'user_id' => $user->id,
+        'device_name' => request()->header('User-Agent'),
+        'ip_address' => request()->ip(),
+        'country' => $location['country'],
+        'city' => $location['city'],
+        'status' => 'success',
+        'required_2fa' => true,
+        'attempted_at' => now(),
+        'created_at' => now(),
+        'updated_at' => now(),
+    ]);
+    
+    // Create user session
+    DB::connection('auth_db')->table('user_sessions')->insert([
+        'user_id' => $user->id,
+        'session_id' => session()->getId(),
+        'device_name' => request()->header('User-Agent'),
+        'ip_address' => request()->ip(),
+        'country' => $location['country'],
+        'city' => $location['city'],
+        'logged_in_at' => now(),
+        'last_active_at' => now(),
+        'expires_at' => now()->addMinutes(2),
+        'is_current' => true,
+        'created_at' => now(),
+        'updated_at' => now(),
+    ]);
+
+    // Determine redirect URL
+    $redirectUrl = route('citizen.dashboard');
+
+    if ($user->role_name === 'super admin') {
+        $redirectUrl = route('superadmin.dashboard');
+    } elseif ($user->subsystem_role_name === 'Admin') {
+        $redirectUrl = route('admin.dashboard');
+    } elseif ($user->subsystem_role_name === 'Reservations Staff') {
+        $redirectUrl = route('staff.dashboard');
+    } elseif ($user->subsystem_role_name === 'Treasurer') {
+        $redirectUrl = route('treasurer.dashboard');
+    } elseif ($user->subsystem_role_name === 'CBD Staff') {
+        $redirectUrl = route('cbd.dashboard');
+    }
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Login successful! Device is now trusted.',
+        'redirect' => $redirectUrl
+    ]);
+})->name('login.verify-2fa');
 
 // Resend Login OTP
 Route::post('/login/resend-otp', function () {
@@ -1256,7 +1485,6 @@ Route::middleware(['auth', 'role:Admin'])->group(function () {
     Route::delete('/admin/backup/{fileName}', [\App\Http\Controllers\Admin\BackupController::class, 'destroy'])->name('admin.backup.destroy');
     Route::post('/admin/backup/clean', [\App\Http\Controllers\Admin\BackupController::class, 'clean'])->name('admin.backup.clean');
     
->>>>>>> Stashed changes
     // Pricing Management
     Route::get('/admin/pricing', [\App\Http\Controllers\Admin\PricingController::class, 'index'])->name('admin.pricing.index');
     Route::put('/admin/pricing/{id}', [\App\Http\Controllers\Admin\PricingController::class, 'update'])->name('admin.pricing.update');
@@ -1475,6 +1703,18 @@ Route::middleware(['auth', 'role:citizen', \App\Http\Middleware\CheckSessionTime
     Route::post('/citizen/profile/update', [\App\Http\Controllers\Citizen\ProfileController::class, 'update'])->name('citizen.profile.update');
     Route::post('/citizen/profile/password', [\App\Http\Controllers\Citizen\ProfileController::class, 'updatePassword'])->name('citizen.profile.password');
     Route::post('/citizen/profile/avatar', [\App\Http\Controllers\Citizen\ProfileController::class, 'uploadAvatar'])->name('citizen.profile.avatar');
+    
+    // Security Settings
+    Route::get('/citizen/security', [\App\Http\Controllers\Citizen\SecurityController::class, 'index'])->name('citizen.security');
+    Route::post('/citizen/security/change-password', [\App\Http\Controllers\Citizen\SecurityController::class, 'changePassword'])->name('citizen.security.change-password');
+    Route::post('/citizen/security/enable-2fa', [\App\Http\Controllers\Citizen\SecurityController::class, 'enable2FA'])->name('citizen.security.enable-2fa');
+    Route::post('/citizen/security/disable-2fa', [\App\Http\Controllers\Citizen\SecurityController::class, 'disable2FA'])->name('citizen.security.disable-2fa');
+    Route::delete('/citizen/security/trusted-device/{id}', [\App\Http\Controllers\Citizen\SecurityController::class, 'removeTrustedDevice'])->name('citizen.security.remove-device');
+    Route::post('/citizen/security/remove-all-devices', [\App\Http\Controllers\Citizen\SecurityController::class, 'removeAllTrustedDevices'])->name('citizen.security.remove-all-devices');
+    Route::post('/citizen/security/revoke-session', [\App\Http\Controllers\Citizen\SecurityController::class, 'revokeSession'])->name('citizen.security.revoke-session');
+    Route::post('/citizen/security/revoke-all-sessions', [\App\Http\Controllers\Citizen\SecurityController::class, 'revokeAllOtherSessions'])->name('citizen.security.revoke-all-sessions');
+    Route::post('/citizen/security/privacy', [\App\Http\Controllers\Citizen\SecurityController::class, 'updatePrivacySettings'])->name('citizen.security.privacy');
+    Route::post('/citizen/security/data-download', [\App\Http\Controllers\Citizen\SecurityController::class, 'requestDataDownload'])->name('citizen.security.data-download');
 });
 
 // Facility Routes (shared across roles)
@@ -1522,11 +1762,11 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/calendar', [\App\Http\Controllers\Admin\CalendarController::class, 'index'])->name('calendar');
     Route::get('/calendar/events', [\App\Http\Controllers\Admin\CalendarController::class, 'getEvents'])->name('calendar.events');
 
-    // System Settings & Profile Update
-    Route::get('/settings', [SettingsController::class, 'index'])->name('settings');
-    Route::post('/settings/profile', [SettingsController::class, 'updateProfile'])->name('profile.update');
-    Route::post('/settings/password', [SettingsController::class, 'updatePassword'])->name('password.update');
-    Route::post('/settings/lgu-update', [SettingsController::class, 'updateLguSettings'])->name('settings.lgu.update');
+    // Profile Settings
+    Route::get('/profile', [ProfileSettingsController::class, 'index'])->name('profile');
+    Route::post('/profile/update', [ProfileSettingsController::class, 'updateProfile'])->name('profile.update');
+    Route::post('/profile/password', [ProfileSettingsController::class, 'updatePassword'])->name('profile.password.update');
+    Route::post('/profile/lgu-update', [ProfileSettingsController::class, 'updateLguSettings'])->name('profile.lgu.update');
 
 });
 

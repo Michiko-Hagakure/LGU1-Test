@@ -12,15 +12,29 @@ use App\Models\User;
 class SettingsController extends Controller
 {
     /**
-     * Display the settings dashboard.
-     * Fetches general system settings from the 'settings' table.
+     * Display the profile dashboard.
+     * Fetches general system settings from the 'system_settings' table.
      */
     public function index()
     {
         // Using the default database connection (lgu1_auth)
-        $settings = DB::table('settings')->pluck('value', 'key');
+        // Get system settings for LGU configuration
+        $settings = DB::table('system_settings')->pluck('value', 'key');
+        
+        // Get authenticated user data
+        $user = Auth::user();
+        
+        // Ensure session has user data (populate if missing from old login sessions)
+        if ($user && !session('user_name')) {
+            session([
+                'user_id' => $user->id,
+                'user_name' => $user->full_name,
+                'user_email' => $user->email,
+                'user_role' => session('user_role', 'admin')
+            ]);
+        }
 
-        return view('admin.settings.index', compact('settings'));
+        return view('admin.profile.index', compact('settings', 'user'));
     }
 
     /**
@@ -55,9 +69,16 @@ class SettingsController extends Controller
 
         // Re-authenticate and maintain the session role to prevent redirection to login
         Auth::login($user);
-        session(['user_role' => 'admin']);
+        
+        // Update session with new user data (single source of truth)
+        session([
+            'user_role' => 'admin',
+            'user_name' => $user->full_name,
+            'user_email' => $user->email,
+            'user_id' => $user->id
+        ]);
 
-        return back()->with('success', 'Profile updated (Email is locked).');
+        return back()->with('success', 'Profile updated successfully.');
     }
 
     /**
@@ -72,9 +93,14 @@ class SettingsController extends Controller
         // Loop through each input key (e.g., lgu_name, office_unit) and update the database
         foreach ($data as $key => $value) {
             // Update the existing record or create a new one if it doesn't exist
-            DB::table('settings')->updateOrInsert(
-                ['key' => $key],
-                ['value' => $value]
+            DB::table('system_settings')->updateOrInsert(
+                ['key' => 'system.' . $key],
+                [
+                    'value' => $value,
+                    'type' => 'string',
+                    'category' => 'system',
+                    'description' => ucwords(str_replace('_', ' ', $key))
+                ]
             );
         }
 

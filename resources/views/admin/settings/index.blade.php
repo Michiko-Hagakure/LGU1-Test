@@ -1,208 +1,232 @@
 @extends('layouts.admin')
 
-@section('page-title', 'System Settings')
-
 @section('page-content')
-<div class="container-fluid py-5" style="background-color: #f8fafb; min-height: 100vh;">
-    <div class="row justify-content-center">
-        <div class="col-xl-11">
-            
-            <div class="mb-5 border-bottom pb-4">
-                <h1 class="display-6 fw-bold mb-2" style="color: #064e3b; letter-spacing: -1px;">System Configuration</h1>
-                <p class="fs-5 text-muted">Manage administrative credentials and official government unit settings.</p>
-            </div>
-
-            {{-- Display Success Message --}}
-            @if(session('success'))
-                <div class="alert alert-success border-0 shadow-sm d-flex align-items-center p-4 mb-4" role="alert" style="border-radius: 15px; background-color: #d1fae5; color: #065f46;">
-                    <i class="fas fa-check-circle me-3 fs-3"></i>
-                    <div>
-                        <h6 class="fw-bold mb-0">Success!</h6>
-                        <span>{{ session('success') }}</span>
-                    </div>
-                    <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            @endif
-
-            {{-- Display Error Messages (Validation Failures) --}}
-            @if($errors->any())
-                <div class="alert alert-danger border-0 shadow-sm p-4 mb-4" role="alert" style="border-radius: 15px; background-color: #fee2e2; color: #991b1b;">
-                    <div class="d-flex align-items-center mb-3">
-                        <i class="fas fa-exclamation-triangle me-3 fs-3"></i>
-                        <h6 class="fw-bold mb-0">Update Failed!</h6>
-                    </div>
-                    <ul class="mb-0 small ps-4">
-                        @foreach($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-            @endif
-
-            <div class="card border-0 shadow-lg mt-2" style="border-radius: 25px; overflow: hidden;">
-                <div class="row g-0">
-                    
-                    <div class="col-md-3 bg-white border-end">
-                        <div class="nav flex-column nav-pills p-4" id="v-pills-tab" role="tablist">
-                            <button class="nav-link active sidebar-link mb-3 py-3 shadow-sm" data-bs-toggle="pill" data-bs-target="#tab-profile" type="button">
-                                <i class="fas fa-user-shield me-3"></i> Admin Profile
-                            </button>
-                            <button class="nav-link sidebar-link mb-3 py-3 shadow-sm" data-bs-toggle="pill" data-bs-target="#tab-lgu" type="button">
-                                <i class="fas fa-university me-3"></i> LGU Configuration
-                            </button>
-                            <button class="nav-link sidebar-link py-3 shadow-sm" data-bs-toggle="pill" data-bs-target="#tab-security" type="button">
-                                <i class="fas fa-lock me-3"></i> Password & Security
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="col-md-9 bg-white">
-                        <div class="tab-content p-5">
-                            
-                            <div class="tab-pane fade show active" id="tab-profile" role="tabpanel">
-                                <form action="/admin/settings/profile" method="POST" enctype="multipart/form-data">
-                                    @csrf
-                                    <h3 class="fw-bold mb-5" style="color: #064e3b;">Personal Identification</h3>
-                                    
-                                    <div class="d-flex align-items-center mb-5 p-4 rounded-4" style="background-color: #f1f5f9;">
-                                        <div class="position-relative">
-                                            @php 
-                                                $user = Auth::user();
-                                                $photo = ($user && $user->profile_photo_path) ? asset($user->profile_photo_path) : 'https://ui-avatars.com/api/?name=Admin&background=064e3b&color=fff&size=200';
-                                            @endphp
-                                            <img id="avatar-preview" src="{{ $photo }}" 
-                                                 class="rounded-circle border border-5 border-white shadow"
-                                                 style="width: 150px; height: 150px; object-fit: cover;">
-                                            
-                                            <label for="avatar_input" class="btn btn-success position-absolute bottom-0 end-0 rounded-circle shadow p-0 d-flex align-items-center justify-content-center" style="width: 45px; height: 45px; background-color: #064e3b; border: 3px solid #fff; cursor: pointer;">
-                                                <i class="fas fa-camera text-white"></i>
-                                            </label>
-                                            <input type="file" id="avatar_input" name="avatar" class="d-none" onchange="previewImage(this)">
-                                        </div>
-                                        <div class="ms-4">
-                                            <h5 class="fw-bold mb-1 text-dark">Profile Photo</h5>
-                                            <p class="text-muted mb-0">Accepted formats: JPG, PNG. Max 2MB.</p>
-                                        </div>
-                                    </div>
-
-                                    <div class="row g-4">
-                                        <div class="col-md-12 mb-3">
-                                            <label class="form-label fw-bold text-muted text-uppercase small">Full Name</label>
-                                            <input type="text" name="full_name" class="form-control huge-input py-3" value="{{ optional($user)->full_name }}" required>
-                                        </div>
-                                        <div class="col-md-12 mb-4">
-                                            <label class="form-label fw-bold text-muted text-uppercase small">Email Address (Locked)</label>
-                                            <input type="email"
-                                            name="email"
-                                            class="form-control huge-input py-3"
-                                            value="{{ optional($user)->email }}"
-                                            style="background-color: #e9ecef; cursor: not-allowed;"
-                                            readonly>
-                                            <small class="text-muted">Contact the Super Admin to change your official email.</small>
-                                        </div>
-                                        <div class="col-12 mt-4 text-start">
-                                            <button type="submit" class="btn btn-success btn-huge px-5 py-3">Update Profile Information</button>
-                                        </div>
-                                    </div>
-                                </form>
-                            </div>
-
-                            <div class="tab-pane fade" id="tab-lgu" role="tabpanel">
-                                <form action="{{ route('admin.settings.lgu.update') }}" method="POST">
-                                    @csrf
-                                    <h3 class="fw-bold mb-5" style="color: #064e3b;">Government Unit Credentials</h3>
-                                    <div class="row g-4">
-                                        <div class="col-md-12 mb-3">
-                                            <label class="form-label fw-bold text-muted small text-uppercase">LGU Name</label>
-                                            <input type="text" name="lgu_name" class="form-control huge-input" value="{{ $settings['lgu_name'] ?? '' }}" placeholder="e.g. Quezon City Government">
-                                        </div>
-                                        <div class="col-md-12 mb-4">
-                                            <label class="form-label fw-bold text-muted small text-uppercase">Office Unit</label>
-                                            <input type="text" name="office_unit" class="form-control huge-input" value="{{ $settings['office_unit'] ?? '' }}" placeholder="e.g. Mayor's Office">
-                                        </div>
-                                        <div class="col-12 mt-4 text-start">
-                                            <button type="submit" class="btn btn-success btn-huge px-5 py-3">Save System Configurations</button>
-                                        </div>
-                                    </div>
-                                </form>
-                            </div>
-
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+<div class="p-6">
+    <!-- Header -->
+    <div class="mb-6">
+        <h1 class="text-3xl font-bold text-lgu-headline mb-2">System Settings</h1>
+        <p class="text-lgu-paragraph">Configure system behavior, rules, and preferences</p>
     </div>
+
+    @if(session('success'))
+        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg mb-6">
+            <i data-lucide="check-circle" class="w-5 h-5 inline mr-2"></i>
+            {{ session('success') }}
+        </div>
+    @endif
+
+    @if(session('error'))
+        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-6">
+            <i data-lucide="alert-circle" class="w-5 h-5 inline mr-2"></i>
+            {{ session('error') }}
+        </div>
+    @endif
+
+    <!-- Settings Form -->
+    <form method="POST" action="{{ route('admin.settings.update') }}" id="settingsForm" enctype="multipart/form-data">
+        @csrf
+        @method('PUT')
+
+        <!-- Tabs Navigation -->
+        <div class="bg-white rounded-2xl shadow-lg mb-6">
+            <div class="flex border-b border-gray-200 overflow-x-auto">
+                @foreach($settingsByCategory as $key => $category)
+                    <button type="button" 
+                            class="tab-button px-6 py-4 font-semibold text-sm whitespace-nowrap transition-colors {{ $loop->first ? 'active' : '' }}"
+                            data-tab="{{ $key }}">
+                        {{ $category['label'] }}
+                    </button>
+                @endforeach
+            </div>
+
+            <!-- Tab Content -->
+            @foreach($settingsByCategory as $key => $category)
+                <div class="tab-content p-6 {{ !$loop->first ? 'hidden' : '' }}" id="tab-{{ $key }}">
+                    <h2 class="text-xl font-bold text-lgu-headline mb-4">{{ $category['label'] }} Settings</h2>
+                    
+                    @if($category['settings']->isEmpty())
+                        <p class="text-gray-500">No settings available in this category.</p>
+                    @else
+                        <div class="space-y-6">
+                            @foreach($category['settings'] as $setting)
+                                <div class="border-b border-gray-200 pb-4 last:border-b-0">
+                                    <label class="block mb-2">
+                                        <span class="text-sm font-bold text-lgu-headline">
+                                            {{ str_replace(['_', '.'], ' ', ucwords(str_replace($key.'.', '', $setting->key))) }}
+                                        </span>
+                                        @if($setting->description)
+                                            <span class="block text-xs text-gray-500 mt-1">{{ $setting->description }}</span>
+                                        @endif
+                                    </label>
+
+                                    @if($setting->type === 'boolean')
+                                        <select name="settings[{{ $setting->key }}]" 
+                                                class="w-full md:w-1/2 px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-lgu-stroke focus:outline-none">
+                                            <option value="1" {{ $setting->getTypedValue() ? 'selected' : '' }}>Enabled</option>
+                                            <option value="0" {{ !$setting->getTypedValue() ? 'selected' : '' }}>Disabled</option>
+                                        </select>
+                                    @elseif($setting->type === 'integer' || $setting->type === 'float')
+                                        <input type="number" 
+                                               name="settings[{{ $setting->key }}]" 
+                                               value="{{ $setting->value }}"
+                                               step="{{ $setting->type === 'float' ? '0.01' : '1' }}"
+                                               class="w-full md:w-1/2 px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-lgu-stroke focus:outline-none">
+                                    @elseif($setting->key === 'system.maintenance_message' || $setting->key === 'system.announcement')
+                                        <textarea name="settings[{{ $setting->key }}]" 
+                                                  rows="3"
+                                                  class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-lgu-stroke focus:outline-none">{{ $setting->value }}</textarea>
+                                        
+                                        @if($setting->key === 'system.announcement')
+                                            <div class="mt-4 border-t pt-4">
+                                                <label class="block mb-3">
+                                                    <span class="text-sm font-bold text-lgu-headline">Announcement Image (Optional)</span>
+                                                    <span class="block text-xs text-gray-500 mt-1">Upload an image to display in the announcement modal (max 2MB)</span>
+                                                </label>
+                                                
+                                                <div class="flex items-center gap-4">
+                                                    <label for="announcement_image" class="cursor-pointer inline-flex items-center px-6 py-3 bg-lgu-button text-white font-semibold rounded-lg hover:opacity-90 transition shadow-md">
+                                                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                                        </svg>
+                                                        Choose Image
+                                                    </label>
+                                                    <span id="fileName" class="text-sm text-gray-600">No file chosen</span>
+                                                </div>
+                                                
+                                                <input type="file" 
+                                                       name="announcement_image" 
+                                                       id="announcement_image"
+                                                       accept="image/jpeg,image/png,image/jpg,image/gif,image/webp"
+                                                       class="hidden">
+                                                
+                                                @if($setting->announcement_image)
+                                                    <div class="mt-4 p-4 bg-gray-50 rounded-lg">
+                                                        <div class="flex items-start justify-between mb-2">
+                                                            <p class="text-xs font-semibold text-gray-700">Current Image:</p>
+                                                            <label class="flex items-center cursor-pointer">
+                                                                <input type="checkbox" 
+                                                                       name="remove_announcement_image" 
+                                                                       value="1"
+                                                                       class="w-4 h-4 text-red-600 border-gray-300 rounded focus:ring-red-500">
+                                                                <span class="ml-2 text-xs font-semibold text-red-600">Remove this image</span>
+                                                            </label>
+                                                        </div>
+                                                        <img src="{{ asset($setting->announcement_image) }}" 
+                                                             alt="Announcement Image" 
+                                                             class="max-w-xs rounded-lg border-2 border-gray-300 shadow-sm">
+                                                        <p class="text-xs text-gray-500 mt-2 italic">Check "Remove this image" above and save to delete</p>
+                                                    </div>
+                                                @endif
+                                                
+                                                <div id="imagePreview" class="mt-4 p-4 bg-green-50 rounded-lg hidden">
+                                                    <p class="text-xs font-semibold text-green-700 mb-2">New Image Preview:</p>
+                                                    <img id="previewImg" src="" alt="Preview" class="max-w-xs rounded-lg border-2 border-green-500 shadow-sm">
+                                                </div>
+                                            </div>
+                                        @endif
+                                    @else
+                                        <input type="text" 
+                                               name="settings[{{ $setting->key }}]" 
+                                               value="{{ $setting->value }}"
+                                               class="w-full md:w-1/2 px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-lgu-stroke focus:outline-none">
+                                    @endif
+                                </div>
+                            @endforeach
+                        </div>
+                    @endif
+                </div>
+            @endforeach
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex gap-4">
+            <button type="submit" class="px-6 py-3 bg-lgu-button text-lgu-button-text font-semibold rounded-lg hover:opacity-90 transition">
+                <i data-lucide="save" class="w-5 h-5 inline mr-2"></i>
+                Save Settings
+            </button>
+            <a href="{{ route('admin.settings.clear-cache') }}" 
+               onclick="return confirm('Are you sure you want to clear the settings cache?')"
+               class="px-6 py-3 bg-gray-500 text-white font-semibold rounded-lg hover:bg-gray-600 transition">
+                <i data-lucide="refresh-cw" class="w-5 h-5 inline mr-2"></i>
+                Clear Cache
+            </a>
+            <a href="{{ route('admin.dashboard') }}" class="px-6 py-3 bg-gray-200 text-gray-700 font-semibold rounded-lg hover:bg-gray-300 transition">
+                <i data-lucide="x" class="w-5 h-5 inline mr-2"></i>
+                Cancel
+            </a>
+        </div>
+    </form>
 </div>
 
-<style>
-    /* 1. SIDEBAR BUTTON STYLING */
-    .sidebar-link {
-        text-align: left !important;
-        color: #4b5563 !important;
-        font-weight: 600 !important;
-        border-radius: 15px !important;
-        transition: all 0.3s ease;
-        border: 1px solid transparent !important;
-    }
-    .sidebar-link.active {
-        background-color: #eaf3f0 !important;
-        color: #064e3b !important;
-        border: 1px solid #d1fae5 !important;
-    }
-    .sidebar-link:hover:not(.active) {
-        background-color: #f3f4f6 !important;
-        color: #064e3b !important;
-    }
-
-    /* 2. FORM INPUT STYLING (Modern & Large) */
-    .huge-input {
-        border-radius: 15px !important;
-        border: 2px solid #e5e7eb !important;
-        padding: 16px 20px !important;
-        background-color: #f9fafb !important;
-        font-size: 1.1rem !important;
-    }
-    .huge-input:focus {
-        border-color: #064e3b !important;
-        box-shadow: 0 0 0 5px rgba(6, 78, 59, 0.1) !important;
-        background-color: #ffffff !important;
-    }
-
-    /* 3. PRIMARY ACTION BUTTON STYLING */
-    .btn-huge {
-        background-color: #064e3b !important;
-        border: none !important;
-        border-radius: 15px !important;
-        font-weight: 700 !important;
-        font-size: 1.1rem !important;
-        color: white !important;
-        box-shadow: 0 10px 15px -3px rgba(6, 78, 59, 0.2);
-        transition: all 0.2s ease;
-    }
-    .btn-huge:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 15px 20px -3px rgba(6, 78, 59, 0.3);
-    }
-
-    /* Tab Layout Display Fix */
-    .tab-pane { display: none; }
-    .tab-pane.active { display: block !important; }
-</style>
-
 <script>
-    /**
-     * JavaScript for Instant Image Preview
-     * Updates the avatar circle as soon as a user selects a file.
-     */
-    function previewImage(input) {
-        if (input.files && input.files[0]) {
-            var reader = new FileReader();
-            reader.onload = function(e) {
-                document.getElementById('avatar-preview').src = e.target.result;
+    // Tab switching functionality
+    document.querySelectorAll('.tab-button').forEach(button => {
+        button.addEventListener('click', function() {
+            // Remove active class from all tabs
+            document.querySelectorAll('.tab-button').forEach(btn => {
+                btn.classList.remove('active', 'text-lgu-button', 'border-b-2', 'border-lgu-button');
+                btn.classList.add('text-gray-600');
+            });
+            
+            // Add active class to clicked tab
+            this.classList.add('active', 'text-lgu-button', 'border-b-2', 'border-lgu-button');
+            this.classList.remove('text-gray-600');
+            
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.add('hidden');
+            });
+            
+            // Show selected tab content
+            const tabId = 'tab-' + this.dataset.tab;
+            document.getElementById(tabId).classList.remove('hidden');
+        });
+    });
+
+    // Initialize first tab as active
+    document.querySelector('.tab-button.active')?.classList.add('text-lgu-button', 'border-b-2', 'border-lgu-button');
+
+    // Image preview functionality
+    const announcementImageInput = document.getElementById('announcement_image');
+    const fileNameDisplay = document.getElementById('fileName');
+    
+    if (announcementImageInput) {
+        announcementImageInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                // Update filename display
+                fileNameDisplay.textContent = file.name;
+                fileNameDisplay.classList.remove('text-gray-600');
+                fileNameDisplay.classList.add('text-green-600', 'font-semibold');
+                
+                // Show preview
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    const preview = document.getElementById('imagePreview');
+                    const previewImg = document.getElementById('previewImg');
+                    previewImg.src = event.target.result;
+                    preview.classList.remove('hidden');
+                };
+                reader.readAsDataURL(file);
+            } else {
+                fileNameDisplay.textContent = 'No file chosen';
+                fileNameDisplay.classList.remove('text-green-600', 'font-semibold');
+                fileNameDisplay.classList.add('text-gray-600');
             }
-            reader.readAsDataURL(input.files[0]);
-        }
+        });
     }
+
+    // Initialize Lucide icons
+    lucide.createIcons();
 </script>
+
+<style>
+    .tab-button {
+        border-bottom: 2px solid transparent;
+    }
+    .tab-button.active {
+        color: #047857;
+        border-bottom-color: #047857;
+    }
+</style>
 @endsection

@@ -181,24 +181,9 @@ function showComingSoon(featureName) {
 
 window.showComingSoon = showComingSoon;
 
-// CSS for active states and transitions
+// Additional CSS for profile animations and scrollbar
 const style = document.createElement('style');
 style.textContent = `
-    .sidebar-link {
-        color: #9CA3AF;
-    }
-    
-    .sidebar-link:hover {
-        color: #FFFFFF;
-        background-color: #00332c;
-    }
-    
-    .sidebar-link.active {
-        color: #faae2b;
-        background-color: #00332c;
-        border-left: 3px solid #faae2b;
-    }
-    
     #profile-compact,
     #profile-expanded-details {
         will-change: opacity, transform;
@@ -259,7 +244,15 @@ function setActiveLink() {
         if (!linkHref || linkHref === '#') return;
         
         // Most specific matches first
-        if (linkHref.includes('/admin/payment-queue') && currentPath.includes('/admin/payment-queue')) {
+        if (linkHref.includes('/admin/profile') && currentPath.includes('/admin/profile')) {
+            link.classList.add('active');
+            activeFound = true;
+        }
+        else if (linkHref.includes('/admin/settings') && currentPath.includes('/admin/settings')) {
+            link.classList.add('active');
+            activeFound = true;
+        }
+        else if (linkHref.includes('/admin/payment-queue') && currentPath.includes('/admin/payment-queue')) {
             link.classList.add('active');
             activeFound = true;
         }

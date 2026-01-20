@@ -103,6 +103,38 @@
         </form>
     </div>
 
+    <!-- Step 3: 2FA PIN Verification Form (Hidden initially) -->
+    <div id="twoFAForm" style="display: none;">
+        <div class="text-center mb-4">
+            <i class="bi bi-shield-lock" style="font-size: 3rem; color: var(--highlight);"></i>
+            <h4 style="color: var(--headline); margin-top: 1rem;">Two-Factor Authentication</h4>
+            <p class="text-muted">Enter your 6-digit PIN</p>
+        </div>
+        
+        <form id="twoFAVerifyForm">
+            <div class="mb-4">
+                <label for="pin" class="form-label"><i class="bi bi-lock"></i> 6-Digit PIN</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-key-fill"></i></span>
+                    <input type="password" 
+                           class="form-control text-center" 
+                           id="pin" 
+                           name="pin" 
+                           placeholder="••••••"
+                           maxlength="6"
+                           pattern="[0-9]{6}"
+                           style="font-size: 1.5rem; letter-spacing: 0.5rem;"
+                           required>
+                </div>
+                <small class="text-muted">This is a new device - 2FA verification required</small>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100" id="verify2FABtn">
+                <i class="bi bi-check-circle"></i> Verify & Sign In
+            </button>
+        </form>
+    </div>
+
     <div class="divider">or</div>
     <div class="text-center">
         <a href="{{ route('register') }}" class="register-link"><i class="bi bi-person-plus"></i> Create New Account</a>
@@ -368,8 +400,15 @@ document.addEventListener('DOMContentLoaded', function() {
             verifyBtn.innerHTML = '<i class="bi bi-check-circle"></i> Verify & Sign In';
             
             if (data.success) {
-                // Redirect directly to dashboard without popup
-                window.location.href = data.redirect;
+                if (data.requires_2fa) {
+                    // Show 2FA PIN form
+                    otpForm.style.display = 'none';
+                    document.getElementById('twoFAForm').style.display = 'block';
+                    document.getElementById('pin').focus();
+                } else {
+                    // Redirect directly to dashboard without popup
+                    window.location.href = data.redirect;
+                }
             } else {
                 Swal.fire({
                     icon: 'error',
@@ -472,6 +511,74 @@ document.addEventListener('DOMContentLoaded', function() {
         // Reset to normal refresh interval (30 seconds)
         clearInterval(tokenRefreshInterval);
         tokenRefreshInterval = setInterval(refreshCSRFToken, 30000);
+    });
+    
+    // Step 3: Verify 2FA PIN
+    const twoFAVerifyForm = document.getElementById('twoFAVerifyForm');
+    const verify2FABtn = document.getElementById('verify2FABtn');
+    
+    twoFAVerifyForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const pin = document.getElementById('pin').value;
+        
+        verify2FABtn.disabled = true;
+        verify2FABtn.innerHTML = '<i class="bi bi-hourglass-split"></i> Verifying...';
+        
+        // Refresh token immediately before submission
+        await refreshCSRFToken();
+        
+        fetch('{{ route("login.verify-2fa") }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': csrfToken,
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({ pin })
+        })
+        .then(async response => {
+            if (response.status === 419) {
+                await handleCSRFError();
+                const retryResponse = await fetch('{{ route("login.verify-2fa") }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken,
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({ pin })
+                });
+                return retryResponse.json();
+            }
+            return response.json();
+        })
+        .then(data => {
+            verify2FABtn.disabled = false;
+            verify2FABtn.innerHTML = '<i class="bi bi-check-circle"></i> Verify & Sign In';
+            
+            if (data.success) {
+                window.location.href = data.redirect;
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Invalid PIN',
+                    text: data.message,
+                    confirmButtonColor: '#fa5246'
+                });
+            }
+        })
+        .catch(error => {
+            verify2FABtn.disabled = false;
+            verify2FABtn.innerHTML = '<i class="bi bi-check-circle"></i> Verify & Sign In';
+            
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Something went wrong. Please try again.',
+                confirmButtonColor: '#fa5246'
+            });
+        });
     });
 });
 </script>

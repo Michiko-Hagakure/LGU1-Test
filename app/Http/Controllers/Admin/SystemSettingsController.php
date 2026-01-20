@@ -133,6 +133,35 @@ class SystemSettingsController extends Controller
         }
     }
 
+    public function updateLguSettings(Request $request)
+    {
+        try {
+            $data = $request->except('_token');
+            
+            foreach ($data as $key => $value) {
+                SystemSetting::updateOrCreate(
+                    ['key' => 'system.' . $key],
+                    [
+                        'value' => $value,
+                        'type' => 'string',
+                        'category' => 'system',
+                        'description' => ucwords(str_replace('_', ' ', $key))
+                    ]
+                );
+            }
+            
+            SystemSetting::clearCache();
+            
+            return redirect()->route('admin.settings.index')
+                ->with('success', 'LGU Configuration saved successfully!');
+        } catch (\Exception $e) {
+            \Log::error('LGU settings update failed: ' . $e->getMessage());
+            return redirect()->back()
+                ->with('error', 'Failed to update LGU settings: ' . $e->getMessage())
+                ->withInput();
+        }
+    }
+
     public function clearCache()
     {
         try {
