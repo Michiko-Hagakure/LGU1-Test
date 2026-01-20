@@ -8,8 +8,6 @@ use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\SettingsController as ProfileSettingsController;
 use App\Http\Controllers\Admin\SystemSettingsController;
 
-use App\Http\Controllers\Admin\SettingsController;
-
 
 
 /*
@@ -261,10 +259,16 @@ Route::post('/login/verify-otp', function () {
                 'updated_at' => now(),
             ]);
             
+            // Delete existing session with same session_id to avoid duplicate error
+            $currentSessionId = session()->getId();
+            DB::connection('auth_db')->table('user_sessions')
+                ->where('session_id', $currentSessionId)
+                ->delete();
+            
             // Create user session
             DB::connection('auth_db')->table('user_sessions')->insert([
                 'user_id' => $user->id,
-                'session_id' => session()->getId(),
+                'session_id' => $currentSessionId,
                 'device_name' => request()->header('User-Agent'),
                 'ip_address' => request()->ip(),
                 'country' => $location['country'],
@@ -422,10 +426,16 @@ Route::post('/login/verify-2fa', function () {
         'updated_at' => now(),
     ]);
     
+    // Delete existing session with same session_id to avoid duplicate error
+    $currentSessionId = session()->getId();
+    DB::connection('auth_db')->table('user_sessions')
+        ->where('session_id', $currentSessionId)
+        ->delete();
+    
     // Create user session
     DB::connection('auth_db')->table('user_sessions')->insert([
         'user_id' => $user->id,
-        'session_id' => session()->getId(),
+        'session_id' => $currentSessionId,
         'device_name' => request()->header('User-Agent'),
         'ip_address' => request()->ip(),
         'country' => $location['country'],
@@ -1770,11 +1780,6 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::post('/profile/update', [ProfileSettingsController::class, 'updateProfile'])->name('profile.update');
     Route::post('/profile/password', [ProfileSettingsController::class, 'updatePassword'])->name('profile.password.update');
     Route::post('/profile/lgu-update', [ProfileSettingsController::class, 'updateLguSettings'])->name('profile.lgu.update');
-    // System Settings & Profile Update
-    Route::get('/settings', [SettingsController::class, 'index'])->name('settings');
-    Route::post('/settings/profile', [SettingsController::class, 'updateProfile'])->name('profile.update');
-    Route::post('/settings/password', [SettingsController::class, 'updatePassword'])->name('password.update');
-    Route::post('/settings/lgu-update', [SettingsController::class, 'updateLguSettings'])->name('settings.lgu.update');
 
 });
 
