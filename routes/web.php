@@ -8,8 +8,6 @@ use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\SettingsController as ProfileSettingsController;
 use App\Http\Controllers\Admin\SystemSettingsController;
 
-
-
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -1426,6 +1424,7 @@ Route::middleware(['auth', 'role:Admin'])->group(function () {
     Route::get('/admin/analytics/facility-utilization', [\App\Http\Controllers\Admin\AnalyticsController::class, 'facilityUtilization'])->name('admin.analytics.facility-utilization');
     Route::get('/admin/analytics/citizen-analytics', [\App\Http\Controllers\Admin\AnalyticsController::class, 'citizenAnalytics'])->name('admin.analytics.citizen-analytics');
     Route::get('/admin/analytics/operational-metrics', [\App\Http\Controllers\Admin\AnalyticsController::class, 'operationalMetrics'])->name('admin.analytics.operational-metrics');
+    Route::get('/admin/analytics/audit-trail', [ReportController::class, 'auditIndex'])->name('admin.audit.trail');
     
     // Audit Trail
     Route::get('/admin/audit-trail', [\App\Http\Controllers\Admin\AuditTrailController::class, 'index'])->name('admin.audit-trail.index');
