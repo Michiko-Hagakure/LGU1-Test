@@ -308,22 +308,15 @@
 <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
 
 <script>
-
 document.addEventListener('DOMContentLoaded', async function() {
 
     const dbData = @json($aiTrainingData);
     const mayorRule = @json($mayorConflict);
 
-   
-
     const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
     const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
-
-
     console.log("🚀 AI Engine: Initializing data from database...");
-
-
 
     // 1. DYNAMIC DATA ANALYSIS
 
@@ -335,14 +328,10 @@ document.addEventListener('DOMContentLoaded', async function() {
             return null;
         }
 
-
-
         const userFreq = {};
         const hourDensity = Array(24).fill(0);
         const dayDensity = Array(7).fill(0);
         const monthDensity = Array(12).fill(0);
-
-
 
         dbData.forEach(item => {
 
@@ -354,8 +343,6 @@ document.addEventListener('DOMContentLoaded', async function() {
             monthDensity[item.month_index - 1]++;
 
         });
-
-
 
         const topUser = Object.entries(userFreq).sort((a,b) => b[1] - a[1])[0];
         const peakHour = hourDensity.indexOf(Math.max(...hourDensity));
@@ -391,33 +378,21 @@ document.addEventListener('DOMContentLoaded', async function() {
         const holidayElement = document.getElementById('ai-holiday-effect');
 
         if (holidayElement) {
-
             holidayElement.innerHTML = `
-
                 <span class="w-1.5 h-1.5 ${dotColor} rounded-full animate-pulse"></span>
-
                 Holiday Impact: <b>${holidayName}</b>
             `;
-
         }
-
         console.log(`📊 Analysis: Top user ${topUser ? topUser[0] : 'N/A'}. Historical peak: ${months[peakMonthIdx]}.`);
-
         return { hourDensity, peakHour, peakDayIdx, peakMonthIdx };
     }
-
-
-
     const liveStats = analyzeHistoricalData();
-
-
 
     // 2. AI MODEL TRAINING
 
     async function trainModel() {
 
         console.log("🧠 TensorFlow: Building Neural Network...");
-
         const model = tf.sequential();
 
         model.add(tf.layers.dense({units: 32, activation: 'relu', inputShape: [3]}));
@@ -454,11 +429,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         return model;
     }
 
-
-
     const model = await trainModel();
-
-
 
     // 3. UPDATED CONDITIONAL RECOMMENDATION
 
@@ -468,15 +439,11 @@ document.addEventListener('DOMContentLoaded', async function() {
         const currentMonth = now.getMonth() + 1;
         const currentDayOfWeek = now.getDay() + 1; // 1 (Sun) to 7 (Sat) to match DB index
 
-       
-
         // CHECK: Is there a Mayor event scheduled for TODAY?
 
         const isMayorEventToday = (currentDayOfWeek === mayorRule.day_index);
         const insightBox = document.getElementById('ai-insight');
-
        
-
         if (insightBox) {
 
             if (isMayorEventToday) {
@@ -487,8 +454,6 @@ document.addEventListener('DOMContentLoaded', async function() {
                 const prediction = model.predict(tf.tensor2d([[mayorRule.day_index, altHour, currentMonth]]));
                 const prob = (await prediction.data())[0];
                 const topUser = document.getElementById('ai-peak-user').innerText.replace('Frequent User: ', '');
-
-
 
                 insightBox.innerHTML = `
 
@@ -528,27 +493,60 @@ document.addEventListener('DOMContentLoaded', async function() {
 });
 function renderForecastChart(data) {
     const ctx = document.getElementById('aiForecastChart').getContext('2d');
+    
+    // Create a much brighter gradient
+    const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+    gradient.addColorStop(0, 'rgba(34, 211, 238, 0.4)');   // Cyan top
+    gradient.addColorStop(0.5, 'rgba(139, 92, 246, 0.1)'); // Violet middle
+    gradient.addColorStop(1, 'rgba(15, 23, 42, 0)');      // Dark bottom
+
     new Chart(ctx, {
         type: 'line',
         data: {
             labels: Array.from({length: 24}, (_, i) => `${i}:00`),
             datasets: [{
+                label: 'Facility Activity',
                 data: data,
-                borderColor: '#6366f1',
-                backgroundColor: 'rgba(99, 102, 241, 0.2)',
+                borderColor: '#22d3ee',         // Bright Electric Cyan
+                borderWidth: 4,
+                pointBackgroundColor: '#fff',
+                pointBorderColor: '#22d3ee',
+                pointHoverRadius: 8,
+                pointHoverBackgroundColor: '#22d3ee',
+                backgroundColor: gradient,
                 fill: true,
-                tension: 0.4
-
+                tension: 0.45,                  // Curvy and modern
+                borderCapStyle: 'round',
+                shadowColor: 'rgba(34, 211, 238, 0.5)',
+                shadowBlur: 10
             }]
         },
-
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            plugins: { legend: { display: false } },
-            scales: { x: { ticks: { color: '#94a3b8' } }, y: { display: false } }
+            animation: {
+                duration: 2500,                 // Slower, more elegant entry
+                easing: 'easeInOutQuart'
+            },
+            plugins: { 
+                legend: { display: false },
+                tooltip: {
+                    backgroundColor: '#fff',     // White tooltips for contrast
+                    titleColor: '#0f172a',
+                    bodyColor: '#0f172a',
+                    padding: 12,
+                    displayColors: false,
+                    cornerRadius: 8
+                }
+            },
+            scales: { 
+                x: { 
+                    grid: { display: false },
+                    ticks: { color: '#cbd5e1', font: { weight: 'bold' } } 
+                }, 
+                y: { display: false, beginAtZero: true } 
+            }
         }
-
     });
 }
 </script>
