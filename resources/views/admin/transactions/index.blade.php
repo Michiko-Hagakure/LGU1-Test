@@ -231,27 +231,39 @@
     async function runAIAudit() {
         console.log("🚀 AI Audit: Initializing Strict Security Model...");
 
-        // 1. NEURAL NETWORK ARCHITECTURE
         const model = tf.sequential();
         model.add(tf.layers.dense({units: 12, inputShape: [3], activation: 'relu'}));
         model.add(tf.layers.dense({units: 1, activation: 'sigmoid'}));
         model.compile({optimizer: 'adam', loss: 'binaryCrossentropy'});
 
-        // 2. TRAINING DATA (Teaching patterns)
+        // 1. COLLECT REAL DATA FROM THE TABLE FOR TRAINING
+        const rows = document.querySelectorAll('.transaction-row');
+        const trainingData = [];
+        const labels = [];
+
+        rows.forEach(row => {
+            const amt = (parseFloat(row.dataset.amount) || 0) / 100000;
+            const hist = parseInt(row.dataset.unpaidHistory) || 0;
+            const isPaid = ['paid', 'approved', 'verified'].includes(row.dataset.status.toLowerCase()) ? 1 : 0;
+            
+            trainingData.push([amt, isPaid, hist]);
+            labels.push([isPaid]); // We teach the AI that 'Paid' is the target safety state
+        });
+
+        // 2. COMBINE HARDCODED PATTERNS WITH REAL DATA
         const xs = tf.tensor2d([
-            [0.1, 1, 0],  // Small amount, Paid -> Verified (1)
-            [0.9, 1, 0],  // Huge amount, Paid -> Verified (1)
-            [0.8, 0, 5],  // Large amount, Unpaid, High History -> Risk (0)
-            [0.05, 0, 10], // Small amount, Unpaid, Spammer -> Risk (0)
-            [0.05, 0, 0]   // Small amount, Unpaid, New User -> Safe (1)
+            [0.1, 1, 0], [0.9, 1, 0], [0.8, 0, 5], [0.05, 0, 10], [0.05, 0, 0],
+            ...trainingData // Add the real data from your database here
         ]);
-        const ys = tf.tensor2d([[1], [1], [0], [0], [1]]); 
+        const ys = tf.tensor2d([
+            [1], [1], [0], [0], [1],
+            ...labels
+        ]); 
 
         await model.fit(xs, ys, {epochs: 50, verbose: 0});
-        console.log("✅ AI Training Complete.");
+        console.log("✅ AI Training Complete using Real DB Data.");
 
-        const rows = document.querySelectorAll('.transaction-row');
-
+        // 3. EXECUTE PREDICTION (STRICT ENFORCEMENT)
         for (let row of rows) {
             const amount = parseFloat(row.dataset.amount) || 0;
             const status = (row.dataset.status || '').toLowerCase();
@@ -260,32 +272,22 @@
 
             if (!badge) continue;
 
-            // Logic Flags
             const isPaid = (status === 'paid' || status === 'approved' || status === 'verified');
             const normalizedAmount = amount / 100000;
 
-            // Generate AI Prediction
             const prediction = model.predict(tf.tensor2d([[normalizedAmount, isPaid ? 1 : 0, unpaidHistory]]));
             const scoreData = await prediction.data();
             const safetyScore = scoreData[0];
 
-            /**
-             * 3. FINAL UI UPDATE (STRICT ENFORCEMENT)
-             * - We check 'isPaid' first. If it is true, we ignore the AI score to stop flickering.
-             * - AI score is only used to flag "Unpaid" items as High Risk.
-             */
             if (isPaid) {
-                // LOCK to Verified for all Paid transactions
-                badge.className = "ai-status-badge inline-flex items-center px-gr-xs py-gr-3xs rounded-full text-caption font-medium bg-green-100 text-green-700";
-                badge.innerHTML = '<i data-lucide="shield-check" class="w-3 h-3 mr-gr-3xs"></i> Verified';
+                badge.className = "ai-status-badge inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700";
+                badge.innerHTML = '<i data-lucide="shield-check" class="w-3 h-3 mr-1"></i> Verified';
             } else if (!isPaid && safetyScore < 0.5) {
-                // FLAG as High Risk for suspicious Unpaid items
-                badge.className = "ai-status-badge inline-flex items-center px-gr-xs py-gr-3xs rounded-full text-caption font-medium bg-red-100 text-red-700";
-                badge.innerHTML = '<i data-lucide="shield-alert" class="w-3 h-3 mr-gr-3xs"></i> High Risk';
+                badge.className = "ai-status-badge inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-red-100 text-red-700 animate-pulse";
+                badge.innerHTML = '<i data-lucide="shield-alert" class="w-3 h-3 mr-1"></i> High Risk';
             } else {
-                // New or small Unpaid items that aren't flagged yet
-                badge.className = "ai-status-badge inline-flex items-center px-gr-xs py-gr-3xs rounded-full text-caption font-medium bg-green-100 text-green-700";
-                badge.innerHTML = '<i data-lucide="shield-check" class="w-3 h-3 mr-gr-3xs"></i> Verified';
+                badge.className = "ai-status-badge inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-100";
+                badge.innerHTML = '<i data-lucide="user-check" class="w-3 h-3 mr-gr-3xs"></i> Safe to Proceed';
             }
         }
         

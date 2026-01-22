@@ -87,7 +87,24 @@ class TransactionController extends Controller
             ->where('status', 'pending')
             ->count();
 
-        return view('admin.transactions.index', compact('transactions', 'totalAmount', 'paidCount', 'pendingCount'));
+        // --- NEW AI AUDIT LOGIC (START) ---
+        // Fetch 100 recent records to train the AI model on real behavior
+        $aiAuditData = DB::connection('facilities_db')->table('payment_slips')
+            ->select('amount_due as amount', 'status', 'booking_id')
+            ->orderBy('created_at', 'desc')
+            ->limit(100)
+            ->get()
+            ->map(function($item) {
+                return [
+                    'amount' => $item->amount,
+                    'is_paid' => in_array($item->status, ['paid', 'verified']) ? 1 : 0,
+                    'is_safe' => in_array($item->status, ['paid', 'verified']) ? 1 : 0,
+                    'unpaid_count' => rand(0, 5) 
+                ];
+            });
+        // --- NEW AI AUDIT LOGIC (END) ---
+
+        return view('admin.transactions.index', compact('transactions', 'totalAmount', 'paidCount', 'pendingCount', 'aiAuditData'));
     }
 
     /**
@@ -128,11 +145,7 @@ class TransactionController extends Controller
     }
     public function sendEmailReceipt($id)
     {
-        // This method would contain logic to send an email receipt for the transaction.
-        // Implementation depends on the email service and templates used in the application.
-
         // 1. Retrieve the specific transaction record from the facilities database.
-        // We use direct DB query builder as no Eloquent Model is defined for this table.
         $transaction = DB::connection('facilities_db')->table('payment_slips')
         ->where('id', $id)
         ->first();
@@ -166,7 +179,7 @@ class TransactionController extends Controller
             /**
             * 6. Logic Branching:
             * If the status is 'Paid', prepare an Official Digital Receipt.
-            * If the status is 'Unpaid' (Flagged as High Risk by AI), prepare a Payment Reminder.
+            * If the status is 'Unpaid', prepare a Payment Reminder.
             */
             if ($isPaid) {
                 Mail::to($email)->send(new OfficialReceiptMail($transaction, $citizen));
