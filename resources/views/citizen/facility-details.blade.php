@@ -103,36 +103,17 @@
                 </div>
             </div>
 
-            <!-- Upcoming Bookings -->
+            <!-- Availability Notice -->
             <div class="bg-white shadow rounded-lg p-6">
-                <h2 class="text-2xl font-bold text-gray-900 mb-4">Upcoming Reservations</h2>
-                @if($upcomingBookings->isEmpty())
-                    <p class="text-gray-600">No upcoming reservations for this facility.</p>
-                @else
-                    <div class="space-y-3">
-                        @foreach($upcomingBookings as $booking)
-                            <div class="flex items-center justify-between p-3 border border-gray-200 rounded-lg bg-gray-50">
-                                <div class="flex items-center">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-lgu-button mr-3">
-                                        <rect width="18" height="18" x="3" y="4" rx="2"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/>
-                                    </svg>
-                                    <div>
-                                        <p class="text-sm font-semibold text-gray-900">
-                                            {{ \Carbon\Carbon::parse($booking->start_time)->format('M d, Y') }}
-                                        </p>
-                                        <p class="text-xs text-gray-600">
-                                            {{ \Carbon\Carbon::parse($booking->start_time)->format('g:i A') }} - 
-                                            {{ \Carbon\Carbon::parse($booking->end_time)->format('g:i A') }}
-                                        </p>
-                                    </div>
-                                </div>
-                                <span class="px-3 py-1 bg-yellow-100 text-yellow-800 text-xs font-semibold rounded-full">
-                                    Reserved
-                                </span>
-                            </div>
-                        @endforeach
-                    </div>
-                @endif
+                <h2 class="text-2xl font-bold text-gray-900 mb-4">Check Availability</h2>
+                <p class="text-gray-600 mb-4">View the facility calendar to see available dates and times for booking.</p>
+                <a href="{{ route('citizen.facility-calendar', ['facility_id' => $facility->facility_id]) }}" 
+                   class="inline-flex items-center px-4 py-2 bg-lgu-button text-lgu-button-text font-semibold rounded-lg hover:bg-lgu-highlight transition">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2">
+                        <rect width="18" height="18" x="3" y="4" rx="2"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/>
+                    </svg>
+                    View Calendar
+                </a>
             </div>
         </div>
 

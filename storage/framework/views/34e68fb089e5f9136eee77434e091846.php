@@ -260,6 +260,81 @@
         };
     });
 })();
+
+// Global favorite toggle function for V1.6
+function toggleFavorite(facilityId) {
+    console.log('toggleFavorite called with facilityId:', facilityId);
+    
+    const csrfToken = document.querySelector('meta[name="csrf-token"]');
+    console.log('CSRF token element:', csrfToken);
+    console.log('CSRF token value:', csrfToken ? csrfToken.content : 'NOT FOUND');
+    
+    fetch('/citizen/favorites/toggle', {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': csrfToken ? csrfToken.content : '',
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ facility_id: facilityId })
+    })
+    .then(response => {
+        console.log('Response status:', response.status);
+        return response.json();
+    })
+    .then(data => {
+        console.log('Response data:', data);
+        if (data.success) {
+            const btn = document.querySelector(`[data-facility-id="${facilityId}"]`);
+            
+            if (btn) {
+                // Find the SVG element (Lucide replaces the <i> tag with SVG)
+                const svg = btn.querySelector('svg');
+                
+                if (svg && data.action === 'added') {
+                    // Make heart filled and red
+                    svg.classList.add('fill-lgu-tertiary', 'text-lgu-tertiary');
+                    svg.classList.remove('text-gray-600');
+                    svg.setAttribute('fill', 'currentColor');
+                } else if (svg && data.action === 'removed') {
+                    // Make heart outline and gray
+                    svg.classList.remove('fill-lgu-tertiary', 'text-lgu-tertiary');
+                    svg.classList.add('text-gray-600');
+                    svg.setAttribute('fill', 'none');
+                }
+            }
+            
+            if (data.action === 'added') {
+                Swal.fire({
+                    title: 'Added to Favorites!',
+                    text: `${data.facility_name} has been added to your favorites`,
+                    icon: 'success',
+                    confirmButtonColor: '#faae2b',
+                    timer: 2000,
+                    showConfirmButton: false
+                });
+            } else {
+                Swal.fire({
+                    title: 'Removed from Favorites',
+                    text: `${data.facility_name} has been removed from favorites`,
+                    icon: 'info',
+                    confirmButtonColor: '#faae2b',
+                    timer: 2000,
+                    showConfirmButton: false
+                });
+            }
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        Swal.fire({
+            title: 'Error!',
+            text: 'Failed to update favorites',
+            icon: 'error',
+            confirmButtonColor: '#fa5246'
+        });
+    });
+}
 </script>
 <?php $__env->stopPush(); ?>
 

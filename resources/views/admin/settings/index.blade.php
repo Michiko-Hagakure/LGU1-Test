@@ -44,7 +44,10 @@
                 <div class="tab-content p-6 {{ !$loop->first ? 'hidden' : '' }}" id="tab-{{ $key }}">
                     <h2 class="text-xl font-bold text-lgu-headline mb-4">{{ $category['label'] }} Settings</h2>
                     
-                    @if($category['settings']->isEmpty())
+                    @if($key === 'communication')
+                        <!-- Special Communication Settings UI -->
+                        @include('admin.settings.partials.communication')
+                    @elseif($category['settings']->isEmpty())
                         <p class="text-gray-500">No settings available in this category.</p>
                     @else
                         <div class="space-y-6">

@@ -61,42 +61,65 @@
             <div class="lg:col-span-3 p-6">
                 <!-- Admin Profile Tab -->
                 <div id="content-profile" class="profile-tab-content">
-                    <form action="{{ route('admin.profile.update') }}" method="POST" enctype="multipart/form-data">
-                        @csrf
-                        <h2 class="text-2xl font-bold text-lgu-headline mb-6">Personal Identification</h2>
-                        
-                        <!-- Profile Photo Section -->
-                        <div class="bg-gray-50 rounded-xl p-6 mb-6 flex items-center space-x-6">
-                            <div class="relative">
-                                @php 
-                                    // Use session data (single source of truth, same as sidebar)
-                                    $userName = session('user_name', $user->full_name ?? 'Admin User');
-                                    $userEmail = session('user_email', $user->email ?? 'admin@lgu1.com');
-                                    
-                                    // Generate initials same as sidebar component
-                                    $nameParts = explode(' ', $userName);
-                                    $firstName = $nameParts[0] ?? 'A';
-                                    $lastName = end($nameParts);
-                                    $initials = strtoupper(
-                                        substr($firstName, 0, 1) . 
-                                        (($lastName !== $firstName) ? substr($lastName, 0, 1) : 'D')
-                                    );
-                                    
-                                    $photo = ($user && $user->profile_photo_path) ? asset($user->profile_photo_path) : 'https://ui-avatars.com/api/?name=' . urlencode($initials) . '&background=064e3b&color=fff&size=200';
-                                @endphp
-                                <img id="avatar-preview" src="{{ $photo }}" 
-                                     class="w-32 h-32 rounded-full object-cover border-4 border-white shadow-lg">
-                                
-                                <label for="avatar_input" class="absolute bottom-0 right-0 w-10 h-10 bg-lgu-button rounded-full flex items-center justify-center border-3 border-white shadow-lg cursor-pointer hover:opacity-90 transition">
-                                    <i data-lucide="camera" class="w-5 h-5 text-lgu-button-text"></i>
-                                </label>
-                                <input type="file" id="avatar_input" name="avatar" class="hidden" onchange="previewImage(this)" accept="image/*">
+                    <h2 class="text-2xl font-bold text-lgu-headline mb-6">Personal Identification</h2>
+                    
+                    <!-- Profile Photo Section -->
+                    <div class="bg-gray-50 rounded-xl p-6 mb-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center space-x-6">
+                                <div class="relative">
+                                    @php 
+                                        // Use session data (single source of truth, same as sidebar)
+                                        $userName = session('user_name', $user->full_name ?? 'Admin User');
+                                        $userEmail = session('user_email', $user->email ?? 'admin@lgu1.com');
+                                        
+                                        // Generate initials same as sidebar component
+                                        $nameParts = explode(' ', $userName);
+                                        $firstName = $nameParts[0] ?? 'A';
+                                        $lastName = end($nameParts);
+                                        $initials = strtoupper(
+                                            substr($firstName, 0, 1) . 
+                                            (($lastName !== $firstName) ? substr($lastName, 0, 1) : 'D')
+                                        );
+                                        
+                                        $photo = ($user && $user->profile_photo_path) ? asset($user->profile_photo_path) : 'https://ui-avatars.com/api/?name=' . urlencode($initials) . '&background=064e3b&color=fff&size=200';
+                                    @endphp
+                                    <img id="avatar-preview" src="{{ $photo }}" 
+                                         class="w-32 h-32 rounded-full object-cover border-4 border-white shadow-lg">
+                                </div>
+                                <div>
+                                    <h3 class="text-lg font-semibold text-lgu-headline mb-1">Profile Photo</h3>
+                                    <p class="text-sm text-lgu-paragraph">Accepted formats: JPG, PNG. Max 2MB.</p>
+                                </div>
                             </div>
-                            <div>
-                                <h3 class="text-lg font-semibold text-lgu-headline mb-1">Profile Photo</h3>
-                                <p class="text-sm text-lgu-paragraph">Accepted formats: JPG, PNG. Max 2MB.</p>
-                            </div>
+                            
+                            @if($user && $user->profile_photo_path)
+                                <form id="remove-photo-form" action="{{ route('admin.profile.photo.remove') }}" method="POST">
+                                    @csrf
+                                    <button type="button" onclick="confirmRemovePhoto()" class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition flex items-center">
+                                        <i data-lucide="trash-2" class="w-4 h-4 mr-2"></i>
+                                        Remove Photo
+                                    </button>
+                                </form>
+                            @endif
                         </div>
+                        
+                        <!-- Upload Photo Form -->
+                        <form action="{{ route('admin.profile.update') }}" method="POST" enctype="multipart/form-data" class="flex items-center gap-4">
+                            @csrf
+                            <input type="hidden" name="full_name" value="{{ session('user_name', $user->full_name ?? '') }}">
+                            <label for="avatar_input" class="px-4 py-2 bg-lgu-button text-lgu-button-text rounded-lg cursor-pointer hover:opacity-90 transition flex items-center">
+                                <i data-lucide="camera" class="w-4 h-4 mr-2"></i>
+                                Choose Photo
+                            </label>
+                            <input type="file" id="avatar_input" name="avatar" class="hidden" onchange="this.form.submit()" accept="image/*">
+                            <span id="file-name" class="text-sm text-gray-600"></span>
+                        </form>
+                    </div>
+                    
+                    <!-- Profile Update Form -->
+                    <form action="{{ route('admin.profile.update') }}" method="POST">
+                        @csrf
 
                         <!-- Form Fields -->
                         <div class="space-y-4">
@@ -182,6 +205,24 @@
             }
             reader.readAsDataURL(input.files[0]);
         }
+    }
+
+    // SweetAlert2 confirmation for removing profile photo
+    function confirmRemovePhoto() {
+        Swal.fire({
+            title: 'Remove Profile Photo?',
+            text: "Are you sure you want to remove your profile photo?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#ef4444',
+            cancelButtonColor: '#6b7280',
+            confirmButtonText: 'Yes, remove it',
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById('remove-photo-form').submit();
+            }
+        });
     }
 
     // Initialize Lucide icons on page load

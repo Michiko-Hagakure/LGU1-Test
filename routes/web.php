@@ -1490,6 +1490,22 @@ Route::middleware(['auth', 'role:Admin'])->group(function () {
     Route::get('/admin/settings', [\App\Http\Controllers\Admin\SystemSettingsController::class, 'index'])->name('admin.settings.index');
     Route::put('/admin/settings', [\App\Http\Controllers\Admin\SystemSettingsController::class, 'update'])->name('admin.settings.update');
     Route::get('/admin/settings/clear-cache', [\App\Http\Controllers\Admin\SystemSettingsController::class, 'clearCache'])->name('admin.settings.clear-cache');
+    Route::post('/admin/settings/communication', [\App\Http\Controllers\Admin\SystemSettingsController::class, 'updateCommunicationSettings'])->name('admin.settings.communication.update');
+    Route::post('/admin/settings/test-email', [\App\Http\Controllers\Admin\SystemSettingsController::class, 'testEmail'])->name('admin.settings.test-email');
+    Route::post('/admin/settings/test-sms', [\App\Http\Controllers\Admin\SystemSettingsController::class, 'testSms'])->name('admin.settings.test-sms');
+    
+    // Message Templates
+    Route::get('/admin/templates', [\App\Http\Controllers\Admin\MessageTemplateController::class, 'index'])->name('admin.templates.index');
+    Route::get('/admin/templates/trash', [\App\Http\Controllers\Admin\MessageTemplateController::class, 'trash'])->name('admin.templates.trash');
+    Route::get('/admin/templates/create', [\App\Http\Controllers\Admin\MessageTemplateController::class, 'create'])->name('admin.templates.create');
+    Route::post('/admin/templates', [\App\Http\Controllers\Admin\MessageTemplateController::class, 'store'])->name('admin.templates.store');
+    Route::get('/admin/templates/{id}/edit', [\App\Http\Controllers\Admin\MessageTemplateController::class, 'edit'])->name('admin.templates.edit');
+    Route::put('/admin/templates/{id}', [\App\Http\Controllers\Admin\MessageTemplateController::class, 'update'])->name('admin.templates.update');
+    Route::delete('/admin/templates/{id}', [\App\Http\Controllers\Admin\MessageTemplateController::class, 'destroy'])->name('admin.templates.destroy');
+    Route::post('/admin/templates/{id}/restore', [\App\Http\Controllers\Admin\MessageTemplateController::class, 'restore'])->name('admin.templates.restore');
+    Route::delete('/admin/templates/{id}/force-delete', [\App\Http\Controllers\Admin\MessageTemplateController::class, 'forceDelete'])->name('admin.templates.force-delete');
+    Route::post('/admin/templates/{id}/toggle', [\App\Http\Controllers\Admin\MessageTemplateController::class, 'toggleStatus'])->name('admin.templates.toggle');
+    Route::get('/admin/templates/{id}/preview', [\App\Http\Controllers\Admin\MessageTemplateController::class, 'preview'])->name('admin.templates.preview');
     
     // Backup & Restore
     Route::get('/admin/backup', [\App\Http\Controllers\Admin\BackupController::class, 'index'])->name('admin.backup.index');
@@ -1506,6 +1522,56 @@ Route::middleware(['auth', 'role:Admin'])->group(function () {
     // Reviews Moderation
     Route::get('/admin/reviews', [\App\Http\Controllers\Admin\ReviewController::class, 'index'])->name('admin.reviews.index');
     Route::get('/admin/reviews/{id}', [\App\Http\Controllers\Admin\ReviewController::class, 'show'])->name('admin.reviews.show');
+
+    // Help Center Management - FAQ Categories
+    Route::get('/admin/faq-categories', [\App\Http\Controllers\Admin\FaqCategoryController::class, 'index'])->name('admin.faq-categories.index');
+    Route::get('/admin/faq-categories/create', [\App\Http\Controllers\Admin\FaqCategoryController::class, 'create'])->name('admin.faq-categories.create');
+    Route::post('/admin/faq-categories', [\App\Http\Controllers\Admin\FaqCategoryController::class, 'store'])->name('admin.faq-categories.store');
+    Route::get('/admin/faq-categories/{id}/edit', [\App\Http\Controllers\Admin\FaqCategoryController::class, 'edit'])->name('admin.faq-categories.edit');
+    Route::put('/admin/faq-categories/{id}', [\App\Http\Controllers\Admin\FaqCategoryController::class, 'update'])->name('admin.faq-categories.update');
+    Route::delete('/admin/faq-categories/{id}', [\App\Http\Controllers\Admin\FaqCategoryController::class, 'destroy'])->name('admin.faq-categories.destroy');
+    Route::get('/admin/faq-categories/trash', [\App\Http\Controllers\Admin\FaqCategoryController::class, 'trash'])->name('admin.faq-categories.trash');
+    Route::post('/admin/faq-categories/{id}/restore', [\App\Http\Controllers\Admin\FaqCategoryController::class, 'restore'])->name('admin.faq-categories.restore');
+
+    // Help Center Management - FAQs
+    Route::get('/admin/faqs', [\App\Http\Controllers\Admin\FaqController::class, 'index'])->name('admin.faqs.index');
+    Route::get('/admin/faqs/create', [\App\Http\Controllers\Admin\FaqController::class, 'create'])->name('admin.faqs.create');
+    Route::post('/admin/faqs', [\App\Http\Controllers\Admin\FaqController::class, 'store'])->name('admin.faqs.store');
+    Route::get('/admin/faqs/{id}/edit', [\App\Http\Controllers\Admin\FaqController::class, 'edit'])->name('admin.faqs.edit');
+    Route::put('/admin/faqs/{id}', [\App\Http\Controllers\Admin\FaqController::class, 'update'])->name('admin.faqs.update');
+    Route::delete('/admin/faqs/{id}', [\App\Http\Controllers\Admin\FaqController::class, 'destroy'])->name('admin.faqs.destroy');
+    Route::get('/admin/faqs/trash', [\App\Http\Controllers\Admin\FaqController::class, 'trash'])->name('admin.faqs.trash');
+    Route::post('/admin/faqs/{id}/restore', [\App\Http\Controllers\Admin\FaqController::class, 'restore'])->name('admin.faqs.restore');
+
+    // Help Center Management - Help Articles
+    Route::get('/admin/help-articles', [\App\Http\Controllers\Admin\HelpArticleController::class, 'index'])->name('admin.help-articles.index');
+    Route::get('/admin/help-articles/create', [\App\Http\Controllers\Admin\HelpArticleController::class, 'create'])->name('admin.help-articles.create');
+    Route::post('/admin/help-articles', [\App\Http\Controllers\Admin\HelpArticleController::class, 'store'])->name('admin.help-articles.store');
+    Route::get('/admin/help-articles/{id}/edit', [\App\Http\Controllers\Admin\HelpArticleController::class, 'edit'])->name('admin.help-articles.edit');
+    Route::put('/admin/help-articles/{id}', [\App\Http\Controllers\Admin\HelpArticleController::class, 'update'])->name('admin.help-articles.update');
+    Route::delete('/admin/help-articles/{id}', [\App\Http\Controllers\Admin\HelpArticleController::class, 'destroy'])->name('admin.help-articles.destroy');
+    Route::get('/admin/help-articles/trash', [\App\Http\Controllers\Admin\HelpArticleController::class, 'trash'])->name('admin.help-articles.trash');
+    Route::post('/admin/help-articles/{id}/restore', [\App\Http\Controllers\Admin\HelpArticleController::class, 'restore'])->name('admin.help-articles.restore');
+
+    // Events Management
+    Route::get('/admin/events', [\App\Http\Controllers\Admin\EventController::class, 'index'])->name('admin.events.index');
+    Route::get('/admin/events/create', [\App\Http\Controllers\Admin\EventController::class, 'create'])->name('admin.events.create');
+    Route::post('/admin/events', [\App\Http\Controllers\Admin\EventController::class, 'store'])->name('admin.events.store');
+    Route::get('/admin/events/{id}/edit', [\App\Http\Controllers\Admin\EventController::class, 'edit'])->name('admin.events.edit');
+    Route::put('/admin/events/{id}', [\App\Http\Controllers\Admin\EventController::class, 'update'])->name('admin.events.update');
+    Route::delete('/admin/events/{id}', [\App\Http\Controllers\Admin\EventController::class, 'destroy'])->name('admin.events.destroy');
+    Route::get('/admin/events/trash', [\App\Http\Controllers\Admin\EventController::class, 'trash'])->name('admin.events.trash');
+    Route::post('/admin/events/{id}/restore', [\App\Http\Controllers\Admin\EventController::class, 'restore'])->name('admin.events.restore');
+
+    // News Management
+    Route::get('/admin/news', [\App\Http\Controllers\Admin\NewsController::class, 'index'])->name('admin.news.index');
+    Route::get('/admin/news/create', [\App\Http\Controllers\Admin\NewsController::class, 'create'])->name('admin.news.create');
+    Route::post('/admin/news', [\App\Http\Controllers\Admin\NewsController::class, 'store'])->name('admin.news.store');
+    Route::get('/admin/news/{id}/edit', [\App\Http\Controllers\Admin\NewsController::class, 'edit'])->name('admin.news.edit');
+    Route::put('/admin/news/{id}', [\App\Http\Controllers\Admin\NewsController::class, 'update'])->name('admin.news.update');
+    Route::delete('/admin/news/{id}', [\App\Http\Controllers\Admin\NewsController::class, 'destroy'])->name('admin.news.destroy');
+    Route::get('/admin/news/trash', [\App\Http\Controllers\Admin\NewsController::class, 'trash'])->name('admin.news.trash');
+    Route::post('/admin/news/{id}/restore', [\App\Http\Controllers\Admin\NewsController::class, 'restore'])->name('admin.news.restore');
 
     // User Management
 
@@ -1571,6 +1637,11 @@ Route::middleware(['auth', 'role:Reservations Staff'])->prefix('staff')->name('s
 
     // Equipment (Read-only)
     Route::get('/equipment', [\App\Http\Controllers\Staff\EquipmentController::class, 'index'])->name('equipment.index');
+    
+    // Notifications - Send to Citizens
+    Route::get('/notifications', [\App\Http\Controllers\Staff\NotificationController::class, 'index'])->name('notifications.index');
+    Route::post('/notifications/send', [\App\Http\Controllers\Staff\NotificationController::class, 'send'])->name('notifications.send');
+    Route::get('/notifications/template/{id}', [\App\Http\Controllers\Staff\NotificationController::class, 'getTemplate'])->name('notifications.template');
 
     // Pricing (Read-only)
     Route::get('/pricing', [\App\Http\Controllers\Staff\PricingController::class, 'index'])->name('pricing.index');
@@ -1580,6 +1651,16 @@ Route::middleware(['auth', 'role:Reservations Staff'])->prefix('staff')->name('s
 
     // Activity Log
     Route::get('/activity-log', [\App\Http\Controllers\Staff\ActivityLogController::class, 'index'])->name('activity-log.index');
+
+    // Inquiry Management (V1.5)
+    Route::get('/inquiries', [\App\Http\Controllers\Staff\InquiryManagementController::class, 'index'])->name('inquiries.index');
+    Route::get('/inquiries/{id}', [\App\Http\Controllers\Staff\InquiryManagementController::class, 'show'])->name('inquiries.show');
+    Route::post('/inquiries/{id}/assign', [\App\Http\Controllers\Staff\InquiryManagementController::class, 'assign'])->name('inquiries.assign');
+    Route::post('/inquiries/{id}/status', [\App\Http\Controllers\Staff\InquiryManagementController::class, 'updateStatus'])->name('inquiries.status');
+    Route::post('/inquiries/{id}/priority', [\App\Http\Controllers\Staff\InquiryManagementController::class, 'updatePriority'])->name('inquiries.priority');
+    Route::post('/inquiries/{id}/note', [\App\Http\Controllers\Staff\InquiryManagementController::class, 'addNote'])->name('inquiries.note');
+    Route::post('/inquiries/{id}/resolve', [\App\Http\Controllers\Staff\InquiryManagementController::class, 'resolve'])->name('inquiries.resolve');
+    Route::post('/inquiries/{id}/close', [\App\Http\Controllers\Staff\InquiryManagementController::class, 'close'])->name('inquiries.close');
 });
 
 // Treasurer Portal Routes
@@ -1650,6 +1731,7 @@ Route::middleware(['auth', 'role:citizen', \App\Http\Middleware\CheckSessionTime
     // Facilities
     Route::get('/citizen/facilities', [\App\Http\Controllers\Citizen\FacilityController::class, 'index'])->name('citizen.browse-facilities');
     Route::get('/citizen/facilities/{id}', [\App\Http\Controllers\Citizen\FacilityController::class, 'show'])->name('citizen.facility-details');
+    Route::get('/citizen/facilities-compare', [\App\Http\Controllers\Citizen\FacilityController::class, 'compare'])->name('citizen.facilities.compare');
 
     // Facility Calendar
     Route::get('/citizen/calendar', [\App\Http\Controllers\Citizen\FacilityCalendarController::class, 'index'])->name('citizen.facility-calendar');
@@ -1728,6 +1810,32 @@ Route::middleware(['auth', 'role:citizen', \App\Http\Middleware\CheckSessionTime
     Route::post('/citizen/security/revoke-all-sessions', [\App\Http\Controllers\Citizen\SecurityController::class, 'revokeAllOtherSessions'])->name('citizen.security.revoke-all-sessions');
     Route::post('/citizen/security/privacy', [\App\Http\Controllers\Citizen\SecurityController::class, 'updatePrivacySettings'])->name('citizen.security.privacy');
     Route::post('/citizen/security/data-download', [\App\Http\Controllers\Citizen\SecurityController::class, 'requestDataDownload'])->name('citizen.security.data-download');
+
+    // Events & News (V1.5)
+    Route::get('/citizen/events', [\App\Http\Controllers\Citizen\EventController::class, 'index'])->name('citizen.events.index');
+    Route::get('/citizen/events/{slug}', [\App\Http\Controllers\Citizen\EventController::class, 'show'])->name('citizen.events.show');
+    Route::get('/citizen/news', [\App\Http\Controllers\Citizen\NewsController::class, 'index'])->name('citizen.news.index');
+    Route::get('/citizen/news/{slug}', [\App\Http\Controllers\Citizen\NewsController::class, 'show'])->name('citizen.news.show');
+
+    // Help Center (V1.5)
+    Route::get('/citizen/help-center', [\App\Http\Controllers\Citizen\HelpCenterController::class, 'index'])->name('citizen.help-center.index');
+    Route::get('/citizen/help-center/search', [\App\Http\Controllers\Citizen\HelpCenterController::class, 'search'])->name('citizen.help-center.search');
+    Route::get('/citizen/help-center/articles', [\App\Http\Controllers\Citizen\HelpCenterController::class, 'articles'])->name('citizen.help-center.articles');
+    Route::get('/citizen/help-center/articles/{slug}', [\App\Http\Controllers\Citizen\HelpCenterController::class, 'article'])->name('citizen.help-center.article');
+    Route::post('/citizen/help-center/helpful/{type}/{id}', [\App\Http\Controllers\Citizen\HelpCenterController::class, 'markHelpful'])->name('citizen.help-center.helpful');
+
+    // Contact Us (V1.5)
+    Route::get('/citizen/contact', [\App\Http\Controllers\Citizen\ContactController::class, 'index'])->name('citizen.contact.index');
+    Route::post('/citizen/contact', [\App\Http\Controllers\Citizen\ContactController::class, 'store'])->name('citizen.contact.store');
+    Route::get('/citizen/contact/success', [\App\Http\Controllers\Citizen\ContactController::class, 'success'])->name('citizen.contact.success');
+    Route::get('/citizen/my-inquiries', [\App\Http\Controllers\Citizen\ContactController::class, 'myInquiries'])->name('citizen.contact.my-inquiries');
+    Route::get('/citizen/my-inquiries/{ticketNumber}', [\App\Http\Controllers\Citizen\ContactController::class, 'showInquiry'])->name('citizen.contact.show-inquiry');
+
+    // Favorites (V1.6)
+    Route::get('/citizen/favorites', [\App\Http\Controllers\Citizen\FavoriteController::class, 'index'])->name('citizen.favorites.index');
+    Route::post('/citizen/favorites', [\App\Http\Controllers\Citizen\FavoriteController::class, 'store'])->name('citizen.favorites.store');
+    Route::delete('/citizen/favorites/{facilityId}', [\App\Http\Controllers\Citizen\FavoriteController::class, 'destroy'])->name('citizen.favorites.destroy');
+    Route::post('/citizen/favorites/toggle', [\App\Http\Controllers\Citizen\FavoriteController::class, 'toggle'])->name('citizen.favorites.toggle');
 });
 
 // Facility Routes (shared across roles)
@@ -1780,6 +1888,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::post('/profile/update', [ProfileSettingsController::class, 'updateProfile'])->name('profile.update');
     Route::post('/profile/password', [ProfileSettingsController::class, 'updatePassword'])->name('profile.password.update');
     Route::post('/profile/lgu-update', [ProfileSettingsController::class, 'updateLguSettings'])->name('profile.lgu.update');
+    Route::post('/profile/remove-photo', [ProfileSettingsController::class, 'removeProfilePhoto'])->name('profile.photo.remove');
 
 });
 

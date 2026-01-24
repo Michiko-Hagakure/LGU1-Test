@@ -32,6 +32,25 @@ class FacilityController extends Controller
         $query = FacilityDb::with('lguCity')
             ->orderBy('name');
         
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('description', 'like', "%{$search}%")
+                  ->orWhere('address', 'like', "%{$search}%");
+            });
+        }
+
+        if ($request->filled('city')) {
+            $query->whereHas('lguCity', function($q) use ($request) {
+                $q->where('city_name', $request->city);
+            });
+        }
+
+        if ($request->filled('capacity')) {
+            $query->where('capacity', '>=', $request->capacity);
+        }
+
         // Filter by city
         if ($request->has('city_id') && $request->city_id != '') {
             $query->where('lgu_city_id', $request->city_id);
@@ -61,7 +80,17 @@ class FacilityController extends Controller
         }
         
         // Paginate results
-        $facilities = $query->paginate(9);
+        $facilities = $query->orderBy('name')->paginate(9);
+        $facilities->appends($request->query());
+
+        // Get user's favorited facility IDs
+        $favoritedIds = [];
+        if (session('user_id')) {
+            $favoritedIds = \App\Models\UserFavorite::where('user_id', session('user_id'))
+                ->pluck('facility_id')
+                ->toArray();
+        }
+
         
         // Facility types for filter
         $facilityTypes = collect([
@@ -74,7 +103,7 @@ class FacilityController extends Controller
             'other'
         ]);
         
-        return view('citizen.browse-facilities', compact('facilities', 'facilityTypes', 'cities'));
+        return view('citizen.browse-facilities', compact('facilities', 'facilityTypes', 'cities', 'favoritedIds'));
     }
     
     /**
@@ -89,34 +118,16 @@ class FacilityController extends Controller
             return redirect()->route('login')->with('error', 'Please login to continue.');
         }
         
-        // Get facility details with relationships (photos disabled - table not created yet)
-        $facility = Facility::with([
-            'location',
-            // 'photos' => function($query) {
-            //     $query->orderBy('display_order');
-            // },
-            // 'equipment' => function($query) {
-            //     $query->where('is_available', true);
-            // }
-        ])
-        ->where('status', 'active')
-        ->find($id);
+        // Get facility details from facilities_db with relationships
+        $facility = FacilityDb::with(['lguCity'])
+            ->where('facility_id', $id)
+            ->first();
         
         if (!$facility) {
             return redirect()->route('citizen.browse-facilities')
                 ->with('error', 'Facility not found.');
         }
         
-        // Get upcoming bookings for this facility (for availability preview)
-        $upcomingBookings = $facility->bookings()
-            ->whereIn('status', ['confirmed', 'payment_pending', 'approved'])
-            ->where('booking_date', '>=', now()->toDateString())
-            ->orderBy('booking_date', 'asc')
-            ->orderBy('start_time', 'asc')
-            ->limit(5)
-            ->get();
-        
-        return view('citizen.facility-details', compact('facility', 'upcomingBookings'));
+        return view('citizen.facility-details', compact('facility'));
     }
 }
-

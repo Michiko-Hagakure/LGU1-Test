@@ -166,11 +166,14 @@ class SecurityController extends Controller
                 'two_factor_enabled' => false,
             ]);
         
-        // Remove all trusted devices
+        // Soft delete all trusted devices
         DB::connection('auth_db')
             ->table('trusted_devices')
             ->where('user_id', $user->id)
-            ->delete();
+            ->update([
+                'deleted_at' => now(),
+                'deleted_by' => $user->id
+            ]);
         
         return back()->with('success', '2FA disabled. All trusted devices have been removed.');
     }
@@ -187,7 +190,10 @@ class SecurityController extends Controller
             ->table('trusted_devices')
             ->where('id', $id)
             ->where('user_id', $userId)
-            ->delete();
+            ->update([
+                'deleted_at' => now(),
+                'deleted_by' => $userId
+            ]);
         
         return back()->with('success', 'Trusted device removed successfully.');
     }
@@ -203,7 +209,10 @@ class SecurityController extends Controller
         DB::connection('auth_db')
             ->table('trusted_devices')
             ->where('user_id', $userId)
-            ->delete();
+            ->update([
+                'deleted_at' => now(),
+                'deleted_by' => $userId
+            ]);
         
         return back()->with('success', 'All trusted devices removed. You will need to verify with 2FA PIN on next login from any device.');
     }
@@ -229,11 +238,14 @@ class SecurityController extends Controller
             return back()->with('error', 'Session not found.');
         }
         
-        // Delete session from database
+        // Soft delete session from database
         DB::connection('auth_db')
             ->table('user_sessions')
             ->where('session_id', $sessionId)
-            ->delete();
+            ->update([
+                'deleted_at' => now(),
+                'deleted_by' => $userId
+            ]);
         
         return back()->with('success', 'Session revoked successfully.');
     }
@@ -248,12 +260,15 @@ class SecurityController extends Controller
         
         $currentSessionId = session()->getId();
         
-        // Delete all sessions except current
+        // Soft delete all sessions except current
         DB::connection('auth_db')
             ->table('user_sessions')
             ->where('user_id', $userId)
             ->where('session_id', '!=', $currentSessionId)
-            ->delete();
+            ->update([
+                'deleted_at' => now(),
+                'deleted_by' => $userId
+            ]);
         
         return back()->with('success', 'All other sessions have been logged out.');
     }
@@ -268,8 +283,6 @@ class SecurityController extends Controller
         
         $request->validate([
             'profile_visibility' => 'required|in:public,private',
-            'show_reviews_publicly' => 'boolean',
-            'show_booking_count' => 'boolean',
         ]);
         
         DB::connection('auth_db')

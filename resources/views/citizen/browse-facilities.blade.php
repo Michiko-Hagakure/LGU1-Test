@@ -38,9 +38,7 @@
                             class="block w-full px-gr-sm py-gr-sm border-2 border-lgu-stroke rounded-lg focus:ring-2 focus:ring-lgu-highlight focus:border-lgu-highlight transition-all duration-200 text-sm {{ request('city_id') ? 'border-lgu-highlight bg-lgu-bg font-medium' : '' }}">
                         <option value="">All Cities</option>
                         @foreach($cities as $city)
-                            <option value="{{ $city->id }}" {{ request('city_id') == $city->id ? 'selected' : '' }}>
-                                {{ $city->location_name }}
-                            </option>
+                            <option value="{{ $city }}" {{ request('city') == $city ? 'selected' : '' }}>{{ $city }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -62,7 +60,7 @@
                 </div>
             </div>
 
-            <div class="flex items-center justify-between pt-gr-sm border-t border-lgu-stroke">
+            <div class="flex items-center justify-between pt-gr-sm border-lgu-stroke">
                 <div class="text-sm text-lgu-paragraph">
                     Showing <span class="font-semibold text-lgu-headline">{{ $facilities->total() }}</span> {{ $facilities->total() == 1 ? 'facility' : 'facilities' }}
                 </div>
@@ -171,6 +169,18 @@
                                 <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm3 1h6v4H7V5zm6 6H7v2h6v-2z" clip-rule="evenodd"/>
                             </svg>
                         </div>
+                        
+                        <!-- Favorite Button -->
+                        <button onclick="toggleFavorite({{ $facility->facility_id ?? $facility->getKey() }})" 
+                                class="favorite-btn absolute top-3 left-3 bg-white rounded-full p-2 shadow-md hover:bg-lgu-highlight transition-all z-10"
+                                data-facility-id="{{ $facility->facility_id ?? $facility->getKey() }}">
+                            @if(in_array($facility->facility_id ?? $facility->getKey(), $favoritedIds ?? []))
+                                <i data-lucide="heart" class="w-5 h-5 fill-lgu-tertiary text-lgu-tertiary" fill="currentColor"></i>
+                            @else
+                                <i data-lucide="heart" class="w-5 h-5 text-gray-600"></i>
+                            @endif
+                        </button>
+                        
                         <!-- Status Badge -->
                         <div class="absolute top-3 right-3">
                             @if(!$facility->is_available)
@@ -208,7 +218,7 @@
                                     </svg>
                                     Capacity
                                 </span>
-                                <span class="font-semibold text-gray-900">{{ number_format($facility->min_capacity ?? 1) }}-{{ number_format($facility->capacity) }} people</span>
+                                <span class="font-semibold text-gray-900">{{ number_format($facility->capacity) }} people</span>
                             </div>
 
                         </div>
@@ -233,12 +243,12 @@
                             @endif
                             
                             <div class="grid grid-cols-2 gap-gr-sm">
-                                <a href="{{ route('citizen.facility-details', $facility->facility_id) }}" 
+                                <a href="{{ route('citizen.facility-details', ['id' => $facility->facility_id ?? $facility->getKey()]) }}" 
                                    class="px-gr-sm py-gr-sm border-2 border-lgu-stroke text-lgu-headline font-semibold rounded-lg hover:bg-lgu-bg transition-colors text-center text-sm">
                                     Details
                                 </a>
                                 @if($facility->is_available)
-                                    <a href="{{ route('citizen.booking.create', $facility->facility_id) }}" 
+                                    <a href="{{ route('citizen.booking.create', $facility->facility_id ?? $facility->getKey()) }}" 
                                        class="px-gr-sm py-gr-sm bg-lgu-button text-lgu-button-text font-semibold rounded-lg hover:opacity-90 transition-all shadow-sm text-center text-sm">
                                         Book Now
                                     </a>
@@ -301,5 +311,13 @@
         </div>
     </div>
 </div>
-@endsection
 
+@push('scripts')
+<script>
+// Initialize Lucide icons when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    lucide.createIcons();
+});
+</script>
+@endpush
+@endsection

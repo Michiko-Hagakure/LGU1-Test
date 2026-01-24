@@ -157,11 +157,14 @@ class PaymentMethodController extends Controller
         $deleted = DB::connection('auth_db')->table('citizen_payment_methods')
             ->where('id', $id)
             ->where('user_id', $userId)
-            ->delete();
+            ->update([
+                'deleted_at' => now(),
+                'deleted_by' => $userId
+            ]);
 
         if ($deleted) {
             return redirect()->route('citizen.payment-methods.index')
-                ->with('success', 'Payment method deleted successfully!');
+                ->with('success', 'Payment method removed successfully!');
         }
 
         return redirect()->route('citizen.payment-methods.index')

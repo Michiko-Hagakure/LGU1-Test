@@ -117,6 +117,43 @@
     </ul>
 </div>
 
+<!-- CONTENT MANAGEMENT SUBMODULE -->
+<div class="px-gr-md mb-gr-lg">
+    <h4 class="text-gray-400 text-caption font-semibold uppercase tracking-wider mb-gr-xs">Content Management</h4>
+    <ul class="space-y-gr-xs">
+        <li>
+            <a href="<?php echo e(route('admin.events.index')); ?>" class="sidebar-link flex items-center px-gr-sm py-gr-xs text-small font-medium rounded-lg transition-colors duration-200 <?php echo e(request()->routeIs('admin.events.*') ? 'active' : ''); ?>">
+                <i data-lucide="calendar" class="w-5 h-5 mr-gr-xs flex-shrink-0"></i>
+                <span>Events</span>
+            </a>
+        </li>
+        <li>
+            <a href="<?php echo e(route('admin.news.index')); ?>" class="sidebar-link flex items-center px-gr-sm py-gr-xs text-small font-medium rounded-lg transition-colors duration-200 <?php echo e(request()->routeIs('admin.news.*') ? 'active' : ''); ?>">
+                <i data-lucide="newspaper" class="w-5 h-5 mr-gr-xs flex-shrink-0"></i>
+                <span>News</span>
+            </a>
+        </li>
+        <li>
+            <a href="<?php echo e(route('admin.faq-categories.index')); ?>" class="sidebar-link flex items-center px-gr-sm py-gr-xs text-small font-medium rounded-lg transition-colors duration-200 <?php echo e(request()->routeIs('admin.faq-categories.*') ? 'active' : ''); ?>">
+                <i data-lucide="folder" class="w-5 h-5 mr-gr-xs flex-shrink-0"></i>
+                <span>FAQ Categories</span>
+            </a>
+        </li>
+        <li>
+            <a href="<?php echo e(route('admin.faqs.index')); ?>" class="sidebar-link flex items-center px-gr-sm py-gr-xs text-small font-medium rounded-lg transition-colors duration-200 <?php echo e(request()->routeIs('admin.faqs.*') ? 'active' : ''); ?>">
+                <i data-lucide="help-circle" class="w-5 h-5 mr-gr-xs flex-shrink-0"></i>
+                <span>FAQs</span>
+            </a>
+        </li>
+        <li>
+            <a href="<?php echo e(route('admin.help-articles.index')); ?>" class="sidebar-link flex items-center px-gr-sm py-gr-xs text-small font-medium rounded-lg transition-colors duration-200 <?php echo e(request()->routeIs('admin.help-articles.*') ? 'active' : ''); ?>">
+                <i data-lucide="book-open" class="w-5 h-5 mr-gr-xs flex-shrink-0"></i>
+                <span>Help Articles</span>
+            </a>
+        </li>
+    </ul>
+</div>
+
 <!-- REPORTS & ANALYTICS SUBMODULE -->
 <div class="px-gr-md mb-gr-lg">
     <h4 class="text-gray-400 text-caption font-semibold uppercase tracking-wider mb-gr-xs">Reports & Analytics</h4>
@@ -180,6 +217,12 @@
             <a href="<?php echo e(route('admin.settings.index')); ?>" class="sidebar-link flex items-center px-gr-sm py-gr-xs text-small font-medium rounded-lg transition-colors duration-200 <?php echo e(request()->routeIs('admin.settings.*') ? 'active' : ''); ?>">
                 <i data-lucide="settings" class="w-5 h-5 mr-gr-xs flex-shrink-0"></i>
                 <span>Settings</span>
+            </a>
+        </li>
+        <li>
+            <a href="<?php echo e(route('admin.templates.index')); ?>" class="sidebar-link flex items-center px-gr-sm py-gr-xs text-small font-medium rounded-lg transition-colors duration-200 <?php echo e(request()->routeIs('admin.templates.*') ? 'active' : ''); ?>">
+                <i data-lucide="mail" class="w-5 h-5 mr-gr-xs flex-shrink-0"></i>
+                <span>Message Templates</span>
             </a>
         </li>
         <li>

@@ -53,17 +53,15 @@
             </a>
         </li>
         <li>
-            <a href="#" onclick="showComingSoon('Browse All Facilities'); return false;" class="sidebar-link flex items-center px-gr-sm py-gr-xs text-small font-medium rounded-lg transition-colors duration-200 opacity-60">
-                <i data-lucide="building-2" class="w-5 h-5 mr-gr-xs flex-shrink-0"></i>
-                <span>Browse All</span>
-                <span class="ml-auto text-xs bg-gray-500 text-white px-2 py-0.5 rounded-full">Soon</span>
-            </a>
-        </li>
-        <li>
-            <a href="#" onclick="showComingSoon('Favorite Facilities'); return false;" class="sidebar-link flex items-center px-gr-sm py-gr-xs text-small font-medium rounded-lg transition-colors duration-200 opacity-60">
+            <a href="<?php echo e(route('citizen.favorites.index')); ?>" class="sidebar-link flex items-center px-gr-sm py-gr-xs text-small font-medium rounded-lg transition-colors duration-200 <?php echo e(request()->routeIs('citizen.favorites.*') ? 'active' : ''); ?>">
                 <i data-lucide="heart" class="w-5 h-5 mr-gr-xs flex-shrink-0"></i>
                 <span>Favorites</span>
-                <span class="ml-auto text-xs bg-gray-500 text-white px-2 py-0.5 rounded-full">Soon</span>
+                <?php
+                    $favoritesCount = auth()->check() ? auth()->user()->favorites()->count() : 0;
+                ?>
+                <?php if($favoritesCount > 0): ?>
+                    <span class="ml-auto text-xs bg-lgu-highlight text-lgu-button-text px-2 py-0.5 rounded-full font-semibold"><?php echo e($favoritesCount); ?></span>
+                <?php endif; ?>
             </a>
         </li>
     </ul>
@@ -105,10 +103,15 @@
             </a>
         </li>
         <li>
-            <a href="#" onclick="showComingSoon('Events & News'); return false;" class="sidebar-link flex items-center px-gr-sm py-gr-xs text-small font-medium rounded-lg transition-colors duration-200 opacity-60">
-                <i data-lucide="megaphone" class="w-5 h-5 mr-gr-xs flex-shrink-0"></i>
-                <span>Events & News</span>
-                <span class="ml-auto text-xs bg-gray-500 text-white px-2 py-0.5 rounded-full">Soon</span>
+            <a href="<?php echo e(route('citizen.events.index')); ?>" class="sidebar-link flex items-center px-gr-sm py-gr-xs text-small font-medium rounded-lg transition-colors duration-200 <?php echo e(request()->routeIs('citizen.events.*') ? 'active' : ''); ?>">
+                <i data-lucide="calendar" class="w-5 h-5 mr-gr-xs flex-shrink-0"></i>
+                <span>Events</span>
+            </a>
+        </li>
+        <li>
+            <a href="<?php echo e(route('citizen.news.index')); ?>" class="sidebar-link flex items-center px-gr-sm py-gr-xs text-small font-medium rounded-lg transition-colors duration-200 <?php echo e(request()->routeIs('citizen.news.*') ? 'active' : ''); ?>">
+                <i data-lucide="newspaper" class="w-5 h-5 mr-gr-xs flex-shrink-0"></i>
+                <span>News</span>
             </a>
         </li>
     </ul>
@@ -119,17 +122,21 @@
     <h4 class="text-gray-400 text-caption font-semibold uppercase tracking-wider mb-gr-xs">Support</h4>
     <ul class="space-y-gr-xs">
         <li>
-            <a href="#" onclick="showComingSoon('Help Center'); return false;" class="sidebar-link flex items-center px-gr-sm py-gr-xs text-small font-medium rounded-lg transition-colors duration-200 opacity-60">
+            <a href="<?php echo e(route('citizen.help-center.index')); ?>" class="sidebar-link flex items-center px-gr-sm py-gr-xs text-small font-medium rounded-lg transition-colors duration-200 <?php echo e(request()->routeIs('citizen.help-center.*') ? 'active' : ''); ?>">
                 <i data-lucide="help-circle" class="w-5 h-5 mr-gr-xs flex-shrink-0"></i>
                 <span>Help Center</span>
-                <span class="ml-auto text-xs bg-gray-500 text-white px-2 py-0.5 rounded-full">Soon</span>
             </a>
         </li>
         <li>
-            <a href="#" onclick="showComingSoon('Contact Us'); return false;" class="sidebar-link flex items-center px-gr-sm py-gr-xs text-small font-medium rounded-lg transition-colors duration-200 opacity-60">
+            <a href="<?php echo e(route('citizen.contact.index')); ?>" class="sidebar-link flex items-center px-gr-sm py-gr-xs text-small font-medium rounded-lg transition-colors duration-200 <?php echo e(request()->routeIs('citizen.contact.*') ? 'active' : ''); ?>">
                 <i data-lucide="message-circle" class="w-5 h-5 mr-gr-xs flex-shrink-0"></i>
                 <span>Contact Us</span>
-                <span class="ml-auto text-xs bg-gray-500 text-white px-2 py-0.5 rounded-full">Soon</span>
+            </a>
+        </li>
+        <li>
+            <a href="<?php echo e(route('citizen.contact.my-inquiries')); ?>" class="sidebar-link flex items-center px-gr-sm py-gr-xs text-small font-medium rounded-lg transition-colors duration-200 <?php echo e(request()->routeIs('citizen.contact.my-inquiries') || request()->routeIs('citizen.contact.show-inquiry') ? 'active' : ''); ?>">
+                <i data-lucide="inbox" class="w-5 h-5 mr-gr-xs flex-shrink-0"></i>
+                <span>My Inquiries</span>
             </a>
         </li>
     </ul>

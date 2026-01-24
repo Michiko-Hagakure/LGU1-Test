@@ -116,4 +116,21 @@ class User extends Authenticatable
         }
         return 'https://ui-avatars.com/api/?name=' . urlencode($this->full_name) . '&background=064e3b&color=fff';
     }
+
+    public function favorites()
+    {
+        return $this->hasMany(UserFavorite::class);
+    }
+
+    public function favoriteFacilities()
+    {
+        return $this->belongsToMany(FacilityDb::class, 'user_favorites', 'user_id', 'facility_id', 'id', 'facility_id')
+            ->withTimestamps()
+            ->withPivot('favorited_at');
+    }
+
+    public function hasFavorited($facilityId): bool
+    {
+        return $this->favorites()->where('facility_id', $facilityId)->exists();
+    }
 }

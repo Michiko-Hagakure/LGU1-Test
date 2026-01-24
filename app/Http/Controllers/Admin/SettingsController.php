@@ -21,17 +21,17 @@ class SettingsController extends Controller
         // Get system settings for LGU configuration
         $settings = DB::table('system_settings')->pluck('value', 'key');
         
-        // Get authenticated user data
-        $user = Auth::user();
+        // Get authenticated user from session
+        $userId = session('user_id');
         
-        // Ensure session has user data (populate if missing from old login sessions)
-        if ($user && !session('user_name')) {
-            session([
-                'user_id' => $user->id,
-                'user_name' => $user->full_name,
-                'user_email' => $user->email,
-                'user_role' => session('user_role', 'admin')
-            ]);
+        if (!$userId) {
+            return redirect()->route('login');
+        }
+        
+        $user = User::find($userId);
+        
+        if (!$user) {
+            return redirect()->route('login');
         }
 
         return view('admin.profile.index', compact('settings', 'user'));
@@ -43,7 +43,14 @@ class SettingsController extends Controller
      */
     public function updateProfile(Request $request)
     {
-        $user = Auth::user();
+        // Get user from session (session-based auth)
+        $userId = session('user_id');
+
+        if (!$userId) {
+            return redirect()->route('login');
+        }
+
+        $user = User::find($userId);
 
         if (!$user) {
             return redirect()->route('login');
@@ -66,19 +73,43 @@ class SettingsController extends Controller
         }
 
         $user->save();
-
-        // Re-authenticate and maintain the session role to prevent redirection to login
-        Auth::login($user);
         
-        // Update session with new user data (single source of truth)
+        // Update session with new user data
         session([
-            'user_role' => 'admin',
             'user_name' => $user->full_name,
             'user_email' => $user->email,
-            'user_id' => $user->id
         ]);
 
         return back()->with('success', 'Profile updated successfully.');
+    }
+
+    /**
+     * Remove profile photo
+     */
+    public function removeProfilePhoto()
+    {
+        $userId = session('user_id');
+
+        if (!$userId) {
+            return redirect()->route('login');
+        }
+
+        $user = User::find($userId);
+
+        if (!$user) {
+            return redirect()->route('login');
+        }
+
+        // Delete the file if it exists
+        if ($user->profile_photo_path && file_exists(public_path($user->profile_photo_path))) {
+            unlink(public_path($user->profile_photo_path));
+        }
+
+        // Remove from database
+        $user->profile_photo_path = null;
+        $user->save();
+
+        return back()->with('success', 'Profile photo removed successfully.');
     }
 
     /**

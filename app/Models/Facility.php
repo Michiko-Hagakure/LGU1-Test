@@ -181,4 +181,26 @@ class Facility extends Model
 
         return !$conflictingBooking;
     }
+
+    public function favoritedByUsers()
+    {
+        return $this->hasMany(UserFavorite::class);
+    }
+
+    public function usersFavorited()
+    {
+        return $this->belongsToMany(User::class, 'user_favorites')
+            ->withTimestamps()
+            ->withPivot('favorited_at');
+    }
+
+    public function incrementViewCount()
+    {
+        $this->increment('view_count');
+    }
+
+    public function getFavoritesCountAttribute()
+    {
+        return $this->favoritedByUsers()->count();
+    }
 }

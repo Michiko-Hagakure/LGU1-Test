@@ -3,9 +3,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class BudgetAllocation extends Model
 {
+    use SoftDeletes;
+    
     protected $connection = 'facilities_db';
     protected $table = 'budget_allocations';
 

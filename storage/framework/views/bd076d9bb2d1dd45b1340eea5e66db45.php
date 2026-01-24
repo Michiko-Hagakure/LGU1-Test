@@ -1,9 +1,14 @@
 <?php
+    // Get full user data from database to include profile photo
+    $userId = session('user_id', 1);
+    $adminUser = \App\Models\User::find($userId);
+    
     $admin = (object) [
         'id' => session('user_id', 1),
         'name' => session('user_name', 'Admin User'),
         'email' => session('user_email', 'admin@lgu1.com'),
-        'role' => 'admin'
+        'role' => 'admin',
+        'profile_photo_path' => $adminUser ? $adminUser->profile_photo_path : null
     ];
     
     // Generate initials
@@ -23,8 +28,14 @@
         <button onclick="toggleProfileExpanded()" class="w-full p-gr-md flex items-center justify-between hover:bg-lgu-stroke/30 transition-all duration-300 group">
             <div class="flex items-center gap-gr-sm">
                 <!-- Small Avatar -->
-                <div class="w-10 h-10 bg-lgu-highlight rounded-full flex items-center justify-center shadow-md border-2 border-lgu-button transition-transform duration-300 group-hover:scale-110 flex-shrink-0">
-                    <span class="text-lgu-button-text font-bold text-base"><?php echo e($adminInitials); ?></span>
+                <div class="w-10 h-10 rounded-full shadow-md border-2 border-lgu-button transition-transform duration-300 group-hover:scale-110 flex-shrink-0 overflow-hidden">
+                    <?php if($admin->profile_photo_path): ?>
+                        <img src="<?php echo e(asset($admin->profile_photo_path)); ?>" alt="<?php echo e($admin->name); ?>" class="w-full h-full object-cover">
+                    <?php else: ?>
+                        <div class="w-full h-full bg-lgu-highlight flex items-center justify-center">
+                            <span class="text-lgu-button-text font-bold text-base"><?php echo e($adminInitials); ?></span>
+                        </div>
+                    <?php endif; ?>
                 </div>
                 
                 <!-- Name and Email Label -->
@@ -45,8 +56,14 @@
     <div id="profile-expanded-details" class="hidden transition-all duration-500 ease-in-out">
         <button onclick="toggleProfileExpanded()" class="w-full px-gr-lg pb-gr-lg pt-gr-md text-center hover:bg-lgu-stroke/20 transition-all duration-300 rounded-lg">
             <!-- Large Centered Admin Avatar -->
-            <div class="w-24 h-24 bg-lgu-highlight rounded-full flex items-center justify-center mx-auto mb-gr-md shadow-lg border-4 border-lgu-button">
-                <span class="text-lgu-button-text font-bold text-3xl"><?php echo e($adminInitials); ?></span>
+            <div class="w-24 h-24 rounded-full mx-auto mb-gr-md shadow-lg border-4 border-lgu-button overflow-hidden">
+                <?php if($admin->profile_photo_path): ?>
+                    <img src="<?php echo e(asset($admin->profile_photo_path)); ?>" alt="<?php echo e($admin->name); ?>" class="w-full h-full object-cover">
+                <?php else: ?>
+                    <div class="w-full h-full bg-lgu-highlight flex items-center justify-center">
+                        <span class="text-lgu-button-text font-bold text-3xl"><?php echo e($adminInitials); ?></span>
+                    </div>
+                <?php endif; ?>
             </div>
             
             <!-- Full Profile Information -->
