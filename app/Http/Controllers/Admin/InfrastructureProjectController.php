@@ -342,7 +342,7 @@ class InfrastructureProjectController extends Controller
                     ]);
                     
                     if ($statusData['success']) {
-                        $newStatus = $this->mapApiStatus($statusData['data']['overall_status'] ?? $statusData['data']['status'] ?? 'submitted');
+                        $newStatus = $this->mapApiStatus($statusData['data']['status'] ?? $statusData['data']['overall_status'] ?? 'submitted');
                         
                         DB::connection('facilities_db')
                             ->table('infrastructure_project_requests')
@@ -510,7 +510,7 @@ class InfrastructureProjectController extends Controller
     {
         try {
             $updateData = [
-                'status' => $this->mapApiStatus($statusData['overall_status'] ?? $statusData['status'] ?? 'submitted'),
+                'status' => $this->mapApiStatus($statusData['status'] ?? $statusData['overall_status'] ?? 'submitted'),
                 'updated_at' => now(),
             ];
 
