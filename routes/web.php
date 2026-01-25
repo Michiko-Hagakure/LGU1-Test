@@ -1836,6 +1836,7 @@ Route::middleware(['auth', 'role:citizen', \App\Http\Middleware\CheckSessionTime
     Route::post('/citizen/favorites', [\App\Http\Controllers\Citizen\FavoriteController::class, 'store'])->name('citizen.favorites.store');
     Route::delete('/citizen/favorites/{facilityId}', [\App\Http\Controllers\Citizen\FavoriteController::class, 'destroy'])->name('citizen.favorites.destroy');
     Route::post('/citizen/favorites/toggle', [\App\Http\Controllers\Citizen\FavoriteController::class, 'toggle'])->name('citizen.favorites.toggle');
+    Route::patch('/citizen/favorites/{facilityId}/notifications', [\App\Http\Controllers\Citizen\FavoriteController::class, 'updateNotifications'])->name('citizen.favorites.notifications');
 });
 
 // Facility Routes (shared across roles)
@@ -1889,6 +1890,11 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::post('/profile/password', [ProfileSettingsController::class, 'updatePassword'])->name('profile.password.update');
     Route::post('/profile/lgu-update', [ProfileSettingsController::class, 'updateLguSettings'])->name('profile.lgu.update');
     Route::post('/profile/remove-photo', [ProfileSettingsController::class, 'removeProfilePhoto'])->name('profile.photo.remove');
+
+    // Infrastructure Project Management Integration
+    Route::get('/infrastructure/project-request', [\App\Http\Controllers\Admin\InfrastructureProjectController::class, 'create'])->name('infrastructure.project-request');
+    Route::post('/infrastructure/project-request', [\App\Http\Controllers\Admin\InfrastructureProjectController::class, 'store'])->name('infrastructure.project-request.store');
+    Route::get('/infrastructure/projects', [\App\Http\Controllers\Admin\InfrastructureProjectController::class, 'index'])->name('infrastructure.projects.index');
 
 });
 

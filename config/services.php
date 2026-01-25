@@ -35,4 +35,14 @@ return [
         ],
     ],
 
+    'google_maps' => [
+        'api_key' => env('GOOGLE_MAPS_API_KEY'),
+    ],
+
+    'infrastructure_pm' => [
+        'base_url' => env('INFRASTRUCTURE_PM_URL', 'https://infra-pm.local-government-unit-1-ph.com'),
+        'api_key' => env('INFRASTRUCTURE_PM_API_KEY'),
+        'timeout' => env('INFRASTRUCTURE_PM_TIMEOUT', 30),
+    ],
+
 ];
