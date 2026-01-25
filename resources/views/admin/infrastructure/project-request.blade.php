@@ -185,7 +185,12 @@
                                 {{ $category }}
                             </option>
                             @endforeach
+                            <option value="Other" {{ old('project_category') == 'Other' ? 'selected' : '' }}>Other</option>
                         </select>
+                        <input type="text" id="project_category_other" name="project_category_other" 
+                            value="{{ old('project_category_other') }}" 
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-lgu-highlight focus:border-lgu-highlight transition-colors mt-2 hidden"
+                            placeholder="Please specify category...">
                     </div>
 
                     <div>
@@ -459,6 +464,24 @@ document.addEventListener('DOMContentLoaded', function() {
     
     positionSelect.addEventListener('change', togglePositionOther);
     togglePositionOther(); // Check on page load
+
+    // Other option handling for Project Category
+    const projectCategorySelect = document.getElementById('project_category');
+    const projectCategoryOther = document.getElementById('project_category_other');
+    
+    function toggleProjectCategoryOther() {
+        if (projectCategorySelect.value === 'Other') {
+            projectCategoryOther.classList.remove('hidden');
+            projectCategoryOther.required = true;
+        } else {
+            projectCategoryOther.classList.add('hidden');
+            projectCategoryOther.required = false;
+            projectCategoryOther.value = '';
+        }
+    }
+    
+    projectCategorySelect.addEventListener('change', toggleProjectCategoryOther);
+    toggleProjectCategoryOther(); // Check on page load
 
     // Photo preview handling
     const photosInput = document.getElementById('photosInput');

@@ -44,6 +44,7 @@ class InfrastructureProjectController extends Controller
             'contact_email' => 'nullable|email|max:255',
             'project_title' => 'required|string|max:500',
             'project_category' => 'required|string|max:255',
+            'project_category_other' => 'nullable|required_if:project_category,Other|string|max:255',
             'project_location' => 'nullable|string|max:500',
             'latitude' => 'nullable|numeric|between:-90,90',
             'longitude' => 'nullable|numeric|between:-180,180',
@@ -72,6 +73,11 @@ class InfrastructureProjectController extends Controller
         // Handle "Other" option for position
         if (($validated['position'] ?? '') === 'Other' && !empty($validated['position_other'] ?? '')) {
             $validated['position'] = $validated['position_other'];
+        }
+        
+        // Handle "Other" option for project_category
+        if ($validated['project_category'] === 'Other' && !empty($validated['project_category_other'] ?? '')) {
+            $validated['project_category'] = $validated['project_category_other'];
         }
 
         try {
