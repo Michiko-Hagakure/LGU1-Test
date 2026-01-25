@@ -84,6 +84,10 @@
                         <option value="Barangay Office" {{ old('requesting_office') == "Barangay Office" ? 'selected' : '' }}>Barangay Office</option>
                         <option value="Other" {{ old('requesting_office') == "Other" ? 'selected' : '' }}>Other</option>
                     </select>
+                    <input type="text" id="requesting_office_other" name="requesting_office_other" 
+                        value="{{ old('requesting_office_other') }}" 
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-lgu-highlight focus:border-lgu-highlight transition-colors mt-2 hidden"
+                        placeholder="Please specify office...">
                 </div>
 
                 <div>
@@ -119,6 +123,10 @@
                         <option value="Barangay Treasurer" {{ old('position') == 'Barangay Treasurer' ? 'selected' : '' }}>Barangay Treasurer</option>
                         <option value="Other" {{ old('position') == 'Other' ? 'selected' : '' }}>Other</option>
                     </select>
+                    <input type="text" id="position_other" name="position_other" 
+                        value="{{ old('position_other') }}" 
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-lgu-highlight focus:border-lgu-highlight transition-colors mt-2 hidden"
+                        placeholder="Please specify position...">
                 </div>
 
                 <div>
@@ -418,6 +426,40 @@
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // Other option handling for Requesting Office
+    const requestingOfficeSelect = document.getElementById('requesting_office');
+    const requestingOfficeOther = document.getElementById('requesting_office_other');
+    
+    function toggleRequestingOfficeOther() {
+        if (requestingOfficeSelect.value === 'Other') {
+            requestingOfficeOther.classList.remove('hidden');
+            requestingOfficeOther.required = true;
+        } else {
+            requestingOfficeOther.classList.add('hidden');
+            requestingOfficeOther.required = false;
+            requestingOfficeOther.value = '';
+        }
+    }
+    
+    requestingOfficeSelect.addEventListener('change', toggleRequestingOfficeOther);
+    toggleRequestingOfficeOther(); // Check on page load
+    
+    // Other option handling for Position
+    const positionSelect = document.getElementById('position');
+    const positionOther = document.getElementById('position_other');
+    
+    function togglePositionOther() {
+        if (positionSelect.value === 'Other') {
+            positionOther.classList.remove('hidden');
+        } else {
+            positionOther.classList.add('hidden');
+            positionOther.value = '';
+        }
+    }
+    
+    positionSelect.addEventListener('change', togglePositionOther);
+    togglePositionOther(); // Check on page load
+
     // Photo preview handling
     const photosInput = document.getElementById('photosInput');
     const photosPreview = document.getElementById('photosPreview');

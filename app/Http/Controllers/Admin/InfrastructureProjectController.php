@@ -36,8 +36,10 @@ class InfrastructureProjectController extends Controller
         // Validate required fields
         $validated = $request->validate([
             'requesting_office' => 'required|string|max:255',
+            'requesting_office_other' => 'nullable|required_if:requesting_office,Other|string|max:255',
             'contact_person' => 'required|string|max:255',
             'position' => 'nullable|string|max:255',
+            'position_other' => 'nullable|string|max:255',
             'contact_number' => 'nullable|string|max:20',
             'contact_email' => 'nullable|email|max:255',
             'project_title' => 'required|string|max:500',
@@ -61,6 +63,16 @@ class InfrastructureProjectController extends Controller
             'other_files' => 'nullable|array|max:3',
             'other_files.*' => 'nullable|file|mimes:pdf,doc,docx|max:10240',
         ]);
+
+        // Handle "Other" option for requesting_office
+        if ($validated['requesting_office'] === 'Other' && !empty($validated['requesting_office_other'])) {
+            $validated['requesting_office'] = $validated['requesting_office_other'];
+        }
+        
+        // Handle "Other" option for position
+        if (($validated['position'] ?? '') === 'Other' && !empty($validated['position_other'] ?? '')) {
+            $validated['position'] = $validated['position_other'];
+        }
 
         try {
             // Prepare the request payload
