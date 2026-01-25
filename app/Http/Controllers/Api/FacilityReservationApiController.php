@@ -12,9 +12,22 @@ use Carbon\Carbon;
 class FacilityReservationApiController extends Controller
 {
     /**
+     * ==========================================================================
+     * FACILITY RESERVATION API
+     * ==========================================================================
+     * 
+     * Endpoint: https://facilities.local-government-unit-1-ph.com/api/facility-reservation
+     * 
+     * This API allows external systems to make facility reservations.
+     * All reservations created here will appear in the staff dashboard.
+     * 
+     * ==========================================================================
+     */
+
+    /**
      * Receive facility reservation request from external system
      * 
-     * POST /api/facility-reservation
+     * POST https://facilities.local-government-unit-1-ph.com/api/facility-reservation
      */
     public function store(Request $request)
     {
