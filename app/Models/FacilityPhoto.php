@@ -21,6 +21,8 @@ class FacilityPhoto extends Model
         'photo_path',
         'photo_caption',
         'is_primary',
+        'is_panorama',
+        'panorama_type',
         'display_order',
     ];
 
@@ -31,6 +33,7 @@ class FacilityPhoto extends Model
      */
     protected $casts = [
         'is_primary' => 'boolean',
+        'is_panorama' => 'boolean',
         'display_order' => 'integer',
     ];
 

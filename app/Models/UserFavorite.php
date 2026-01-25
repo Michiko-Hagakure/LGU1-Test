@@ -14,10 +14,16 @@ class UserFavorite extends Model
         'user_id',
         'facility_id',
         'favorited_at',
+        'notify_updates',
+        'notify_availability',
+        'notify_price_changes',
     ];
 
     protected $casts = [
         'favorited_at' => 'datetime',
+        'notify_updates' => 'boolean',
+        'notify_availability' => 'boolean',
+        'notify_price_changes' => 'boolean',
     ];
 
     public function user(): BelongsTo

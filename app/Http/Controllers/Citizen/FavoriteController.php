@@ -36,12 +36,17 @@ class FavoriteController extends Controller
             ->get()
             ->keyBy('facility_id');
         
-        // Attach facility data to each favorite
+        // Attach facility data and notification settings to each favorite
         $favorites = $userFavorites->map(function($favorite) use ($facilitiesData) {
             $facility = $facilitiesData->get($favorite->facility_id);
             if ($facility) {
                 $facility->favorited_at = $favorite->favorited_at;
                 $facility->favorite_id = $favorite->id;
+                $facility->pivot = (object) [
+                    'notify_updates' => $favorite->notify_updates ?? true,
+                    'notify_availability' => $favorite->notify_availability ?? true,
+                    'notify_price_changes' => $favorite->notify_price_changes ?? false,
+                ];
             }
             return $facility;
         })->filter(); // Remove null values
@@ -159,5 +164,31 @@ class FavoriteController extends Controller
                 'facility_name' => $facility->name
             ]);
         }
+    }
+
+    public function updateNotifications(Request $request, $facilityId)
+    {
+        $user = $this->getAuthUser();
+        
+        $request->validate([
+            'notify_updates' => 'boolean',
+            'notify_availability' => 'boolean',
+            'notify_price_changes' => 'boolean',
+        ]);
+
+        $favorite = UserFavorite::where('user_id', $user->id)
+            ->where('facility_id', $facilityId)
+            ->firstOrFail();
+
+        $favorite->update([
+            'notify_updates' => $request->input('notify_updates', true),
+            'notify_availability' => $request->input('notify_availability', true),
+            'notify_price_changes' => $request->input('notify_price_changes', false),
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Notification settings updated successfully.'
+        ]);
     }
 }

@@ -318,6 +318,41 @@ class InfrastructureProjectController extends Controller
     }
 
     /**
+     * Sync all project statuses from Infrastructure PM API
+     */
+    public function syncAllStatuses()
+    {
+        try {
+            $projects = DB::connection('facilities_db')
+                ->table('infrastructure_project_requests')
+                ->whereNotNull('external_project_id')
+                ->get();
+
+            $synced = 0;
+            $failed = 0;
+
+            foreach ($projects as $project) {
+                try {
+                    $statusData = $this->fetchProjectStatus($project->external_project_id);
+                    if ($statusData['success']) {
+                        $this->updateLocalStatus($project->external_project_id, $statusData['data']);
+                        $synced++;
+                    } else {
+                        $failed++;
+                    }
+                } catch (\Exception $e) {
+                    $failed++;
+                }
+            }
+
+            return back()->with('success', "Synced {$synced} project(s). " . ($failed > 0 ? "{$failed} failed." : ''));
+
+        } catch (\Exception $e) {
+            return back()->with('error', 'Failed to sync statuses: ' . $e->getMessage());
+        }
+    }
+
+    /**
      * Get project status from Infrastructure PM API
      */
     public function getStatus($projectId)

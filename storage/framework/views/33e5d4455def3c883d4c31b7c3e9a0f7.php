@@ -20,20 +20,114 @@
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <!-- Main Content -->
         <div class="lg:col-span-2 space-y-6">
-            <!-- Facility Image -->
+            <!-- Facility Image Gallery / Virtual Tour -->
             <div class="bg-white shadow rounded-lg overflow-hidden">
+                <div class="relative">
+                    <?php if($facility->image_path): ?>
+                        <img id="mainImage" src="<?php echo e(asset('storage/' . $facility->image_path)); ?>" 
+                             alt="<?php echo e($facility->name); ?>" 
+                             class="w-full h-96 object-cover">
+                        
+                        <!-- Virtual Tour Badge -->
+                        <div class="absolute top-4 left-4 bg-lgu-button text-lgu-button-text px-4 py-2 rounded-lg shadow-lg font-semibold text-sm flex items-center gap-2">
+                            <i data-lucide="camera" class="w-4 h-4"></i>
+                            <span>Virtual Tour</span>
+                        </div>
+                        
+                        <!-- Navigation Controls -->
+                        <button onclick="previousImage()" class="absolute left-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-gray-800 rounded-full p-3 shadow-lg transition-all">
+                            <i data-lucide="chevron-left" class="w-6 h-6"></i>
+                        </button>
+                        <button onclick="nextImage()" class="absolute right-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-gray-800 rounded-full p-3 shadow-lg transition-all">
+                            <i data-lucide="chevron-right" class="w-6 h-6"></i>
+                        </button>
+                        
+                        <!-- Fullscreen Button -->
+                        <button onclick="openFullscreen()" class="absolute top-4 right-4 bg-white/90 hover:bg-white text-gray-800 rounded-lg px-3 py-2 shadow-lg transition-all flex items-center gap-2">
+                            <i data-lucide="maximize" class="w-4 h-4"></i>
+                            <span class="text-sm font-semibold">Fullscreen</span>
+                        </button>
+                    <?php else: ?>
+                        <div class="w-full h-96 bg-lgu-bg flex items-center justify-center">
+                            <div class="text-center">
+                                <i data-lucide="image-off" class="w-32 h-32 text-gray-300 mx-auto mb-4"></i>
+                                <p class="text-gray-500 font-medium">No photos available</p>
+                            </div>
+                        </div>
+                    <?php endif; ?>
+                </div>
+                
+                <!-- Photo Thumbnails -->
                 <?php if($facility->image_path): ?>
-                    <img src="<?php echo e(asset('storage/' . $facility->image_path)); ?>" 
-                         alt="<?php echo e($facility->name); ?>" 
-                         class="w-full h-96 object-cover">
-                <?php else: ?>
-                    <div class="w-full h-96 bg-lgu-bg flex items-center justify-center">
-                        <svg class="w-32 h-32 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
-                        </svg>
+                <div class="bg-gray-50 p-4">
+                    <div class="flex gap-2 overflow-x-auto">
+                        <button onclick="changeImage(0)" class="thumbnail-btn flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 border-lgu-button transition-all">
+                            <img src="<?php echo e(asset('storage/' . $facility->image_path)); ?>" alt="View 1" class="w-full h-full object-cover">
+                        </button>
+                        <!-- Additional photos would go here if available -->
+                        <?php for($i = 1; $i < 4; $i++): ?>
+                        <button onclick="changeImage(<?php echo e($i); ?>)" class="thumbnail-btn flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 border-gray-300 hover:border-lgu-highlight transition-all opacity-50">
+                            <div class="w-full h-full bg-gray-200 flex items-center justify-center">
+                                <i data-lucide="camera" class="w-6 h-6 text-gray-400"></i>
+                            </div>
+                        </button>
+                        <?php endfor; ?>
                     </div>
+                </div>
                 <?php endif; ?>
             </div>
+
+            <?php $__env->startPush('scripts'); ?>
+            <script>
+            // Virtual Tour / Photo Gallery
+            let currentImageIndex = 0;
+            const images = ['<?php echo e(asset('storage/' . $facility->image_path)); ?>']; // In production, this would be an array of all facility photos
+
+            function changeImage(index) {
+                currentImageIndex = index;
+                const mainImage = document.getElementById('mainImage');
+                if (mainImage && images[index]) {
+                    mainImage.src = images[index];
+                    
+                    // Update thumbnail borders
+                    document.querySelectorAll('.thumbnail-btn').forEach((btn, i) => {
+                        if (i === index) {
+                            btn.classList.remove('border-gray-300');
+                            btn.classList.add('border-lgu-button');
+                            btn.classList.remove('opacity-50');
+                        } else {
+                            btn.classList.add('border-gray-300');
+                            btn.classList.remove('border-lgu-button');
+                            btn.classList.add('opacity-50');
+                        }
+                    });
+                }
+            }
+
+            function previousImage() {
+                currentImageIndex = (currentImageIndex - 1 + images.length) % images.length;
+                changeImage(currentImageIndex);
+            }
+
+            function nextImage() {
+                currentImageIndex = (currentImageIndex + 1) % images.length;
+                changeImage(currentImageIndex);
+            }
+
+            function openFullscreen() {
+                const mainImage = document.getElementById('mainImage');
+                if (mainImage) {
+                    if (mainImage.requestFullscreen) {
+                        mainImage.requestFullscreen();
+                    } else if (mainImage.webkitRequestFullscreen) {
+                        mainImage.webkitRequestFullscreen();
+                    } else if (mainImage.msRequestFullscreen) {
+                        mainImage.msRequestFullscreen();
+                    }
+                }
+            }
+            </script>
+            <?php $__env->stopPush(); ?>
 
             <!-- Facility Description -->
             <div class="bg-white shadow rounded-lg p-6">

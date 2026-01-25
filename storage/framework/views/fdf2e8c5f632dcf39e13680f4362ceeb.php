@@ -21,8 +21,6 @@
                 </svg>
             </button>
             <div id="admin-settings-dropdown" class="hidden absolute right-0 mt-3 w-48 bg-white rounded-md shadow-lg py-1 z-50">
-                <a href="#" class="block px-4 py-2 text-sm text-lgu-paragraph hover:bg-lgu-bg">Help & Support</a>
-                <div class="border-t border-gray-200 my-1"></div>
                 <form method="POST" action="<?php echo e(route('logout')); ?>" class="block" id="adminLogoutForm">
                     <?php echo csrf_field(); ?>
                     <button type="button" onclick="confirmAdminLogout()" class="w-full text-left px-4 py-2 text-sm text-lgu-tertiary hover:bg-lgu-bg">Logout</button>

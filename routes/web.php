@@ -1898,6 +1898,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/infrastructure/projects/{id}', [\App\Http\Controllers\Admin\InfrastructureProjectController::class, 'show'])->name('infrastructure.projects.show');
     Route::get('/infrastructure/projects/{id}/status', [\App\Http\Controllers\Admin\InfrastructureProjectController::class, 'getStatus'])->name('infrastructure.projects.status');
     Route::post('/infrastructure/projects/{id}/refresh', [\App\Http\Controllers\Admin\InfrastructureProjectController::class, 'refreshStatus'])->name('infrastructure.projects.refresh');
+    Route::post('/infrastructure/projects/sync-all', [\App\Http\Controllers\Admin\InfrastructureProjectController::class, 'syncAllStatuses'])->name('infrastructure.projects.sync-all');
 
 });
 
