@@ -330,22 +330,45 @@ class InfrastructureProjectController extends Controller
 
             $synced = 0;
             $failed = 0;
+            $errors = [];
 
             foreach ($projects as $project) {
                 try {
                     $statusData = $this->fetchProjectStatus($project->external_project_id);
+                    
+                    Log::info('Infrastructure PM API response', [
+                        'external_project_id' => $project->external_project_id,
+                        'response' => $statusData,
+                    ]);
+                    
                     if ($statusData['success']) {
-                        $this->updateLocalStatus($project->external_project_id, $statusData['data']);
+                        $newStatus = $this->mapApiStatus($statusData['data']['overall_status'] ?? $statusData['data']['status'] ?? 'submitted');
+                        
+                        DB::connection('facilities_db')
+                            ->table('infrastructure_project_requests')
+                            ->where('external_project_id', $project->external_project_id)
+                            ->update([
+                                'status' => $newStatus,
+                                'updated_at' => now(),
+                            ]);
+                        
                         $synced++;
                     } else {
                         $failed++;
+                        $errors[] = "Project #{$project->external_project_id}: " . ($statusData['message'] ?? 'Unknown error');
                     }
                 } catch (\Exception $e) {
                     $failed++;
+                    $errors[] = "Project #{$project->external_project_id}: " . $e->getMessage();
                 }
             }
 
-            return back()->with('success', "Synced {$synced} project(s). " . ($failed > 0 ? "{$failed} failed." : ''));
+            $message = "Synced {$synced} project(s).";
+            if ($failed > 0) {
+                $message .= " {$failed} failed: " . implode('; ', array_slice($errors, 0, 3));
+            }
+
+            return back()->with($synced > 0 ? 'success' : 'error', $message);
 
         } catch (\Exception $e) {
             return back()->with('error', 'Failed to sync statuses: ' . $e->getMessage());
