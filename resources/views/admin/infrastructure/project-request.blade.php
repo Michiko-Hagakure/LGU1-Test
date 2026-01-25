@@ -5,8 +5,32 @@
 
 @push('styles')
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+<link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
 <style>
     #locationMap { z-index: 0; }
+    #locationMap.fullscreen-map {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100vw !important;
+        height: 100vh !important;
+        z-index: 9999 !important;
+        border-radius: 0 !important;
+    }
+    .fullscreen-btn {
+        background: white;
+        border: 2px solid rgba(0,0,0,0.2);
+        border-radius: 4px;
+        padding: 5px 10px;
+        cursor: pointer;
+        font-size: 14px;
+    }
+    .fullscreen-btn:hover {
+        background: #f4f4f4;
+    }
+    .leaflet-control-geocoder {
+        clear: both;
+    }
 </style>
 @endpush
 
@@ -448,11 +472,13 @@
 
 @push('scripts')
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     // Initialize Leaflet Map
     const defaultLat = {{ old('latitude') ?: '14.5995' }};
     const defaultLng = {{ old('longitude') ?: '120.9842' }};
+    const mapContainer = document.getElementById('locationMap');
     const map = L.map('locationMap').setView([defaultLat, defaultLng], 13);
     
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -461,6 +487,79 @@ document.addEventListener('DOMContentLoaded', function() {
     }).addTo(map);
     
     let marker = null;
+    let isFullscreen = false;
+    
+    // Add Fullscreen Control
+    const FullscreenControl = L.Control.extend({
+        options: { position: 'topright' },
+        onAdd: function(map) {
+            const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
+            const btn = L.DomUtil.create('a', 'fullscreen-btn', container);
+            btn.innerHTML = '⛶';
+            btn.href = '#';
+            btn.title = 'Toggle Fullscreen';
+            btn.style.fontSize = '18px';
+            btn.style.width = '34px';
+            btn.style.height = '34px';
+            btn.style.lineHeight = '34px';
+            btn.style.textAlign = 'center';
+            btn.style.display = 'block';
+            btn.style.textDecoration = 'none';
+            btn.style.color = '#333';
+            
+            L.DomEvent.on(btn, 'click', function(e) {
+                L.DomEvent.preventDefault(e);
+                isFullscreen = !isFullscreen;
+                if (isFullscreen) {
+                    mapContainer.classList.add('fullscreen-map');
+                    btn.innerHTML = '✕';
+                    btn.title = 'Exit Fullscreen';
+                } else {
+                    mapContainer.classList.remove('fullscreen-map');
+                    btn.innerHTML = '⛶';
+                    btn.title = 'Toggle Fullscreen';
+                }
+                map.invalidateSize();
+            });
+            
+            return container;
+        }
+    });
+    map.addControl(new FullscreenControl());
+    
+    // Add Search/Geocoder Control
+    const geocoder = L.Control.geocoder({
+        defaultMarkGeocode: false,
+        placeholder: 'Search for a location...',
+        collapsed: false
+    }).on('markgeocode', function(e) {
+        const latlng = e.geocode.center;
+        const lat = latlng.lat.toFixed(7);
+        const lng = latlng.lng.toFixed(7);
+        
+        // Update form fields
+        document.getElementById('latitude').value = lat;
+        document.getElementById('longitude').value = lng;
+        document.getElementById('project_location').value = e.geocode.name;
+        
+        // Update or create marker
+        if (marker) {
+            marker.setLatLng(latlng);
+        } else {
+            marker = L.marker(latlng).addTo(map);
+        }
+        
+        map.setView(latlng, 16);
+    }).addTo(map);
+    
+    // ESC key to exit fullscreen
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && isFullscreen) {
+            isFullscreen = false;
+            mapContainer.classList.remove('fullscreen-map');
+            map.invalidateSize();
+        }
+    });
     
     // If we have old values, place a marker
     @if(old('latitude') && old('longitude'))
