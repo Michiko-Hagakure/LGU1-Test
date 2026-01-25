@@ -12,15 +12,6 @@ use Carbon\Carbon;
 class FacilityReservationApiController extends Controller
 {
     /**
-     * API Key for authentication
-     * In production, store this in .env file
-     */
-    private function getApiKey()
-    {
-        return config('services.facility_api.key', env('FACILITY_API_KEY', 'your-secure-api-key-here'));
-    }
-
-    /**
      * Receive facility reservation request from external system
      * 
      * POST /api/facility-reservation
@@ -33,18 +24,6 @@ class FacilityReservationApiController extends Controller
                 'ip' => $request->ip(),
                 'source_system' => $request->input('source_system'),
             ]);
-
-            // Validate API key
-            $apiKey = $request->header('X-API-Key') ?? $request->input('api_key');
-            if ($apiKey !== $this->getApiKey()) {
-                Log::warning('Facility Reservation API: Unauthorized access attempt', [
-                    'ip' => $request->ip(),
-                ]);
-                return response()->json([
-                    'status' => 'error',
-                    'message' => 'Unauthorized. Invalid API key.',
-                ], 401);
-            }
 
             // Validate incoming data
             $validated = $request->validate([
