@@ -375,9 +375,9 @@
                         Name
                     </label>
                     <input type="text" id="prepared_by" name="prepared_by" 
-                        value="{{ old('prepared_by', session('user_name')) }}" 
-                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-lgu-highlight focus:border-lgu-highlight transition-colors"
-                        placeholder="Full name of person preparing request">
+                        value="{{ session('user_name') }}" 
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-50 text-gray-700"
+                        readonly>
                 </div>
 
                 <div>
@@ -385,9 +385,9 @@
                         Position
                     </label>
                     <input type="text" id="prepared_position" name="prepared_position" 
-                        value="{{ old('prepared_position') }}" 
-                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-lgu-highlight focus:border-lgu-highlight transition-colors"
-                        placeholder="e.g., Engineer, Admin Staff">
+                        value="{{ session('user_role', 'Staff') }}" 
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-50 text-gray-700"
+                        readonly>
                 </div>
             </div>
         </div>
