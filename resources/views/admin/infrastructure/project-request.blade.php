@@ -479,26 +479,84 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // SweetAlert2 Date Picker for Requested Start Date
+    // Custom Calendar Picker for Requested Start Date
     const dateDisplay = document.getElementById('requested_start_date_display');
     const dateHidden = document.getElementById('requested_start_date');
+    let currentMonth, currentYear, selectedDate = null;
     
-    dateDisplay.addEventListener('click', function() {
-        // Get tomorrow's date as minimum
-        const tomorrow = new Date();
+    const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+    const days = ['SU', 'MO', 'TU', 'WE', 'TH', 'FR', 'SA'];
+    
+    function generateCalendar(month, year) {
+        const firstDay = new Date(year, month, 1).getDay();
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const tomorrow = new Date(today);
         tomorrow.setDate(tomorrow.getDate() + 1);
-        const minDate = tomorrow.toISOString().split('T')[0];
+        
+        let html = `
+            <div style="text-align: center; padding: 10px 0;">
+                <div style="display: flex; align-items: center; justify-content: center; gap: 15px; margin-bottom: 20px;">
+                    <button type="button" id="prevMonth" style="width: 36px; height: 36px; border: 1px solid #ddd; border-radius: 50%; background: #fff; cursor: pointer; font-size: 18px;">‹</button>
+                    <span style="font-size: 18px; font-weight: 600; min-width: 150px;">${months[month]} ${year}</span>
+                    <button type="button" id="nextMonth" style="width: 36px; height: 36px; border: 1px solid #ddd; border-radius: 50%; background: #fff; cursor: pointer; font-size: 18px;">›</button>
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; margin-bottom: 10px;">
+                    ${days.map(d => `<div style="font-size: 12px; font-weight: 600; color: #666; padding: 8px;">${d}</div>`).join('')}
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px;">`;
+        
+        // Empty cells before first day
+        for (let i = 0; i < firstDay; i++) {
+            html += `<div style="padding: 10px;"></div>`;
+        }
+        
+        // Days of month
+        for (let day = 1; day <= daysInMonth; day++) {
+            const dateObj = new Date(year, month, day);
+            const isPast = dateObj < tomorrow;
+            const isSelected = selectedDate && selectedDate.getTime() === dateObj.getTime();
+            const isToday = dateObj.toDateString() === today.toDateString();
+            
+            let style = 'width: 36px; height: 36px; border-radius: 50%; border: none; cursor: pointer; font-size: 14px; margin: auto;';
+            if (isPast) {
+                style += ' color: #ccc; cursor: not-allowed; background: transparent;';
+            } else if (isSelected) {
+                style += ' background: #1a5632; color: white;';
+            } else if (isToday) {
+                style += ' background: #e8f5e9; color: #1a5632; font-weight: bold;';
+            } else {
+                style += ' background: transparent; color: #333;';
+            }
+            
+            html += `<button type="button" class="cal-day" data-day="${day}" ${isPast ? 'disabled' : ''} style="${style}">${day}</button>`;
+        }
+        
+        html += `</div></div>`;
+        return html;
+    }
+    
+    function showCalendarModal() {
+        const existing = dateHidden.value ? new Date(dateHidden.value + 'T00:00:00') : null;
+        if (existing) selectedDate = existing;
+        
+        const now = new Date();
+        currentMonth = selectedDate ? selectedDate.getMonth() : now.getMonth();
+        currentYear = selectedDate ? selectedDate.getFullYear() : now.getFullYear();
         
         Swal.fire({
             title: 'Select Start Date',
-            html: `<input type="date" id="swal-date" class="swal2-input" min="${minDate}" value="${dateHidden.value || ''}" style="width: 100%; padding: 10px; font-size: 16px;">`,
+            html: generateCalendar(currentMonth, currentYear),
             showCancelButton: true,
-            confirmButtonText: 'Select',
+            confirmButtonText: 'Confirm',
             confirmButtonColor: '#1a5632',
             cancelButtonText: 'Cancel',
-            focusConfirm: false,
+            width: 380,
+            didOpen: () => {
+                attachCalendarEvents();
+            },
             preConfirm: () => {
-                const selectedDate = document.getElementById('swal-date').value;
                 if (!selectedDate) {
                     Swal.showValidationMessage('Please select a date');
                     return false;
@@ -507,14 +565,42 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }).then((result) => {
             if (result.isConfirmed && result.value) {
-                dateHidden.value = result.value;
-                // Format display date
-                const date = new Date(result.value + 'T00:00:00');
-                const options = { year: 'numeric', month: 'long', day: 'numeric' };
-                dateDisplay.value = date.toLocaleDateString('en-US', options);
+                const d = result.value;
+                const yyyy = d.getFullYear();
+                const mm = String(d.getMonth() + 1).padStart(2, '0');
+                const dd = String(d.getDate()).padStart(2, '0');
+                dateHidden.value = `${yyyy}-${mm}-${dd}`;
+                dateDisplay.value = d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
             }
         });
-    });
+    }
+    
+    function attachCalendarEvents() {
+        document.getElementById('prevMonth')?.addEventListener('click', () => {
+            currentMonth--;
+            if (currentMonth < 0) { currentMonth = 11; currentYear--; }
+            Swal.update({ html: generateCalendar(currentMonth, currentYear) });
+            attachCalendarEvents();
+        });
+        
+        document.getElementById('nextMonth')?.addEventListener('click', () => {
+            currentMonth++;
+            if (currentMonth > 11) { currentMonth = 0; currentYear++; }
+            Swal.update({ html: generateCalendar(currentMonth, currentYear) });
+            attachCalendarEvents();
+        });
+        
+        document.querySelectorAll('.cal-day:not([disabled])').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const day = parseInt(btn.dataset.day);
+                selectedDate = new Date(currentYear, currentMonth, day);
+                Swal.update({ html: generateCalendar(currentMonth, currentYear) });
+                attachCalendarEvents();
+            });
+        });
+    }
+    
+    dateDisplay.addEventListener('click', showCalendarModal);
     // Initialize Leaflet Map
     const defaultLat = {{ old('latitude') ?: '14.5995' }};
     const defaultLng = {{ old('longitude') ?: '120.9842' }};
