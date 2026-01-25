@@ -527,11 +527,18 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     map.addControl(new FullscreenControl());
     
-    // Add Search/Geocoder Control
+    // Add Search/Geocoder Control with Philippines bias
     const geocoder = L.Control.geocoder({
         defaultMarkGeocode: false,
-        placeholder: 'Search for a location...',
-        collapsed: false
+        placeholder: 'Search location in Philippines...',
+        collapsed: false,
+        geocoder: L.Control.Geocoder.nominatim({
+            geocodingQueryParams: {
+                countrycodes: 'ph',
+                viewbox: '116.9,4.5,127.0,21.2',
+                bounded: 0
+            }
+        })
     }).on('markgeocode', function(e) {
         const latlng = e.geocode.center;
         const lat = latlng.lat.toFixed(7);
