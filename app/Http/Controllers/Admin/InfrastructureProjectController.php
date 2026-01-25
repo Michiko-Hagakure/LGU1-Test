@@ -316,4 +316,174 @@ class InfrastructureProjectController extends Controller
 
         return view('admin.infrastructure.index', compact('requests'));
     }
+
+    /**
+     * Get project status from Infrastructure PM API
+     */
+    public function getStatus($projectId)
+    {
+        try {
+            $statusData = $this->fetchProjectStatus($projectId);
+
+            if ($statusData['success']) {
+                // Update local record with latest status
+                $this->updateLocalStatus($projectId, $statusData['data']);
+
+                return response()->json($statusData);
+            }
+
+            return response()->json($statusData, 400);
+
+        } catch (\Exception $e) {
+            Log::error('Failed to fetch project status', [
+                'project_id' => $projectId,
+                'error' => $e->getMessage(),
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to fetch project status: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Refresh status for a project and return updated view
+     */
+    public function refreshStatus($projectId)
+    {
+        try {
+            $statusData = $this->fetchProjectStatus($projectId);
+
+            if ($statusData['success']) {
+                $this->updateLocalStatus($projectId, $statusData['data']);
+
+                return back()->with('success', 'Project status updated successfully.');
+            }
+
+            return back()->with('error', $statusData['message'] ?? 'Failed to refresh status.');
+
+        } catch (\Exception $e) {
+            return back()->with('error', 'Failed to refresh status: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Show detailed project status
+     */
+    public function show($id)
+    {
+        try {
+            // Get local record
+            $project = DB::connection('facilities_db')
+                ->table('infrastructure_project_requests')
+                ->where('id', $id)
+                ->first();
+
+            if (!$project) {
+                return redirect()
+                    ->route('admin.infrastructure.projects.index')
+                    ->with('error', 'Project not found.');
+            }
+
+            // Fetch latest status from API if we have an external ID
+            $apiStatus = null;
+            if ($project->external_project_id) {
+                $statusResponse = $this->fetchProjectStatus($project->external_project_id);
+                if ($statusResponse['success']) {
+                    $apiStatus = $statusResponse['data'];
+                    $this->updateLocalStatus($project->external_project_id, $apiStatus);
+                }
+            }
+
+            return view('admin.infrastructure.show', compact('project', 'apiStatus'));
+
+        } catch (\Exception $e) {
+            Log::error('Failed to show project details', [
+                'id' => $id,
+                'error' => $e->getMessage(),
+            ]);
+
+            return redirect()
+                ->route('admin.infrastructure.projects.index')
+                ->with('error', 'Failed to load project details.');
+        }
+    }
+
+    /**
+     * Fetch project status from Infrastructure PM API
+     */
+    private function fetchProjectStatus($projectId): array
+    {
+        $baseUrl = config('services.infrastructure_pm.base_url');
+        $timeout = config('services.infrastructure_pm.timeout', 30);
+        $apiKey = config('services.infrastructure_pm.api_key');
+
+        $url = rtrim($baseUrl, '/') . '/api/integrations/ProjectRequestStatus.php';
+
+        $headers = [
+            'Accept' => 'application/json',
+        ];
+
+        if ($apiKey) {
+            $headers['Authorization'] = 'Bearer ' . $apiKey;
+        }
+
+        $response = Http::timeout($timeout)
+            ->withHeaders($headers)
+            ->get($url, ['project_id' => $projectId]);
+
+        if ($response->successful()) {
+            return $response->json();
+        }
+
+        $errorData = $response->json();
+        
+        return [
+            'success' => false,
+            'message' => $errorData['message'] ?? 'Failed to fetch status: ' . $response->status(),
+        ];
+    }
+
+    /**
+     * Update local record with status from API
+     */
+    private function updateLocalStatus($externalProjectId, array $statusData): void
+    {
+        try {
+            $updateData = [
+                'status' => $this->mapApiStatus($statusData['overall_status'] ?? $statusData['status'] ?? 'submitted'),
+                'updated_at' => now(),
+            ];
+
+            DB::connection('facilities_db')
+                ->table('infrastructure_project_requests')
+                ->where('external_project_id', $externalProjectId)
+                ->update($updateData);
+
+        } catch (\Exception $e) {
+            Log::warning('Failed to update local project status', [
+                'external_project_id' => $externalProjectId,
+                'error' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    /**
+     * Map API status to local status enum
+     */
+    private function mapApiStatus(string $apiStatus): string
+    {
+        $statusMap = [
+            'pending' => 'submitted',
+            'received' => 'received',
+            'under_review' => 'under_review',
+            'approved' => 'approved',
+            'rejected' => 'rejected',
+            'in_progress' => 'in_progress',
+            'completed' => 'completed',
+        ];
+
+        return $statusMap[strtolower($apiStatus)] ?? 'submitted';
+    }
 }

@@ -41,7 +41,7 @@
                         <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Budget</th>
                         <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Status</th>
                         <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Submitted</th>
-                        <th class="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">External ID</th>
+                        <th class="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">Actions</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-200">
@@ -93,12 +93,15 @@
                         <td class="px-6 py-4 text-sm text-gray-600">
                             {{ \Carbon\Carbon::parse($request->created_at)->format('M d, Y') }}
                         </td>
-                        <td class="px-6 py-4 text-center text-sm">
-                            @if($request->external_project_id)
-                            <span class="font-mono text-gray-900">#{{ $request->external_project_id }}</span>
-                            @else
-                            <span class="text-gray-400">Pending</span>
-                            @endif
+                        <td class="px-6 py-4 text-center">
+                            <div class="flex items-center justify-center gap-2">
+                                <a href="{{ route('admin.infrastructure.projects.show', $request->id) }}" class="px-3 py-1.5 bg-lgu-highlight text-white text-xs font-medium rounded-lg hover:bg-lgu-stroke transition-colors">
+                                    View
+                                </a>
+                                @if($request->external_project_id)
+                                <span class="text-xs font-mono text-gray-500">#{{ $request->external_project_id }}</span>
+                                @endif
+                            </div>
                         </td>
                     </tr>
                     @endforeach
