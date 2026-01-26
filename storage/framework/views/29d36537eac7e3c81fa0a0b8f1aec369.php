@@ -1,8 +1,8 @@
 
 
 <?php $__env->startSection('content'); ?>
-<!-- Admin Sidebar -->
-<div id="admin-sidebar" class="fixed left-0 top-0 h-full w-72 bg-lgu-headline shadow-2xl transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out z-50 overflow-hidden flex flex-col">
+<!-- Staff Sidebar -->
+<div id="staff-sidebar" class="fixed left-0 top-0 h-full w-72 bg-lgu-headline shadow-2xl transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out z-50 overflow-hidden flex flex-col">
     <!-- Sidebar Header -->
     <div class="flex items-center justify-between p-gr-md border-b border-lgu-stroke">
         <div class="flex items-center gap-gr-sm">
@@ -15,31 +15,101 @@
             </div>
         </div>
         <div class="relative">
-            <button id="admin-settings-button" class="p-2 text-white">
+            <button id="staff-settings-button" class="p-2 text-white">
                 <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
                     <path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"></path>
                 </svg>
             </button>
-            <div id="admin-settings-dropdown" class="hidden absolute right-0 mt-3 w-48 bg-white rounded-md shadow-lg py-1 z-50">
-                <form method="POST" action="<?php echo e(route('logout')); ?>" class="block" id="adminLogoutForm">
+            <div id="staff-settings-dropdown" class="hidden absolute right-0 mt-3 w-48 bg-white rounded-md shadow-lg py-1 z-50">
+                <a href="#" class="block px-4 py-2 text-sm text-lgu-paragraph hover:bg-lgu-bg">Help & Support</a>
+                <div class="border-t border-gray-200 my-1"></div>
+                <form method="POST" action="<?php echo e(route('logout')); ?>" class="block" id="staffLogoutForm">
                     <?php echo csrf_field(); ?>
-                    <button type="button" onclick="confirmAdminLogout()" class="w-full text-left px-4 py-2 text-sm text-lgu-tertiary hover:bg-lgu-bg">Logout</button>
+                    <button type="button" onclick="confirmStaffLogout()" class="w-full text-left px-4 py-2 text-sm text-lgu-tertiary hover:bg-lgu-bg">Logout</button>
                 </form>
             </div>
         </div>
         <!-- Close button for mobile -->
-        <button id="admin-sidebar-close" class="lg:hidden text-white hover:text-lgu-highlight">
+        <button id="staff-sidebar-close" class="lg:hidden text-white hover:text-lgu-highlight">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
             </svg>
         </button>
     </div>
 
-    <?php echo $__env->make('components.sidebar.admin-profile', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
+    <!-- Staff Profile Section with Expandable Details -->
+    <div class="border-b border-lgu-stroke">
+        <?php
+            $staff = (object) [
+                'id' => session('user_id', 1),
+                'name' => session('user_name', 'Staff User'),
+                'email' => session('user_email', 'staff@lgu1.com'),
+                'role' => 'staff'
+            ];
+            
+            // Generate initials
+            $nameParts = explode(' ', $staff->name);
+            $firstName = $nameParts[0] ?? 'S';
+            $lastName = end($nameParts);
+            $staffInitials = strtoupper(
+                substr($firstName, 0, 1) . 
+                (($lastName !== $firstName) ? substr($lastName, 0, 1) : 'T')
+            );
+        ?>
+        
+        <!-- Compact Profile Header (Collapsed State) -->
+        <div id="profile-compact" class="transition-all duration-300">
+            <button onclick="toggleProfileExpanded()" class="w-full p-gr-md flex items-center justify-between hover:bg-lgu-stroke/30 transition-all duration-300 group">
+                <div class="flex items-center gap-gr-sm">
+                    <!-- Small Avatar -->
+                    <div class="w-10 h-10 bg-lgu-highlight rounded-full flex items-center justify-center shadow-md border-2 border-lgu-button transition-transform duration-300 group-hover:scale-110 flex-shrink-0">
+                        <span class="text-lgu-button-text font-bold text-base"><?php echo e($staffInitials); ?></span>
+                    </div>
+                    
+                    <!-- Name and Email Label -->
+                    <div class="text-left min-w-0">
+                        <h3 class="text-white font-semibold text-small leading-tight truncate"><?php echo e($staff->name); ?></h3>
+                        <p class="text-gray-400 text-caption leading-tight truncate"><?php echo e($staff->email); ?></p>
+                    </div>
+                </div>
+                
+                <!-- Dropdown Arrow -->
+                <svg class="w-5 h-5 text-gray-400 transition-transform duration-300" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                </svg>
+            </button>
+        </div>
+        
+        <!-- Expandable Full Profile Details (Maximized State) -->
+        <div id="profile-expanded-details" class="hidden transition-all duration-500 ease-in-out">
+            <button onclick="toggleProfileExpanded()" class="w-full px-gr-lg pb-gr-lg pt-gr-md text-center hover:bg-lgu-stroke/20 transition-all duration-300 rounded-lg">
+                <!-- Large Centered Staff Avatar -->
+                <div class="w-24 h-24 bg-lgu-highlight rounded-full flex items-center justify-center mx-auto mb-gr-md shadow-lg border-4 border-lgu-button">
+                    <span class="text-lgu-button-text font-bold text-3xl"><?php echo e($staffInitials); ?></span>
+                </div>
+                
+                <!-- Full Profile Information -->
+                <div class="space-y-gr-xs mb-gr-md">
+                    <h3 class="text-white font-bold text-body leading-tight"><?php echo e($staff->name); ?></h3>
+                    <p class="text-gray-300 text-small break-all"><?php echo e($staff->email); ?></p>
+                    
+                    <!-- Staff Role Badge -->
+                    <div class="flex items-center justify-center mt-gr-xs">
+                        <div class="flex items-center px-gr-sm py-gr-xs rounded-full bg-blue-900/40">
+                            <svg class="w-4 h-4 text-blue-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                            </svg>
+                            <span class="text-blue-400 text-caption font-semibold">Staff Member</span>
+                        </div>
+                    </div>
+                </div>
+            </button>
+        </div>
+    </div>
 
     <!-- Navigation Menu -->
     <nav class="flex-1 overflow-y-auto overflow-x-hidden py-gr-md">
-        <?php echo $__env->make('components.sidebar.admin-menu', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
+        <?php echo $__env->make('components.sidebar.staff-menu', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
     </nav>
 </div>
 
@@ -59,8 +129,8 @@
         <div class="flex items-center justify-between h-16 px-6">
             <!-- Page Title -->
             <div class="flex-1">
-                <h1 class="text-2xl font-bold text-lgu-headline"><?php echo $__env->yieldContent('page-title', 'Admin Dashboard'); ?></h1>
-                <p class="text-sm text-lgu-paragraph"><?php echo $__env->yieldContent('page-subtitle', 'Manage bookings and payments'); ?></p>
+                <h1 class="text-2xl font-bold text-lgu-headline"><?php echo $__env->yieldContent('page-title', 'Staff Dashboard'); ?></h1>
+                <p class="text-sm text-lgu-paragraph"><?php echo $__env->yieldContent('page-subtitle', 'Manage bookings and verifications'); ?></p>
             </div>
 
             <!-- Right Side Actions -->
@@ -88,14 +158,12 @@
     <footer class="bg-white border-t border-lgu-stroke py-gr-md px-gr-lg">
         <div class="flex justify-between items-center text-small text-lgu-paragraph">
             <p>&copy; <?php echo e(date('Y')); ?> LGU Facility Reservation System. All rights reserved.</p>
-            <p class="text-caption">Admin Portal</p>
+            <p class="text-caption">Staff Portal</p>
         </div>
     </footer>
 </div>
 
-<?php echo $__env->make('components.sidebar.admin-script', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
-
-<?php $__env->stopSection(); ?>
+<?php echo $__env->make('components.sidebar.staff-script', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
 
 <?php $__env->startPush('scripts'); ?>
 <script>
@@ -233,4 +301,7 @@ setInterval(updateClock, 1000);
 </script>
 <?php $__env->stopPush(); ?>
 
-<?php echo $__env->make('layouts.master', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH D:\xampp\htdocs\LGU-PUBLIC-FACILITIES-RESERVATION-SYSTEM\resources\views/layouts/admin.blade.php ENDPATH**/ ?>
+<?php $__env->stopSection(); ?>
+
+
+<?php echo $__env->make('layouts.master', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH D:\xampp\htdocs\LGU-PUBLIC-FACILITIES-RESERVATION-SYSTEM\resources\views/layouts/staff.blade.php ENDPATH**/ ?>

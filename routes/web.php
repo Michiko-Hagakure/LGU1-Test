@@ -22,9 +22,16 @@ use App\Http\Controllers\Admin\SystemSettingsController;
 */
 
 // Root Route - Redirect to Login
+
+/*
 Route::get('/', function () {
     return redirect()->route('login');
 });
+*/
+Route::get('/', function () {
+    return view('welcome');
+});
+
 
 // CSRF Token Refresh Endpoint - For preventing stale token issues
 Route::get('/csrf-token', function () {

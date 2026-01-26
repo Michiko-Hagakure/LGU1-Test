@@ -137,7 +137,7 @@
                         <th class="px-gr-md py-gr-sm text-left text-caption font-semibold text-gray-700">Amount</th>
                         <th class="px-gr-md py-gr-sm text-left text-caption font-semibold text-gray-700">Payment Method</th>
                         <th class="px-gr-md py-gr-sm text-left text-caption font-semibold text-gray-700">Status</th>
-                        <th class="px-gr-md py-gr-sm text-left text-caption font-semibold text-gray-700">AI Audit</th>
+                        <th class="px-gr-md py-gr-sm text-left text-caption font-semibold text-gray-700">Scan Audit</th>
                         <th class="px-gr-md py-gr-sm text-left text-caption font-semibold text-gray-700">Actions</th>
                     </tr>
                 </thead>

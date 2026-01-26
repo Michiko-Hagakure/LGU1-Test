@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="<?php echo e(str_replace('_', '-', app()->getLocale())); ?>">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -16,7 +16,7 @@
             position: fixed;
             top: 0; left: 0;
             width: 100%; height: 100%;
-            background-image: url("{{ asset('Images/BG_Facilities.png') }}");
+            background-image: url("<?php echo e(asset('Images/BG_Facilities.png')); ?>");
             background-size: cover;
             background-position: center;
             z-index: -1;
@@ -62,7 +62,7 @@
     <nav>
         <div class="max-w-7xl mx-auto px-6 h-20 flex justify-between items-center relative z-[110]">
             <a href="/" class="flex items-center gap-3 group">
-                <img src="{{ asset('Images/logo.png') }}" alt="Logo" class="h-10 w-10 object-contain drop-shadow-lg group-hover:rotate-12 transition">
+                <img src="<?php echo e(asset('Images/logo.png')); ?>" alt="Logo" class="h-10 w-10 object-contain drop-shadow-lg group-hover:rotate-12 transition">
                 <span class="font-bold text-2xl tracking-tighter uppercase">LGU<span class="text-orange-500">Facility Reservation</span></span>
             </a>
             <div class="hidden lg:flex gap-10 text-[10px] font-black tracking-[0.25em]">
@@ -71,8 +71,8 @@
                 <a href="#contact" class="hover:text-orange-500 transition">CONTACT US</a>
             </div>
             <div class="hidden md:flex gap-6 items-center">
-                <a href="{{ route('login') }}" class="text-sm font-bold hover:text-orange-400 transition uppercase tracking-tighter">Log in</a>
-                <a href="{{ route('register') }}" class="bg-orange-600 text-white px-8 py-3 rounded-full text-sm font-bold hover:bg-orange-700 transition shadow-xl shadow-orange-900/40 uppercase">Get Started</a>
+                <a href="<?php echo e(route('login')); ?>" class="text-sm font-bold hover:text-orange-400 transition uppercase tracking-tighter">Log in</a>
+                <a href="<?php echo e(route('register')); ?>" class="bg-orange-600 text-white px-8 py-3 rounded-full text-sm font-bold hover:bg-orange-700 transition shadow-xl shadow-orange-900/40 uppercase">Get Started</a>
             </div>
             <button id="menu-btn" class="lg:hidden text-white p-2">
                 <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -85,8 +85,8 @@
             <a href="#facilities" class="mobile-link text-2xl font-black tracking-widest uppercase">FACILITIES</a>
             <a href="#contact" class="mobile-link text-2xl font-black tracking-widest uppercase">CONTACT</a>
             <hr class="w-16 border-white/20">
-            <a href="{{ route('login') }}" class="mobile-link text-xl font-bold uppercase">LOG IN</a>
-            <a href="{{ route('register') }}" class="w-full max-w-xs bg-orange-600 text-white py-5 rounded-2xl font-black text-center text-lg">REGISTER</a>
+            <a href="<?php echo e(route('login')); ?>" class="mobile-link text-xl font-bold uppercase">LOG IN</a>
+            <a href="<?php echo e(route('register')); ?>" class="w-full max-w-xs bg-orange-600 text-white py-5 rounded-2xl font-black text-center text-lg">REGISTER</a>
         </div>
     </nav>
 
@@ -119,7 +119,7 @@
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                     <div class="facility-card relative group rounded-[2.5rem] overflow-hidden aspect-[4/5] bg-slate-900 shadow-2xl">
-                        <img src="{{ asset('Images/Buena_Park_Caloocan.jpg') }}" class="w-full h-full object-cover transition duration-700">
+                        <img src="<?php echo e(asset('Images/Buena_Park_Caloocan.jpg')); ?>" class="w-full h-full object-cover transition duration-700">
                         <div class="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent opacity-90 transition duration-500"></div>
                         <div class="absolute bottom-0 left-0 p-8">
                             <h3 class="text-2xl font-bold mb-1">Buena Park</h3>
@@ -128,7 +128,7 @@
                         </div>
                     </div>
                     <div class="facility-card relative group rounded-[2.5rem] overflow-hidden aspect-[4/5] bg-slate-900 shadow-2xl">
-                        <img src="{{ asset('Images/Caloocan_Sports_Complex.jpg') }}" class="w-full h-full object-cover transition duration-700">
+                        <img src="<?php echo e(asset('Images/Caloocan_Sports_Complex.jpg')); ?>" class="w-full h-full object-cover transition duration-700">
                         <div class="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent opacity-90 transition duration-500"></div>
                         <div class="absolute bottom-0 left-0 p-8">
                             <h3 class="text-2xl font-bold mb-1">Sports Complex</h3>
@@ -137,7 +137,7 @@
                         </div>
                     </div>
                     <div class="facility-card relative group rounded-[2.5rem] overflow-hidden aspect-[4/5] bg-slate-900 shadow-2xl">
-                        <img src="{{ asset('Images/MICE_Center_QC.jpg') }}" class="w-full h-full object-cover transition duration-700">
+                        <img src="<?php echo e(asset('Images/MICE_Center_QC.jpg')); ?>" class="w-full h-full object-cover transition duration-700">
                         <div class="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent opacity-90 transition duration-500"></div>
                         <div class="absolute bottom-0 left-0 p-8">
                             <h3 class="text-2xl font-bold mb-1">M.I.C.E. Center</h3>
@@ -289,4 +289,4 @@
         });
     </script>
 </body>
-</html>
+</html><?php /**PATH D:\xampp\htdocs\LGU-PUBLIC-FACILITIES-RESERVATION-SYSTEM\resources\views/welcome.blade.php ENDPATH**/ ?>
