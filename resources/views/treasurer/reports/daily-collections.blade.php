@@ -8,7 +8,7 @@
 <div class="space-y-gr-lg">
     <!-- Date Filter & Export -->
     <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-        <form method="GET" action="{{ route('treasurer.reports.daily-collections') }}" class="flex flex-col md:flex-row items-end gap-4">
+        <form method="GET" action="{{ URL::signedRoute('treasurer.reports.daily-collections') }}" class="flex flex-col md:flex-row items-end gap-4">
             <div class="flex-1">
                 <label for="date" class="block text-small font-semibold text-gray-700 mb-gr-xs">Select Date</label>
                 <input type="date" 
@@ -26,7 +26,7 @@
             </button>
             
             @if($payments->count() > 0)
-            <a href="{{ route('treasurer.reports.daily-collections.export', ['date' => $selectedDate->format('Y-m-d')]) }}" 
+            <a href="{{ URL::signedRoute('treasurer.reports.daily-collections.export', ['date' => $selectedDate->format('Y-m-d')]) }}" 
                class="bg-green-600 text-white px-6 py-2.5 rounded-lg hover:bg-green-700 transition-colors font-semibold inline-flex items-center gap-2">
                 <i data-lucide="download" class="w-4 h-4"></i>
                 Export PDF

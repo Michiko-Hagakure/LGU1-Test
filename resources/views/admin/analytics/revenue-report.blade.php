@@ -14,7 +14,7 @@
             
             <!-- Date Range Filter & Actions -->
             <div class="flex flex-wrap items-end gap-3">
-                <form method="GET" action="{{ route('admin.analytics.revenue-report') }}" class="flex flex-wrap items-end gap-3">
+                <form method="GET" action="{{ URL::signedRoute('admin.analytics.revenue-report') }}" class="flex flex-wrap items-end gap-3">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
                         <input type="date" name="start_date" value="{{ $startDate }}" 

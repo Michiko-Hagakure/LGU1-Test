@@ -7,7 +7,7 @@
     <!-- Header -->
     <div class="mb-8">
         <div class="flex items-center gap-3 mb-3">
-            <a href="{{ route('citizen.payment-slips.show', $paymentSlip->id) }}" class="text-gray-500 hover:text-gray-700">
+            <a href="{{ URL::signedRoute('citizen.payment-slips.show', $paymentSlip->id) }}" class="text-gray-500 hover:text-gray-700">
                 <i data-lucide="arrow-left" class="w-5 h-5"></i>
             </a>
             <h1 class="text-3xl font-bold text-gray-900">Cashless Payment</h1>
@@ -99,7 +99,7 @@
             </div>
 
             <!-- Reference Number Form -->
-            <form action="{{ route('citizen.payment-slips.submit-cashless', $paymentSlip->id) }}" method="POST" id="payment-form">
+            <form action="{{ URL::signedRoute('citizen.payment-slips.submit-cashless', $paymentSlip->id) }}" method="POST" id="payment-form">
                 @csrf
                 <input type="hidden" name="payment_channel" id="payment_channel" value="">
                 
@@ -134,7 +134,7 @@
 
                 <div class="flex gap-4">
                     <button type="button" 
-                            onclick="window.location.href='{{ route('citizen.payment-slips.show', $paymentSlip->id) }}'"
+                            onclick="window.location.href='{{ URL::signedRoute('citizen.payment-slips.show', $paymentSlip->id) }}'"
                             class="flex-1 bg-gray-200 text-gray-700 font-bold py-4 rounded-lg hover:bg-gray-300 transition-all">
                         Cancel
                     </button>

@@ -27,7 +27,7 @@
 
 <!-- Filters and Search -->
 <div class="bg-white rounded-xl shadow-md p-gr-md mb-gr-md">
-    <form method="GET" action="{{ route('treasurer.payment-verification') }}" class="space-y-gr-sm">
+    <form method="GET" action="{{ URL::signedRoute('treasurer.payment-verification') }}" class="space-y-gr-sm">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-gr-sm">
             <!-- Status Filter -->
             <div>
@@ -59,7 +59,7 @@
             <button type="submit" class="px-gr-md py-gr-xs bg-lgu-button hover:bg-lgu-highlight text-white font-semibold rounded-lg transition-all shadow-sm hover:shadow-md text-body">
                 Apply Filters
             </button>
-            <a href="{{ route('treasurer.payment-verification') }}" class="px-gr-md py-gr-xs bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold rounded-lg transition-all text-body">
+            <a href="{{ URL::signedRoute('treasurer.payment-verification') }}" class="px-gr-md py-gr-xs bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold rounded-lg transition-all text-body">
                 Reset
             </a>
         </div>
@@ -118,7 +118,7 @@
                             $isOverdue = $slip->status === 'unpaid' && $deadline->isPast();
                             $isUrgent = $slip->status === 'unpaid' && $deadline->diffInHours(now(), false) <= 24 && !$isOverdue;
                         @endphp
-                        <tr class="hover:bg-gray-50 transition-colors cursor-pointer {{ $isOverdue ? 'bg-red-50/50' : '' }}" onclick="window.location='{{ route('treasurer.payment-slips.show', $slip->id) }}'">
+                        <tr class="hover:bg-gray-50 transition-colors cursor-pointer {{ $isOverdue ? 'bg-red-50/50' : '' }}" onclick="window.location='{{ URL::signedRoute('treasurer.payment-slips.show', $slip->id) }}'">
                             <td class="px-gr-sm py-gr-sm whitespace-nowrap">
                                 <span class="text-body font-bold text-lgu-button">{{ $slip->slip_number }}</span>
                             </td>
@@ -157,7 +157,7 @@
                                 @endif
                             </td>
                             <td class="px-gr-sm py-gr-sm whitespace-nowrap">
-                                <a href="{{ route('treasurer.payment-slips.show', $slip->id) }}" class="inline-flex items-center text-body font-semibold text-lgu-button hover:text-lgu-highlight transition-colors" onclick="event.stopPropagation()">
+                                <a href="{{ URL::signedRoute('treasurer.payment-slips.show', $slip->id) }}" class="inline-flex items-center text-body font-semibold text-lgu-button hover:text-lgu-highlight transition-colors" onclick="event.stopPropagation()">
                                     {{ $slip->status === 'unpaid' ? 'Verify' : 'View' }}
                                     <i data-lucide="arrow-right" class="w-4 h-4 ml-gr-xs"></i>
                                 </a>

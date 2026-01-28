@@ -11,10 +11,10 @@
         <p class="text-gray-600 mt-1">Manage city events and activities</p>
     </div>
     <div class="flex gap-3">
-        <a href="{{ route('admin.events.trash') }}" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition duration-200 flex items-center">
+        <a href="{{ URL::signedRoute('admin.events.trash') }}" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition duration-200 flex items-center">
             <i data-lucide="trash-2" class="w-4 h-4 mr-2"></i> View Trash
         </a>
-        <a href="{{ route('admin.events.create') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition duration-200 flex items-center">
+        <a href="{{ URL::signedRoute('admin.events.create') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition duration-200 flex items-center">
             <i data-lucide="plus" class="w-4 h-4 mr-2"></i> Add Event
         </a>
     </div>
@@ -68,10 +68,10 @@
                 </td>
                 <td class="px-6 py-4 text-sm">
                     <div class="flex gap-2">
-                        <a href="{{ route('admin.events.edit', $event->id) }}" class="text-blue-600 hover:text-blue-800">
+                        <a href="{{ URL::signedRoute('admin.events.edit', $event->id) }}" class="text-blue-600 hover:text-blue-800">
                             <i data-lucide="pencil" class="w-4 h-4"></i>
                         </a>
-                        <form action="{{ route('admin.events.destroy', $event->id) }}" method="POST" class="inline">
+                        <form action="{{ URL::signedRoute('admin.events.destroy', $event->id) }}" method="POST" class="inline">
                             @csrf
                             @method('DELETE')
                             <button type="button" onclick="confirmDelete(this)" class="text-red-600 hover:text-red-800">
@@ -92,7 +92,7 @@
     <div class="p-12 text-center text-gray-500">
         <i data-lucide="calendar" class="w-16 h-16 mx-auto mb-4 text-gray-300"></i>
         <p class="text-lg">No events yet.</p>
-        <a href="{{ route('admin.events.create') }}" class="text-blue-600 hover:text-blue-800 mt-2 inline-block">
+        <a href="{{ URL::signedRoute('admin.events.create') }}" class="text-blue-600 hover:text-blue-800 mt-2 inline-block">
             Create your first event
         </a>
     </div>

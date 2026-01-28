@@ -242,7 +242,7 @@
                 <div class="mt-gr-lg space-y-gr-sm">
                     @if($booking->status === 'staff_verified')
                         <!-- Payment Verification Actions -->
-                        <form method="POST" action="{{ route('admin.bookings.confirm-payment', $booking->id) }}" id="confirmPaymentForm">
+                        <form method="POST" action="{{ URL::signedRoute('admin.bookings.confirm-payment', $booking->id) }}" id="confirmPaymentForm">
                             @csrf
                             <button type="button" onclick="confirmPayment()" class="w-full px-gr-lg py-gr-md bg-green-600 hover:bg-green-700 text-white font-bold rounded-lg transition-colors flex items-center justify-center gap-2">
                                 <i data-lucide="check-circle" class="w-5 h-5"></i>
@@ -257,7 +257,7 @@
 
                     @elseif($booking->status === 'paid')
                         <!-- Final Confirmation -->
-                        <form method="POST" action="{{ route('admin.bookings.final-confirm', $booking->id) }}" id="finalConfirmForm">
+                        <form method="POST" action="{{ URL::signedRoute('admin.bookings.final-confirm', $booking->id) }}" id="finalConfirmForm">
                             @csrf
                             <button type="button" onclick="finalConfirm()" class="w-full px-gr-lg py-gr-md bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-lg transition-colors flex items-center justify-center gap-2">
                                 <i data-lucide="badge-check" class="w-5 h-5"></i>
@@ -273,7 +273,7 @@
                         </div>
                     @endif
 
-                    <a href="{{ route('admin.bookings.index') }}" class="w-full px-gr-lg py-gr-md bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold rounded-lg transition-colors flex items-center justify-center gap-2">
+                    <a href="{{ URL::signedRoute('admin.bookings.index') }}" class="w-full px-gr-lg py-gr-md bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold rounded-lg transition-colors flex items-center justify-center gap-2">
                         <i data-lucide="arrow-left" class="w-5 h-5"></i>
                         Back to All Bookings
                     </a>
@@ -303,7 +303,7 @@
 <div id="rejectModal" class="hidden fixed inset-0 bg-black bg-opacity-75 z-50 flex items-center justify-center p-4">
     <div class="bg-white rounded-2xl max-w-md w-full p-gr-lg">
         <h3 class="text-h3 font-bold text-lgu-headline mb-gr-md">Reject Payment</h3>
-        <form method="POST" action="{{ route('admin.bookings.reject-payment', $booking->id) }}">
+        <form method="POST" action="{{ URL::signedRoute('admin.bookings.reject-payment', $booking->id) }}">
             @csrf
             <div class="mb-gr-md">
                 <label class="block text-small font-medium text-lgu-paragraph mb-gr-xs">Rejection Reason</label>

@@ -152,7 +152,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (facilityId) params.append('facility_id', facilityId);
             if (status) params.append('status', status);
             
-            fetch(`{{ route('admin.calendar.events') }}?${params.toString()}`)
+            fetch(`{{ URL::signedRoute('admin.calendar.events') }}?${params.toString()}`)
                 .then(response => response.json())
                 .then(data => successCallback(data))
                 .catch(error => {

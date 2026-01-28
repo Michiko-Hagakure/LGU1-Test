@@ -13,7 +13,7 @@
 
     <!-- Search & Filters -->
     <div class="bg-white rounded-lg shadow-md p-6 mb-8">
-        <form method="GET" action="{{ route('citizen.events.index') }}" class="flex flex-col md:flex-row gap-4">
+        <form method="GET" action="{{ URL::signedRoute('citizen.events.index') }}" class="flex flex-col md:flex-row gap-4">
             <!-- Search -->
             <div class="flex-1">
                 <input type="text" name="search" placeholder="Search events..." value="{{ request('search') }}"
@@ -64,7 +64,7 @@
                     </div>
                     <h3 class="font-bold text-lg mb-2">{{ $event->title }}</h3>
                     <p class="text-sm text-blue-100 mb-3">{{ Str::limit($event->description, 80) }}</p>
-                    <a href="{{ route('citizen.events.show', $event->slug) }}" class="inline-block bg-white text-blue-600 font-semibold px-4 py-2 rounded-lg hover:bg-blue-50 transition duration-200">
+                    <a href="{{ URL::signedRoute('citizen.events.show', $event->slug) }}" class="inline-block bg-white text-blue-600 font-semibold px-4 py-2 rounded-lg hover:bg-blue-50 transition duration-200">
                         Learn More
                     </a>
                 </div>
@@ -112,7 +112,7 @@
                         </svg>
                         {{ $event->event_date ? $event->event_date->format('F j, Y') : 'Date TBA' }}
                     </div>
-                    <a href="{{ route('citizen.events.show', $event->slug) }}" class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded-lg transition duration-200">
+                    <a href="{{ URL::signedRoute('citizen.events.show', $event->slug) }}" class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded-lg transition duration-200">
                         View Details
                     </a>
                 </div>

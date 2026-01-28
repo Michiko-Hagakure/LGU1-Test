@@ -36,7 +36,7 @@
         </div>
     </div>
 
-    <form action="{{ route('citizen.booking.store') }}" method="POST" enctype="multipart/form-data" id="bookingSubmitForm">
+    <form action="{{ URL::signedRoute('citizen.booking.store') }}" method="POST" enctype="multipart/form-data" id="bookingSubmitForm">
         @csrf
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">

@@ -62,7 +62,7 @@
             <div>
                 <p class="text-gray-600 text-sm font-medium">Pending Payments</p>
                 <h3 class="text-3xl font-bold text-gray-900 mt-2">{{ $pendingPayments }}</h3>
-                <a href="{{ route('treasurer.payment-verification') }}" class="text-orange-600 hover:text-orange-700 text-sm font-medium mt-2 inline-flex items-center">
+                <a href="{{ URL::signedRoute('treasurer.payment-verification') }}" class="text-orange-600 hover:text-orange-700 text-sm font-medium mt-2 inline-flex items-center">
                     Review Now
                     <i data-lucide="arrow-right" class="w-4 h-4 ml-1"></i>
                 </a>
@@ -166,7 +166,7 @@
                                 <span class="text-sm text-gray-600">{{ \Carbon\Carbon::parse($payment->paid_at)->format('M d, Y h:i A') }}</span>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm">
-                                <a href="{{ route('treasurer.payment-slips.show', $payment->id) }}" class="text-lgu-button hover:text-lgu-highlight font-medium">
+                                <a href="{{ URL::signedRoute('treasurer.payment-slips.show', $payment->id) }}" class="text-lgu-button hover:text-lgu-highlight font-medium">
                                     View
                                 </a>
                             </td>

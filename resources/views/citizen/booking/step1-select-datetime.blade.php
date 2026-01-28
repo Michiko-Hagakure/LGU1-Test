@@ -39,7 +39,7 @@
 
     <!-- Booking Form -->
     <div class="bg-white shadow-lg rounded-lg p-8">
-        <form action="{{ route('citizen.booking.step2') }}" method="POST" id="bookingStep1Form">
+        <form action="{{ URL::signedRoute('citizen.booking.step2') }}" method="POST" id="bookingStep1Form">
             @csrf
 
             <!-- Facility Selection -->
@@ -518,7 +518,7 @@
 
             <!-- Navigation Buttons -->
             <div class="flex items-center justify-between pt-6 border-t">
-                <a href="{{ route('citizen.browse-facilities') }}" 
+                <a href="{{ URL::signedRoute('citizen.browse-facilities') }}" 
                    class="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition cursor-pointer">
                     Cancel
                 </a>

@@ -7,7 +7,7 @@
 <div class="max-w-5xl mx-auto">
     {{-- Back Button --}}
     <div class="mb-6">
-        <a href="{{ route('admin.infrastructure.projects.index') }}" class="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors">
+        <a href="{{ URL::signedRoute('admin.infrastructure.projects.index') }}" class="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
             </svg>
@@ -49,7 +49,7 @@
             </div>
             <div class="flex items-center gap-3">
                 @if($project->external_project_id)
-                <form action="{{ route('admin.infrastructure.projects.refresh', $project->id) }}" method="POST">
+                <form action="{{ URL::signedRoute('admin.infrastructure.projects.refresh', $project->id) }}" method="POST">
                     @csrf
                     <button type="submit" class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors flex items-center gap-2">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

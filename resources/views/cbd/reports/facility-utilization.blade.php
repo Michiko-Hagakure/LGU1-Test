@@ -18,7 +18,7 @@
             <i data-lucide="construction" class="w-24 h-24 mx-auto mb-4 text-gray-400"></i>
             <h3 class="text-xl font-semibold text-gray-700 mb-2">Under Development</h3>
             <p class="text-gray-600 mb-6">This report is currently being developed and will be available soon.</p>
-            <a href="{{ route('cbd.dashboard') }}" class="inline-flex items-center px-6 py-3 bg-[#0f3d3e] text-white rounded-lg hover:bg-opacity-90 transition-all">
+            <a href="{{ URL::signedRoute('cbd.dashboard') }}" class="inline-flex items-center px-6 py-3 bg-[#0f3d3e] text-white rounded-lg hover:bg-opacity-90 transition-all">
                 <i data-lucide="arrow-left" class="w-4 h-4 mr-2"></i>
                 Back to Dashboard
             </a>

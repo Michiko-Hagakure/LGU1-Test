@@ -32,11 +32,11 @@
 
         <!-- Action Buttons -->
         <div class="flex flex-col sm:flex-row gap-4 justify-center">
-            <a href="{{ route('citizen.contact.my-inquiries') }}"
+            <a href="{{ URL::signedRoute('citizen.contact.my-inquiries') }}"
                 class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-lg transition duration-200">
                 View My Inquiries
             </a>
-            <a href="{{ route('citizen.dashboard') }}"
+            <a href="{{ URL::signedRoute('citizen.dashboard') }}"
                 class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold px-6 py-3 rounded-lg transition duration-200">
                 Back to Dashboard
             </a>

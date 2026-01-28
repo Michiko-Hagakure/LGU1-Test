@@ -8,7 +8,7 @@
 
 <!-- Back Button -->
 <div class="mb-6">
-    <a href="{{ route('treasurer.payment-verification') }}" 
+    <a href="{{ URL::signedRoute('treasurer.payment-verification') }}" 
        class="inline-flex items-center text-lgu-button hover:text-lgu-highlight font-medium">
         <i data-lucide="arrow-left" class="w-5 h-5 mr-2"></i>
         Back to Payment Queue
@@ -309,7 +309,7 @@
                             <i data-lucide="check-circle" class="w-5 h-5 mr-2"></i>
                             Verify & Confirm Payment
                         </button>
-                        <a href="{{ route('treasurer.payment-verification') }}" class="px-6 py-3 bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium rounded-lg transition">
+                        <a href="{{ URL::signedRoute('treasurer.payment-verification') }}" class="px-6 py-3 bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium rounded-lg transition">
                             Cancel
                         </a>
                     </div>
@@ -365,7 +365,7 @@
                     </a>
                 @endif
                 
-                <a href="{{ route('treasurer.payment-verification') }}" class="w-full px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-lg transition inline-flex items-center justify-center">
+                <a href="{{ URL::signedRoute('treasurer.payment-verification') }}" class="w-full px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-lg transition inline-flex items-center justify-center">
                     <i data-lucide="arrow-left" class="w-4 h-4 mr-2"></i>
                     Back to List
                 </a>

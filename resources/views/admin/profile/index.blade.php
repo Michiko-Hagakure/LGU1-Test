@@ -90,7 +90,7 @@
                                 
                                 <div class="flex items-center gap-3">
                                     <!-- Upload Photo Form -->
-                                    <form action="{{ route('admin.profile.update') }}" method="POST" enctype="multipart/form-data">
+                                    <form action="{{ URL::signedRoute('admin.profile.update') }}" method="POST" enctype="multipart/form-data">
                                         @csrf
                                         <input type="hidden" name="full_name" value="{{ session('user_name', $user->full_name ?? '') }}">
                                         <label for="avatar_input" class="px-5 py-2.5 bg-lgu-button text-lgu-button-text rounded-lg cursor-pointer hover:opacity-90 transition inline-flex items-center">
@@ -101,7 +101,7 @@
                                     </form>
                                     
                                     @if($user && $user->profile_photo_path)
-                                        <form id="remove-photo-form" action="{{ route('admin.profile.photo.remove') }}" method="POST">
+                                        <form id="remove-photo-form" action="{{ URL::signedRoute('admin.profile.photo.remove') }}" method="POST">
                                             @csrf
                                             <button type="button" onclick="confirmRemovePhoto()" class="px-5 py-2.5 bg-red-500 text-white rounded-lg hover:bg-red-600 transition inline-flex items-center">
                                                 <i data-lucide="trash-2" class="w-4 h-4 mr-2"></i>
@@ -115,7 +115,7 @@
                     </div>
                     
                     <!-- Profile Update Form -->
-                    <form action="{{ route('admin.profile.update') }}" method="POST">
+                    <form action="{{ URL::signedRoute('admin.profile.update') }}" method="POST">
                         @csrf
 
                         <!-- Form Fields -->

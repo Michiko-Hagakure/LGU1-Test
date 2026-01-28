@@ -410,7 +410,7 @@ document.getElementById('profileForm').addEventListener('submit', function(e) {
     
     const formData = new FormData(this);
     
-    fetch('{{ route('citizen.profile.update') }}', {
+    fetch('{{ URL::signedRoute('citizen.profile.update') }}', {
         method: 'POST',
         body: formData,
         headers: {
@@ -477,7 +477,7 @@ function uploadAvatar(input) {
     const formData = new FormData();
     formData.append('avatar', file);
     
-    fetch('{{ route('citizen.profile.avatar') }}', {
+    fetch('{{ URL::signedRoute('citizen.profile.avatar') }}', {
         method: 'POST',
         body: formData,
         headers: {
@@ -525,7 +525,7 @@ function removeAvatar() {
         confirmButtonText: 'Yes, remove it'
     }).then((result) => {
         if (result.isConfirmed) {
-            fetch('{{ route('citizen.profile.avatar.remove') }}', {
+            fetch('{{ URL::signedRoute('citizen.profile.avatar.remove') }}', {
                 method: 'DELETE',
                 headers: {
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,

@@ -25,7 +25,7 @@
 
     {{-- Filters --}}
     <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-gr-lg">
-        <form method="GET" action="{{ route('admin.reviews.index') }}" class="space-y-gr-md">
+        <form method="GET" action="{{ URL::signedRoute('admin.reviews.index') }}" class="space-y-gr-md">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-gr-md">
                 <div>
                     <label for="search" class="block text-small font-semibold text-lgu-headline mb-gr-xs">Search</label>
@@ -61,7 +61,7 @@
                     Apply Filters
                 </button>
                 @if($search || $facilityId || $rating)
-                    <a href="{{ route('admin.reviews.index') }}" class="inline-flex items-center px-gr-md py-gr-sm bg-gray-100 text-gray-700 font-semibold rounded-lg hover:bg-gray-200 transition-colors duration-200">
+                    <a href="{{ URL::signedRoute('admin.reviews.index') }}" class="inline-flex items-center px-gr-md py-gr-sm bg-gray-100 text-gray-700 font-semibold rounded-lg hover:bg-gray-200 transition-colors duration-200">
                         <i data-lucide="x" class="w-5 h-5 mr-gr-xs"></i>
                         Clear
                     </a>

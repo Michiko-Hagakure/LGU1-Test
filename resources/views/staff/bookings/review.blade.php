@@ -315,7 +315,7 @@
                 <h3 class="text-h4 font-bold text-gray-900 mb-gr-md">Verification Actions</h3>
                 
                 <!-- Verify Form -->
-                <form action="{{ route('staff.bookings.verify', $booking->id) }}" method="POST" id="verifyForm" class="mb-gr-sm">
+                <form action="{{ URL::signedRoute('staff.bookings.verify', $booking->id) }}" method="POST" id="verifyForm" class="mb-gr-sm">
                     @csrf
                     <div class="mb-gr-sm">
                         <label for="staff_notes" class="block text-small font-medium text-gray-700 mb-2">Staff Notes (Optional)</label>
@@ -334,7 +334,7 @@
                 </form>
 
                 <!-- Reject Form -->
-                <form action="{{ route('staff.bookings.reject', $booking->id) }}" method="POST" id="rejectForm">
+                <form action="{{ URL::signedRoute('staff.bookings.reject', $booking->id) }}" method="POST" id="rejectForm">
                     @csrf
                     <input type="hidden" name="rejection_reason" id="rejection_reason">
                     <button type="button" onclick="confirmReject()" 
@@ -348,7 +348,7 @@
                     </button>
                 </form>
 
-                <a href="{{ route('staff.verification-queue') }}" 
+                <a href="{{ URL::signedRoute('staff.verification-queue') }}" 
                    class="block mt-gr-sm text-center px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors text-small font-medium">
                     Cancel
                 </a>
@@ -398,7 +398,7 @@
                     </div>
                 @endif
 
-                <a href="{{ route('staff.bookings.index') }}" 
+                <a href="{{ URL::signedRoute('staff.bookings.index') }}" 
                    class="block mt-gr-sm text-center px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors text-small font-medium">
                     Back to Booking History
                 </a>

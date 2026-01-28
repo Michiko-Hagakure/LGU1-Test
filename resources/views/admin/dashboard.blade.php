@@ -40,7 +40,7 @@
     <!-- Critical Alerts Bar -->
     <div class="grid grid-cols-1 md:grid-cols-4 gap-gr-lg items-stretch">
         <!-- Payment Pending -->
-        <a href="{{ route('admin.payment-queue') }}" class="bg-yellow-50 border border-yellow-200 rounded-xl p-gr-lg shadow-sm hover:shadow-md transition-all hover:scale-105">
+        <a href="{{ URL::signedRoute('admin.payment-queue') }}" class="bg-yellow-50 border border-yellow-200 rounded-xl p-gr-lg shadow-sm hover:shadow-md transition-all hover:scale-105">
             <div class="flex items-center h-full">
                 <div class="flex-shrink-0">
                     <div class="w-12 h-12 bg-amber-500 rounded-xl flex items-center justify-center shadow-lg">
@@ -58,7 +58,7 @@
         </a>
 
         <!-- Payment Verification -->
-        <a href="{{ route('admin.bookings.index') }}?status=paid" class="bg-blue-50 border border-blue-200 rounded-xl p-gr-lg shadow-sm hover:shadow-md transition-all hover:scale-105">
+        <a href="{{ URL::signedRoute('admin.bookings.index') }}?status=paid" class="bg-blue-50 border border-blue-200 rounded-xl p-gr-lg shadow-sm hover:shadow-md transition-all hover:scale-105">
             <div class="flex items-center h-full">
                 <div class="flex-shrink-0">
                     <div class="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center shadow-lg">
@@ -76,7 +76,7 @@
         </a>
 
         <!-- Confirmed Bookings -->
-        <a href="{{ route('admin.bookings.index') }}?status=confirmed" class="bg-green-50 border border-green-200 rounded-xl p-gr-lg shadow-sm hover:shadow-md transition-all hover:scale-105">
+        <a href="{{ URL::signedRoute('admin.bookings.index') }}?status=confirmed" class="bg-green-50 border border-green-200 rounded-xl p-gr-lg shadow-sm hover:shadow-md transition-all hover:scale-105">
             <div class="flex items-center h-full">
                 <div class="flex-shrink-0">
                     <div class="w-12 h-12 bg-emerald-500 rounded-xl flex items-center justify-center shadow-lg">
@@ -94,7 +94,7 @@
         </a>
 
         <!-- Today's Events -->
-        <a href="{{ route('admin.calendar') }}" class="bg-purple-50 border border-purple-200 rounded-xl p-gr-lg shadow-sm hover:shadow-md transition-all hover:scale-105">
+        <a href="{{ URL::signedRoute('admin.calendar') }}" class="bg-purple-50 border border-purple-200 rounded-xl p-gr-lg shadow-sm hover:shadow-md transition-all hover:scale-105">
             <div class="flex items-center h-full">
                 <div class="flex-shrink-0">
                     <div class="w-12 h-12 bg-purple-500 rounded-xl flex items-center justify-center shadow-lg">
@@ -214,7 +214,7 @@
                     Quick Actions
                 </h3>
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-gr-sm">
-                    <a href="{{ route('admin.payment-queue') }}" 
+                    <a href="{{ URL::signedRoute('admin.payment-queue') }}" 
                        class="flex flex-col items-center p-gr-md bg-yellow-50 rounded-lg hover:bg-yellow-100 transition-colors border border-yellow-200">
                         <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-clock text-yellow-600 mb-gr-xs">
                             <circle cx="12" cy="12" r="10"/>
@@ -223,7 +223,7 @@
                         <span class="text-small font-medium text-yellow-900">Payment Queue</span>
                     </a>
                     
-                    <a href="{{ route('admin.bookings.index') }}" 
+                    <a href="{{ URL::signedRoute('admin.bookings.index') }}" 
                        class="flex flex-col items-center p-gr-md bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors border border-blue-200">
                         <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-calendar-check text-blue-600 mb-gr-xs">
                             <path d="M8 2v4"/>
@@ -235,7 +235,7 @@
                         <span class="text-small font-medium text-blue-900">All Bookings</span>
                     </a>
                     
-                    <a href="{{ route('admin.calendar') }}" 
+                    <a href="{{ URL::signedRoute('admin.calendar') }}" 
                        class="flex flex-col items-center p-gr-md bg-purple-50 rounded-lg hover:bg-purple-100 transition-colors border border-purple-200">
                         <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-calendar-days text-purple-600 mb-gr-xs">
                             <path d="M8 2v4"/>
@@ -252,7 +252,7 @@
                         <span class="text-small font-medium text-purple-900">View Calendar</span>
                     </a>
                     
-                    <a href="{{ route('citizen.browse-facilities') }}" 
+                    <a href="{{ URL::signedRoute('citizen.browse-facilities') }}" 
                        class="flex flex-col items-center p-gr-md bg-green-50 rounded-lg hover:bg-green-100 transition-colors border border-green-200">
                         <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-building-2 text-green-600 mb-gr-xs">
                             <path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/>
@@ -305,7 +305,7 @@
                     @endforeach
                 </div>
                     <div class="mt-gr-md">
-                        <a href="{{ route('admin.bookings.index') }}" class="text-small text-lgu-button hover:underline font-medium">
+                        <a href="{{ URL::signedRoute('admin.bookings.index') }}" class="text-small text-lgu-button hover:underline font-medium">
                             View All Bookings →
                         </a>
                     </div>

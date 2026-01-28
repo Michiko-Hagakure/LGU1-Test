@@ -15,7 +15,7 @@
 
     {{-- Filter --}}
     <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-gr-lg">
-        <form method="GET" action="{{ route('citizen.reviews.index') }}" class="flex items-end gap-gr-md">
+        <form method="GET" action="{{ URL::signedRoute('citizen.reviews.index') }}" class="flex items-end gap-gr-md">
             <div class="flex-1">
                 <label for="facility_id" class="block text-small font-semibold text-lgu-headline mb-gr-xs">Filter by Facility</label>
                 <select id="facility_id" name="facility_id" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-lgu-highlight focus:border-transparent">
@@ -32,7 +32,7 @@
                 Filter
             </button>
             @if($facilityFilter)
-                <a href="{{ route('citizen.reviews.index') }}" class="inline-flex items-center px-gr-lg py-gr-sm bg-gray-100 text-gray-700 font-semibold rounded-lg hover:bg-gray-200 transition-colors duration-200">
+                <a href="{{ URL::signedRoute('citizen.reviews.index') }}" class="inline-flex items-center px-gr-lg py-gr-sm bg-gray-100 text-gray-700 font-semibold rounded-lg hover:bg-gray-200 transition-colors duration-200">
                     <i data-lucide="x" class="w-5 h-5"></i>
                 </a>
             @endif
@@ -68,7 +68,7 @@
                                     </div>
                                 </div>
                                 <div class="flex items-center gap-gr-xs">
-                                    <a href="{{ route('citizen.reviews.edit', $review->id) }}" class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors duration-200" title="Edit Review">
+                                    <a href="{{ URL::signedRoute('citizen.reviews.edit', $review->id) }}" class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors duration-200" title="Edit Review">
                                         <i data-lucide="edit-2" class="w-5 h-5"></i>
                                     </a>
                                     <button onclick="deleteReview({{ $review->id }})" class="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors duration-200" title="Delete Review">
@@ -124,7 +124,7 @@
                 <i data-lucide="star" class="w-16 h-16 text-gray-300 mb-gr-md"></i>
                 <h3 class="text-h3 font-bold text-lgu-headline mb-gr-xs">No Reviews Yet</h3>
                 <p class="text-body text-gray-600 mb-gr-md">Complete a booking to leave your first review!</p>
-                <a href="{{ route('citizen.reservations') }}" class="inline-flex items-center px-gr-lg py-gr-md bg-lgu-button text-lgu-button-text font-semibold rounded-lg hover:bg-opacity-90 transition-colors duration-200">
+                <a href="{{ URL::signedRoute('citizen.reservations') }}" class="inline-flex items-center px-gr-lg py-gr-md bg-lgu-button text-lgu-button-text font-semibold rounded-lg hover:bg-opacity-90 transition-colors duration-200">
                     <i data-lucide="calendar" class="w-5 h-5 mr-gr-xs"></i>
                     View My Reservations
                 </a>

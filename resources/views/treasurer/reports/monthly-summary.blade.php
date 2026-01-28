@@ -8,7 +8,7 @@
 <div class="space-y-gr-lg">
     <!-- Month Filter & Export -->
     <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-        <form method="GET" action="{{ route('treasurer.reports.monthly-summary') }}" class="flex flex-col md:flex-row items-end gap-4">
+        <form method="GET" action="{{ URL::signedRoute('treasurer.reports.monthly-summary') }}" class="flex flex-col md:flex-row items-end gap-4">
             <div class="flex-1">
                 <label for="month" class="block text-small font-semibold text-gray-700 mb-gr-xs">Select Month</label>
                 <input type="month" 
@@ -26,7 +26,7 @@
             </button>
             
             @if($stats['total_transactions'] > 0)
-            <a href="{{ route('treasurer.reports.monthly-summary.export', ['month' => $selectedMonth->format('Y-m')]) }}" 
+            <a href="{{ URL::signedRoute('treasurer.reports.monthly-summary.export', ['month' => $selectedMonth->format('Y-m')]) }}" 
                class="bg-green-600 text-white px-6 py-2.5 rounded-lg hover:bg-green-700 transition-colors font-semibold inline-flex items-center gap-2">
                 <i data-lucide="download" class="w-4 h-4"></i>
                 Export PDF

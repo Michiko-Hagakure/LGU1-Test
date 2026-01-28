@@ -32,35 +32,35 @@
             Filter by Type
         </h3>
         <div class="flex flex-wrap gap-3">
-            <a href="{{ route('citizen.bulletin', ['type' => 'all']) }}" 
+            <a href="{{ URL::signedRoute('citizen.bulletin', ['type' => 'all']) }}" 
                class="group px-5 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 cursor-pointer flex items-center gap-2 {{ $type === 'all' ? 'bg-lgu-button text-lgu-button-text shadow-lg scale-105' : 'bg-gray-100 text-gray-700 hover:bg-gray-200 hover:scale-105' }}">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/>
                 </svg>
                 All <span class="ml-1 px-2 py-0.5 rounded-full text-xs {{ $type === 'all' ? 'bg-white/20' : 'bg-gray-200' }}">{{ $typeCounts['all'] }}</span>
             </a>
-            <a href="{{ route('citizen.bulletin', ['type' => 'general']) }}" 
+            <a href="{{ URL::signedRoute('citizen.bulletin', ['type' => 'general']) }}" 
                class="group px-5 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 cursor-pointer flex items-center gap-2 {{ $type === 'general' ? 'bg-blue-500 text-white shadow-lg scale-105' : 'bg-blue-100 text-blue-700 hover:bg-blue-200 hover:scale-105' }}">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/>
                 </svg>
                 General <span class="ml-1 px-2 py-0.5 rounded-full text-xs {{ $type === 'general' ? 'bg-white/20' : 'bg-blue-200' }}">{{ $typeCounts['general'] }}</span>
             </a>
-            <a href="{{ route('citizen.bulletin', ['type' => 'maintenance']) }}" 
+            <a href="{{ URL::signedRoute('citizen.bulletin', ['type' => 'maintenance']) }}" 
                class="group px-5 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 cursor-pointer flex items-center gap-2 {{ $type === 'maintenance' ? 'bg-yellow-500 text-white shadow-lg scale-105' : 'bg-yellow-100 text-yellow-700 hover:bg-yellow-200 hover:scale-105' }}">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
                 </svg>
                 Maintenance <span class="ml-1 px-2 py-0.5 rounded-full text-xs {{ $type === 'maintenance' ? 'bg-white/20' : 'bg-yellow-200' }}">{{ $typeCounts['maintenance'] }}</span>
             </a>
-            <a href="{{ route('citizen.bulletin', ['type' => 'event']) }}" 
+            <a href="{{ URL::signedRoute('citizen.bulletin', ['type' => 'event']) }}" 
                class="group px-5 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 cursor-pointer flex items-center gap-2 {{ $type === 'event' ? 'bg-purple-500 text-white shadow-lg scale-105' : 'bg-purple-100 text-purple-700 hover:bg-purple-200 hover:scale-105' }}">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <rect width="18" height="18" x="3" y="4" rx="2"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/>
                 </svg>
                 Events <span class="ml-1 px-2 py-0.5 rounded-full text-xs {{ $type === 'event' ? 'bg-white/20' : 'bg-purple-200' }}">{{ $typeCounts['event'] }}</span>
             </a>
-            <a href="{{ route('citizen.bulletin', ['type' => 'urgent']) }}" 
+            <a href="{{ URL::signedRoute('citizen.bulletin', ['type' => 'urgent']) }}" 
                class="group px-5 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 cursor-pointer flex items-center gap-2 {{ $type === 'urgent' ? 'bg-red-500 text-white shadow-lg scale-105 animate-pulse' : 'bg-red-100 text-red-700 hover:bg-red-200 hover:scale-105' }}">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/>
@@ -152,7 +152,7 @@
                         </div>
 
                         <!-- Read More Button -->
-                        <a href="{{ route('citizen.bulletin.show', $announcement->id) }}" 
+                        <a href="{{ URL::signedRoute('citizen.bulletin.show', $announcement->id) }}" 
                            class="block w-full px-4 py-3 bg-lgu-button text-lgu-button-text font-semibold rounded-lg hover:bg-lgu-highlight transition-all duration-200 text-center shadow-md hover:shadow-lg cursor-pointer">
                             Read More
                         </a>
@@ -176,7 +176,7 @@ function liveSearch(query) {
     clearTimeout(searchTimeout);
     searchTimeout = setTimeout(() => {
         const currentType = '{{ $type }}';
-        window.location.href = `{{ route('citizen.bulletin') }}?type=${currentType}&search=${encodeURIComponent(query)}`;
+        window.location.href = `{{ URL::signedRoute('citizen.bulletin') }}?type=${currentType}&search=${encodeURIComponent(query)}`;
     }, 500);
 }
 </script>

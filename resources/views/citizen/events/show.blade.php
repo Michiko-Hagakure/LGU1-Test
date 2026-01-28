@@ -7,7 +7,7 @@
 @section('page-content')
 <!-- Breadcrumb -->
     <nav class="mb-6 text-sm">
-        <a href="{{ route('citizen.events.index') }}" class="text-blue-600 hover:text-blue-800">Events</a>
+        <a href="{{ URL::signedRoute('citizen.events.index') }}" class="text-blue-600 hover:text-blue-800">Events</a>
         <span class="text-gray-400 mx-2">/</span>
         <span class="text-gray-600">{{ $event->title }}</span>
     </nav>
@@ -122,7 +122,7 @@
                 <h3 class="font-bold text-gray-800 mb-4">Related Events</h3>
                 <div class="space-y-4">
                     @foreach($relatedEvents as $related)
-                    <a href="{{ route('citizen.events.show', $related->slug) }}" class="block hover:bg-gray-50 p-3 rounded-lg transition duration-200">
+                    <a href="{{ URL::signedRoute('citizen.events.show', $related->slug) }}" class="block hover:bg-gray-50 p-3 rounded-lg transition duration-200">
                         <h4 class="font-semibold text-gray-800 mb-1">{{ $related->title }}</h4>
                         <p class="text-sm text-gray-600">{{ Str::limit($related->description, 60) }}</p>
                         @if($related->event_date)

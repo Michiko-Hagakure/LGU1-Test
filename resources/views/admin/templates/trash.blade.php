@@ -11,7 +11,7 @@
             </h1>
             <p class="text-lgu-paragraph">Restore or permanently delete message templates</p>
         </div>
-        <a href="{{ route('admin.templates.index') }}" 
+        <a href="{{ URL::signedRoute('admin.templates.index') }}" 
            class="px-6 py-3 bg-lgu-button text-white font-semibold rounded-lg hover:opacity-90 transition shadow-lg">
             <i data-lucide="arrow-left" class="w-5 h-5 inline mr-2"></i>
             Back to Templates
@@ -76,7 +76,7 @@
 
                 <!-- Actions -->
                 <div class="flex gap-2 border-t pt-4">
-                    <form action="{{ route('admin.templates.restore', $template->id) }}" method="POST" class="flex-1">
+                    <form action="{{ URL::signedRoute('admin.templates.restore', $template->id) }}" method="POST" class="flex-1">
                         @csrf
                         <button type="button" 
                                 class="w-full px-4 py-2 bg-green-500 text-white text-sm font-semibold rounded-lg hover:bg-green-600 transition"
@@ -84,7 +84,7 @@
                             <i data-lucide="rotate-ccw" class="w-4 h-4 inline mr-1"></i> Restore
                         </button>
                     </form>
-                    <form action="{{ route('admin.templates.force-delete', $template->id) }}" method="POST" class="flex-1">
+                    <form action="{{ URL::signedRoute('admin.templates.force-delete', $template->id) }}" method="POST" class="flex-1">
                         @csrf
                         @method('DELETE')
                         <button type="button" 
@@ -100,7 +100,7 @@
                 <i data-lucide="inbox" class="w-16 h-16 mx-auto text-gray-400 mb-4"></i>
                 <p class="text-gray-500 text-lg mb-2">Trash is empty</p>
                 <p class="text-gray-400 text-sm">Deleted templates will appear here</p>
-                <a href="{{ route('admin.templates.index') }}" 
+                <a href="{{ URL::signedRoute('admin.templates.index') }}" 
                    class="inline-block mt-4 px-6 py-3 bg-lgu-button text-white font-semibold rounded-lg hover:opacity-90 transition">
                     Back to Templates
                 </a>

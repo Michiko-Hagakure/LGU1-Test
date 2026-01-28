@@ -10,7 +10,7 @@
         <div>
             <p class="text-body text-gray-600">Save your preferred payment methods for faster checkout</p>
         </div>
-        <a href="{{ route('citizen.payment-methods.create') }}" class="btn-primary">
+        <a href="{{ URL::signedRoute('citizen.payment-methods.create') }}" class="btn-primary">
             <i data-lucide="plus" class="w-4 h-4 mr-gr-xs"></i>
             Add Payment Method
         </a>
@@ -36,7 +36,7 @@
         <i data-lucide="credit-card" class="w-16 h-16 mx-auto mb-gr-md text-gray-400"></i>
         <h3 class="text-h5 font-bold text-gray-900 mb-gr-xs">No Payment Methods Yet</h3>
         <p class="text-small text-gray-600 mb-gr-lg">Add a payment method to make reservations faster and easier</p>
-        <a href="{{ route('citizen.payment-methods.create') }}" class="btn-primary inline-flex items-center">
+        <a href="{{ URL::signedRoute('citizen.payment-methods.create') }}" class="btn-primary inline-flex items-center">
             <i data-lucide="plus" class="w-4 h-4 mr-gr-xs"></i>
             Add Your First Payment Method
         </a>
@@ -79,7 +79,7 @@
                     Set as Default
                 </button>
                 @endif
-                <a href="{{ route('citizen.payment-methods.edit', $method->id) }}" class="text-gray-600 hover:text-gray-900">
+                <a href="{{ URL::signedRoute('citizen.payment-methods.edit', $method->id) }}" class="text-gray-600 hover:text-gray-900">
                     <i data-lucide="edit" class="w-4 h-4"></i>
                 </a>
                 <button onclick="confirmDelete({{ $method->id }})" class="text-red-600 hover:text-red-700">

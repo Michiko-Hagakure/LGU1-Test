@@ -13,12 +13,12 @@
             <p class="text-lgu-paragraph">Manage email, SMS, and in-app message templates</p>
         </div>
         <div class="flex gap-3">
-            <a href="{{ route('admin.templates.trash') }}" 
+            <a href="{{ URL::signedRoute('admin.templates.trash') }}" 
                class="px-6 py-3 bg-gray-600 text-white font-semibold rounded-lg hover:bg-gray-700 transition shadow-lg">
                 <i data-lucide="trash-2" class="w-5 h-5 inline mr-2"></i>
                 View Trash
             </a>
-            <a href="{{ route('admin.templates.create') }}" 
+            <a href="{{ URL::signedRoute('admin.templates.create') }}" 
                class="px-6 py-3 bg-lgu-button text-white font-semibold rounded-lg hover:opacity-90 transition shadow-lg">
                 <i data-lucide="plus" class="w-5 h-5 inline mr-2"></i>
                 Create Template
@@ -121,11 +121,11 @@
                             class="flex-1 px-4 py-2 bg-blue-500 text-white text-sm font-semibold rounded-lg hover:bg-blue-600 transition">
                         <i data-lucide="eye" class="w-4 h-4 inline mr-1"></i> Preview
                     </button>
-                    <a href="{{ route('admin.templates.edit', $template->id) }}" 
+                    <a href="{{ URL::signedRoute('admin.templates.edit', $template->id) }}" 
                        class="flex-1 px-4 py-2 bg-green-500 text-white text-sm font-semibold rounded-lg hover:bg-green-600 transition text-center">
                         <i data-lucide="edit" class="w-4 h-4 inline mr-1"></i> Edit
                     </a>
-                    <form action="{{ route('admin.templates.toggle', $template->id) }}" method="POST" class="inline toggle-form">
+                    <form action="{{ URL::signedRoute('admin.templates.toggle', $template->id) }}" method="POST" class="inline toggle-form">
                         @csrf
                         <button type="button" 
                                 class="px-4 py-2 {{ $template->is_active ? 'bg-yellow-500 hover:bg-yellow-600' : 'bg-green-500 hover:bg-green-600' }} text-white text-sm font-semibold rounded-lg transition"
@@ -133,7 +133,7 @@
                             <i data-lucide="{{ $template->is_active ? 'pause' : 'play' }}" class="w-4 h-4"></i>
                         </button>
                     </form>
-                    <form action="{{ route('admin.templates.destroy', $template->id) }}" method="POST" class="inline delete-form">
+                    <form action="{{ URL::signedRoute('admin.templates.destroy', $template->id) }}" method="POST" class="inline delete-form">
                         @csrf
                         @method('DELETE')
                         <button type="button" 
@@ -148,7 +148,7 @@
             <div class="col-span-full text-center py-12">
                 <i data-lucide="inbox" class="w-16 h-16 mx-auto text-gray-400 mb-4"></i>
                 <p class="text-gray-500 text-lg">No message templates found.</p>
-                <a href="{{ route('admin.templates.create') }}" 
+                <a href="{{ URL::signedRoute('admin.templates.create') }}" 
                    class="inline-block mt-4 px-6 py-3 bg-lgu-button text-white font-semibold rounded-lg hover:opacity-90 transition">
                     Create Your First Template
                 </a>

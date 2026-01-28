@@ -8,7 +8,7 @@
 <div class="space-y-6">
     <!-- Quick Actions -->
     <div class="flex justify-end">
-        <a href="{{ route('citizen.browse-facilities') }}" 
+        <a href="{{ URL::signedRoute('citizen.browse-facilities') }}" 
            class="inline-flex items-center px-6 py-3 bg-lgu-button text-lgu-button-text font-semibold rounded-lg hover:bg-lgu-highlight transition-all shadow-lg hover:shadow-xl cursor-pointer">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2">
                 <path d="M5 12h14"/><path d="M12 5v14"/>
@@ -42,7 +42,7 @@
             <div>
                 <div class="flex items-center justify-between mb-3">
                     <label class="block text-sm font-semibold text-gray-700">Filter by Status</label>
-                    <a href="{{ route('citizen.reservation.history') }}" 
+                    <a href="{{ URL::signedRoute('citizen.reservation.history') }}" 
                        class="text-sm text-lgu-button hover:text-lgu-highlight font-semibold inline-flex items-center gap-1 cursor-pointer">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
@@ -52,21 +52,21 @@
                     </a>
                 </div>
                 <div class="flex flex-wrap gap-3">
-                    <a href="{{ route('citizen.reservations', ['status' => 'all', 'search' => $search]) }}" 
+                    <a href="{{ URL::signedRoute('citizen.reservations', ['status' => 'all', 'search' => $search]) }}" 
                        class="px-5 py-2.5 rounded-xl text-sm font-semibold transition-all shadow-sm hover:shadow-md cursor-pointer {{ $status === 'all' ? 'bg-lgu-button text-lgu-button-text shadow-lg scale-105' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }}">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="inline-block mr-1">
                             <rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/>
                         </svg>
                         All <span class="ml-1 px-2 py-0.5 bg-white/30 rounded-full text-xs">{{ $statusCounts['all'] }}</span>
                     </a>
-                    <a href="{{ route('citizen.reservations', ['status' => 'active', 'search' => $search]) }}" 
+                    <a href="{{ URL::signedRoute('citizen.reservations', ['status' => 'active', 'search' => $search]) }}" 
                        class="px-5 py-2.5 rounded-xl text-sm font-semibold transition-all shadow-sm hover:shadow-md cursor-pointer {{ $status === 'active' ? 'bg-lgu-button text-lgu-button-text shadow-lg scale-105' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }}">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="inline-block mr-1">
                             <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
                         </svg>
                         Active <span class="ml-1 px-2 py-0.5 bg-white/30 rounded-full text-xs">{{ $statusCounts['active'] }}</span>
                     </a>
-                    <a href="{{ route('citizen.reservations', ['status' => 'completed', 'search' => $search]) }}" 
+                    <a href="{{ URL::signedRoute('citizen.reservations', ['status' => 'completed', 'search' => $search]) }}" 
                        class="px-5 py-2.5 rounded-xl text-sm font-semibold transition-all shadow-sm hover:shadow-md cursor-pointer {{ $status === 'completed' ? 'bg-lgu-button text-lgu-button-text shadow-lg scale-105' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }}">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="inline-block mr-1">
                             <polyline points="20 6 9 17 4 12"/>
@@ -88,7 +88,7 @@
             </div>
             <h3 class="text-2xl font-bold text-gray-900 mb-3">No Reservations Found</h3>
             <p class="text-gray-600 mb-8 max-w-md mx-auto">You haven't made any bookings yet{{ $search ? ' matching your search' : '' }}. Start by browsing our available facilities!</p>
-            <a href="{{ route('citizen.browse-facilities') }}" 
+            <a href="{{ URL::signedRoute('citizen.browse-facilities') }}" 
                class="inline-flex items-center px-8 py-4 bg-lgu-button text-lgu-button-text font-bold rounded-xl hover:bg-lgu-highlight transition-all shadow-lg hover:shadow-xl cursor-pointer transform hover:scale-105">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2">
                     <path d="M5 12h14"/><path d="M12 5v14"/>
@@ -204,7 +204,7 @@
 
                             <!-- Action Buttons -->
                             <div class="flex items-center gap-3 flex-wrap">
-                                <a href="{{ route('citizen.reservations.show', $booking->id) }}" 
+                                <a href="{{ URL::signedRoute('citizen.reservations.show', $booking->id) }}" 
                                    class="px-5 py-2.5 bg-lgu-button text-lgu-button-text font-semibold rounded-lg hover:bg-lgu-highlight transition-all shadow-md hover:shadow-lg text-sm cursor-pointer">
                                     View Details →
                                 </a>
@@ -218,7 +218,7 @@
                                 @endif
 
                                 @if($booking->status === 'payment_pending')
-                                    <a href="{{ route('citizen.payment-slips') }}" 
+                                    <a href="{{ URL::signedRoute('citizen.payment-slips') }}" 
                                        class="px-5 py-2.5 bg-orange-50 text-orange-700 font-semibold rounded-lg hover:bg-orange-100 transition-all border-2 border-orange-200 hover:border-orange-300 text-sm cursor-pointer inline-flex items-center">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2">
                                             <rect width="20" height="14" x="2" y="5" rx="2"/>
@@ -249,7 +249,7 @@ function liveSearch(query) {
     clearTimeout(searchTimeout);
     searchTimeout = setTimeout(() => {
         const currentStatus = '{{ $status }}';
-        window.location.href = `{{ route('citizen.reservations') }}?status=${currentStatus}&search=${encodeURIComponent(query)}`;
+        window.location.href = `{{ URL::signedRoute('citizen.reservations') }}?status=${currentStatus}&search=${encodeURIComponent(query)}`;
     }, 500);
 }
 

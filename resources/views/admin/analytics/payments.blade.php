@@ -14,7 +14,7 @@
     {{-- Date Filter --}}
     <div class="px-gr-lg py-gr-md">
         <div class="bg-white rounded-xl shadow-md border-2 border-lgu-stroke p-gr-md">
-            <form method="GET" action="{{ route('admin.analytics.payments') }}" class="flex items-end gap-gr-sm">
+            <form method="GET" action="{{ URL::signedRoute('admin.analytics.payments') }}" class="flex items-end gap-gr-sm">
                 <div class="flex-1">
                     <label for="start_date" class="block text-sm font-semibold mb-gr-xs text-lgu-headline">Start Date</label>
                     <input type="date" name="start_date" id="start_date" value="{{ $startDate }}"

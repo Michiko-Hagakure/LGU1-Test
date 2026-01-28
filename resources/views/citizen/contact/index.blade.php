@@ -15,7 +15,7 @@
         <!-- Contact Form -->
         <div class="lg:col-span-2">
             <div class="bg-white rounded-lg shadow-md p-6">
-                <form action="{{ route('citizen.contact.store') }}" method="POST" enctype="multipart/form-data" id="contactForm">
+                <form action="{{ URL::signedRoute('citizen.contact.store') }}" method="POST" enctype="multipart/form-data" id="contactForm">
                     @csrf
 
                     <!-- Name -->
@@ -131,7 +131,7 @@
                 </h3>
                 <ul class="space-y-3">
                     <li>
-                        <a href="{{ route('citizen.help-center.index') }}" class="text-blue-600 hover:text-blue-800 flex items-center">
+                        <a href="{{ URL::signedRoute('citizen.help-center.index') }}" class="text-blue-600 hover:text-blue-800 flex items-center">
                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
                             </svg>
@@ -139,7 +139,7 @@
                         </a>
                     </li>
                     <li>
-                        <a href="{{ route('citizen.contact.my-inquiries') }}" class="text-blue-600 hover:text-blue-800 flex items-center">
+                        <a href="{{ URL::signedRoute('citizen.contact.my-inquiries') }}" class="text-blue-600 hover:text-blue-800 flex items-center">
                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
                             </svg>

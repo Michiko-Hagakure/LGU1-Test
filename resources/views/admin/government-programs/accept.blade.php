@@ -7,7 +7,7 @@
 <div class="space-y-gr-xl">
     <!-- Back Button -->
     <div>
-        <a href="{{ route('admin.government-programs.preview', $seminar->seminar_id) }}" 
+        <a href="{{ URL::signedRoute('admin.government-programs.preview', $seminar->seminar_id) }}" 
            class="inline-flex items-center gap-2 text-lgu-paragraph hover:text-lgu-headline transition-colors">
             <i data-lucide="arrow-left" class="w-5 h-5"></i>
             <span class="font-medium">Back to Preview</span>
@@ -48,7 +48,7 @@
     </div>
     @endif
 
-    <form method="POST" action="{{ route('admin.government-programs.accept', $seminar->seminar_id) }}" class="space-y-gr-lg">
+    <form method="POST" action="{{ URL::signedRoute('admin.government-programs.accept', $seminar->seminar_id) }}" class="space-y-gr-lg">
         @csrf
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-gr-lg">
@@ -170,7 +170,7 @@
                             <i data-lucide="check-circle" class="w-5 h-5"></i>
                             Accept & Confirm
                         </button>
-                        <a href="{{ route('admin.government-programs.preview', $seminar->seminar_id) }}" 
+                        <a href="{{ URL::signedRoute('admin.government-programs.preview', $seminar->seminar_id) }}" 
                            class="w-full inline-flex items-center justify-center gap-2 px-gr-lg py-gr-md bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold rounded-lg transition-colors">
                             <i data-lucide="x" class="w-5 h-5"></i>
                             Cancel

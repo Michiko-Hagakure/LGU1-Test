@@ -11,7 +11,7 @@
             <button class="bg-white border border-gray-200 text-gray-700 px-4 py-2 rounded-xl text-small font-bold hover:bg-gray-50 shadow-sm transition-all flex items-center">
                 <i data-lucide="filter" class="w-4 h-4 mr-2"></i> Filter
             </button>
-            <a href="{{ route('admin.audit.export') }}" class="px-6 py-2 bg-lgu-secondary text-white rounded-lg hover:opacity-90 transition-all font-semibold flex items-center">
+            <a href="{{ URL::signedRoute('admin.audit.export') }}" class="px-6 py-2 bg-lgu-secondary text-white rounded-lg hover:opacity-90 transition-all font-semibold flex items-center">
                 <i data-lucide="download" class="w-4 h-4 mr-2"></i>
                 <span>Export PDF</span>
             </a>

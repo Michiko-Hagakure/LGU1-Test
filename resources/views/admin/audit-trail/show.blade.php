@@ -4,7 +4,7 @@
 <div class="p-6">
     <!-- Header -->
     <div class="mb-6">
-        <a href="{{ route('admin.audit-trail.index') }}" class="inline-flex items-center text-lgu-paragraph hover:text-lgu-headline mb-4">
+        <a href="{{ URL::signedRoute('admin.audit-trail.index') }}" class="inline-flex items-center text-lgu-paragraph hover:text-lgu-headline mb-4">
             <i data-lucide="arrow-left" class="w-4 h-4 mr-2"></i>
             Back to Audit Trail
         </a>

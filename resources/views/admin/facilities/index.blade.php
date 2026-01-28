@@ -12,7 +12,7 @@
             <h1 class="text-h1 font-bold text-lgu-headline mb-gr-xs">Manage Facilities</h1>
             <p class="text-body text-lgu-paragraph">Add, edit, and manage all public facilities</p>
         </div>
-        <a href="{{ route('admin.facilities.create') }}" class="inline-flex items-center px-gr-md py-gr-sm bg-lgu-button text-lgu-button-text font-semibold rounded-lg hover:bg-opacity-90 transition-colors duration-200">
+        <a href="{{ URL::signedRoute('admin.facilities.create') }}" class="inline-flex items-center px-gr-md py-gr-sm bg-lgu-button text-lgu-button-text font-semibold rounded-lg hover:bg-opacity-90 transition-colors duration-200">
             <i data-lucide="plus" class="w-5 h-5 mr-gr-xs"></i>
             Add New Facility
         </a>
@@ -46,7 +46,7 @@
     {{-- Tabs for Active/Archived --}}
     <div class="bg-white rounded-xl shadow-sm border border-gray-200 mb-gr-lg">
         <div class="flex">
-            <a href="{{ route('admin.facilities.index', request()->except('show_deleted')) }}" 
+            <a href="{{ URL::signedRoute('admin.facilities.index', request()->except('show_deleted')) }}" 
                 style="flex: 1; display: flex; align-items: center; justify-content: center; padding: 1rem 1.5rem; font-weight: 600; transition: all 0.2s; border-bottom: 4px solid {{ !$showDeleted ? '#00473e' : 'transparent' }}; background-color: {{ !$showDeleted ? '#00473e' : '#f9fafb' }}; color: {{ !$showDeleted ? 'white' : '#4b5563' }};">
                 <i data-lucide="building-2" style="width: 20px; height: 20px; margin-right: 0.5rem;"></i>
                 <span>Active Facilities</span>
@@ -54,7 +54,7 @@
                     {{ $activeFacilitiesCount ?? 0 }}
                 </span>
             </a>
-            <a href="{{ route('admin.facilities.index', array_merge(request()->except('show_deleted'), ['show_deleted' => '1'])) }}" 
+            <a href="{{ URL::signedRoute('admin.facilities.index', array_merge(request()->except('show_deleted'), ['show_deleted' => '1'])) }}" 
                 style="flex: 1; display: flex; align-items: center; justify-content: center; padding: 1rem 1.5rem; font-weight: 600; transition: all 0.2s; border-bottom: 4px solid {{ $showDeleted ? '#f59e0b' : 'transparent' }}; background-color: {{ $showDeleted ? '#f59e0b' : '#f9fafb' }}; color: {{ $showDeleted ? 'white' : '#4b5563' }};">
                 <i data-lucide="archive" style="width: 20px; height: 20px; margin-right: 0.5rem;"></i>
                 <span>Archived Facilities</span>
@@ -67,7 +67,7 @@
 
     {{-- Search and Filters --}}
     <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-gr-lg mb-gr-lg">
-        <form method="GET" action="{{ route('admin.facilities.index') }}" class="space-y-gr-md">
+        <form method="GET" action="{{ URL::signedRoute('admin.facilities.index') }}" class="space-y-gr-md">
             <input type="hidden" name="show_deleted" value="{{ $showDeleted ? '1' : '' }}">
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-gr-md">
                 {{-- Search --}}
@@ -126,7 +126,7 @@
                     <i data-lucide="filter" class="w-5 h-5 mr-gr-xs"></i>
                     Apply Filters
                 </button>
-                <a href="{{ route('admin.facilities.index', $showDeleted ? ['show_deleted' => '1'] : []) }}" class="inline-flex items-center px-gr-md py-gr-sm bg-gray-100 text-gray-700 font-semibold rounded-lg hover:bg-gray-200 transition-colors duration-200">
+                <a href="{{ URL::signedRoute('admin.facilities.index', $showDeleted ? ['show_deleted' => '1'] : []) }}" class="inline-flex items-center px-gr-md py-gr-sm bg-gray-100 text-gray-700 font-semibold rounded-lg hover:bg-gray-200 transition-colors duration-200">
                     <i data-lucide="x" class="w-5 h-5 mr-gr-xs"></i>
                     Clear
                 </a>
@@ -207,7 +207,7 @@
                                             <i data-lucide="rotate-ccw" class="w-5 h-5"></i>
                                         </button>
                                     @else
-                                        <a href="{{ route('admin.facilities.edit', $facility->facility_id) }}" 
+                                        <a href="{{ URL::signedRoute('admin.facilities.edit', $facility->facility_id) }}" 
                                             class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors duration-200"
                                             title="Edit">
                                             <i data-lucide="edit" class="w-5 h-5"></i>
@@ -233,7 +233,7 @@
                                         <i data-lucide="inbox" class="w-16 h-16 text-gray-300 mb-gr-md"></i>
                                         <p class="text-body font-semibold text-gray-600 mb-gr-xs">No facilities found</p>
                                         <p class="text-small text-gray-500 mb-gr-md">Try adjusting your search or filters</p>
-                                        <a href="{{ route('admin.facilities.create') }}" class="inline-flex items-center px-gr-md py-gr-sm bg-lgu-button text-lgu-button-text font-semibold rounded-lg hover:bg-opacity-90 transition-colors duration-200">
+                                        <a href="{{ URL::signedRoute('admin.facilities.create') }}" class="inline-flex items-center px-gr-md py-gr-sm bg-lgu-button text-lgu-button-text font-semibold rounded-lg hover:bg-opacity-90 transition-colors duration-200">
                                             <i data-lucide="plus" class="w-5 h-5 mr-gr-xs"></i>
                                             Add Your First Facility
                                         </a>

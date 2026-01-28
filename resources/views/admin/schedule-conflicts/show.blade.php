@@ -8,7 +8,7 @@
     {{-- Header --}}
     <div class="flex justify-between items-center">
         <div>
-            <a href="{{ route('admin.schedule-conflicts.index') }}" class="inline-flex items-center text-lgu-button hover:underline mb-gr-sm">
+            <a href="{{ URL::signedRoute('admin.schedule-conflicts.index') }}" class="inline-flex items-center text-lgu-button hover:underline mb-gr-sm">
                 <i data-lucide="arrow-left" class="w-4 h-4 mr-2"></i>
                 Back to Conflicts
             </a>
@@ -98,7 +98,7 @@
                             @endif
                         </div>
 
-                        <a href="{{ route('admin.bookings.review', $conflicting->id) }}" class="inline-flex items-center px-gr-md py-gr-sm bg-lgu-button text-lgu-button-text font-semibold rounded-lg hover:bg-opacity-90 transition-colors duration-200">
+                        <a href="{{ URL::signedRoute('admin.bookings.review', $conflicting->id) }}" class="inline-flex items-center px-gr-md py-gr-sm bg-lgu-button text-lgu-button-text font-semibold rounded-lg hover:bg-opacity-90 transition-colors duration-200">
                             <i data-lucide="eye" class="w-5 h-5 mr-gr-xs"></i>
                             Review Booking
                         </a>
@@ -112,15 +112,15 @@
     <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-gr-lg">
         <h2 class="text-h2 font-bold text-lgu-headline mb-gr-md">Resolution Actions</h2>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-gr-md">
-            <a href="{{ route('admin.bookings.review', $booking->id) }}" class="flex items-center justify-center px-gr-lg py-gr-md bg-blue-100 text-blue-800 font-semibold rounded-lg hover:bg-blue-200 transition-colors duration-200">
+            <a href="{{ URL::signedRoute('admin.bookings.review', $booking->id) }}" class="flex items-center justify-center px-gr-lg py-gr-md bg-blue-100 text-blue-800 font-semibold rounded-lg hover:bg-blue-200 transition-colors duration-200">
                 <i data-lucide="file-text" class="w-5 h-5 mr-2"></i>
                 Review Primary Booking
             </a>
-            <a href="{{ route('admin.maintenance.create') }}?facility_id={{ $booking->facility_id }}" class="flex items-center justify-center px-gr-lg py-gr-md bg-amber-100 text-amber-800 font-semibold rounded-lg hover:bg-amber-200 transition-colors duration-200">
+            <a href="{{ URL::signedRoute('admin.maintenance.create') }}?facility_id={{ $booking->facility_id }}" class="flex items-center justify-center px-gr-lg py-gr-md bg-amber-100 text-amber-800 font-semibold rounded-lg hover:bg-amber-200 transition-colors duration-200">
                 <i data-lucide="wrench" class="w-5 h-5 mr-2"></i>
                 Schedule Maintenance
             </a>
-            <a href="{{ route('admin.calendar') }}?facility={{ $booking->facility_id }}" class="flex items-center justify-center px-gr-lg py-gr-md bg-green-100 text-green-800 font-semibold rounded-lg hover:bg-green-200 transition-colors duration-200">
+            <a href="{{ URL::signedRoute('admin.calendar') }}?facility={{ $booking->facility_id }}" class="flex items-center justify-center px-gr-lg py-gr-md bg-green-100 text-green-800 font-semibold rounded-lg hover:bg-green-200 transition-colors duration-200">
                 <i data-lucide="calendar" class="w-5 h-5 mr-2"></i>
                 View Calendar
             </a>

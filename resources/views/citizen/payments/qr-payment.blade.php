@@ -6,7 +6,7 @@
 <div class="container mx-auto px-4 py-6 max-w-2xl">
     <!-- Back Button -->
     <div class="mb-gr-md">
-        <a href="{{ route('citizen.payment-slips.show', $paymentSlip->id) }}" class="inline-flex items-center text-small font-medium text-gray-600 hover:text-gray-900">
+        <a href="{{ URL::signedRoute('citizen.payment-slips.show', $paymentSlip->id) }}" class="inline-flex items-center text-small font-medium text-gray-600 hover:text-gray-900">
             <i data-lucide="arrow-left" class="w-4 h-4 mr-gr-xs"></i>
             Back to Payment Slip
         </a>
@@ -82,7 +82,7 @@
         </div>
 
         <!-- Cancel Button -->
-        <a href="{{ route('citizen.payment-slips.show', $paymentSlip->id) }}" class="btn-secondary inline-flex items-center">
+        <a href="{{ URL::signedRoute('citizen.payment-slips.show', $paymentSlip->id) }}" class="btn-secondary inline-flex items-center">
             <i data-lucide="x" class="w-4 h-4 mr-gr-xs"></i>
             Cancel
         </a>

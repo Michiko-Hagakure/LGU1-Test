@@ -6,7 +6,7 @@
 
 @section('page-content')
 <div class="mb-6">
-    <a href="{{ route('admin.news.index') }}" class="inline-flex items-center text-gray-600 hover:text-gray-800 transition-colors duration-200">
+    <a href="{{ URL::signedRoute('admin.news.index') }}" class="inline-flex items-center text-gray-600 hover:text-gray-800 transition-colors duration-200">
         <i data-lucide="arrow-left" class="w-5 h-5 mr-2"></i>
         Back to News
     </a>
@@ -25,7 +25,7 @@
     </div>
     @endif
 
-    <form action="{{ route('admin.news.store') }}" method="POST" enctype="multipart/form-data">
+    <form action="{{ URL::signedRoute('admin.news.store') }}" method="POST" enctype="multipart/form-data">
         @csrf
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -149,7 +149,7 @@
 
         {{-- Submit Buttons --}}
         <div class="mt-8 flex justify-end gap-4">
-            <a href="{{ route('admin.news.index') }}" class="px-6 py-2.5 bg-gray-100 text-gray-700 font-semibold rounded-lg hover:bg-gray-200 transition-colors duration-200">
+            <a href="{{ URL::signedRoute('admin.news.index') }}" class="px-6 py-2.5 bg-gray-100 text-gray-700 font-semibold rounded-lg hover:bg-gray-200 transition-colors duration-200">
                 Cancel
             </a>
             <button type="submit" class="px-6 py-2.5 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors duration-200">

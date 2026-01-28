@@ -26,7 +26,7 @@
 
     <!-- Filters & Search -->
     <div class="bg-white rounded-xl shadow-sm border border-lgu-stroke p-gr-lg">
-        <form method="GET" action="{{ route('admin.payment-queue') }}" class="flex flex-col md:flex-row gap-gr-md">
+        <form method="GET" action="{{ URL::signedRoute('admin.payment-queue') }}" class="flex flex-col md:flex-row gap-gr-md">
             <!-- Search -->
             <div class="flex-1">
                 <label class="block text-small font-medium text-lgu-paragraph mb-gr-xs">Search</label>
@@ -134,7 +134,7 @@
                             </div>
 
                             <!-- Action Button -->
-                            <a href="{{ route('admin.bookings.review', $booking->id) }}" 
+                            <a href="{{ URL::signedRoute('admin.bookings.review', $booking->id) }}" 
                                class="px-gr-lg py-gr-sm bg-lgu-button hover:bg-lgu-highlight text-lgu-button-text font-semibold rounded-lg transition-colors flex items-center gap-2">
                                 <i data-lucide="eye" class="w-5 h-5"></i>
                                 Review Booking

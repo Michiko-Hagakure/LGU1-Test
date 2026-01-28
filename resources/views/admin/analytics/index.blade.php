@@ -79,7 +79,7 @@
         </h3>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <!-- Revenue Report -->
-            <a href="{{ route('admin.analytics.revenue-report') }}" class="group block p-4 border-2 border-gray-200 rounded-lg hover:border-lgu-primary hover:shadow-md transition-all duration-200">
+            <a href="{{ URL::signedRoute('admin.analytics.revenue-report') }}" class="group block p-4 border-2 border-gray-200 rounded-lg hover:border-lgu-primary hover:shadow-md transition-all duration-200">
                 <div class="flex items-start justify-between mb-3">
                     <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center group-hover:bg-lgu-primary group-hover:text-white transition-colors duration-200">
                         <i data-lucide="trending-up" class="w-5 h-5 text-green-600 group-hover:text-white"></i>
@@ -91,7 +91,7 @@
             </a>
 
             <!-- Budget Analysis -->
-            <a href="{{ route('admin.budget.index') }}" class="group block p-4 border-2 border-gray-200 rounded-lg hover:border-lgu-primary hover:shadow-md transition-all duration-200">
+            <a href="{{ URL::signedRoute('admin.budget.index') }}" class="group block p-4 border-2 border-gray-200 rounded-lg hover:border-lgu-primary hover:shadow-md transition-all duration-200">
                 <div class="flex items-start justify-between mb-3">
                     <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center group-hover:bg-lgu-primary group-hover:text-white transition-colors duration-200">
                         <i data-lucide="wallet" class="w-5 h-5 text-blue-600 group-hover:text-white"></i>
@@ -112,7 +112,7 @@
         </h3>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <!-- Booking Statistics -->
-            <a href="{{ route('admin.analytics.booking-statistics') }}" class="group block p-4 border-2 border-gray-200 rounded-lg hover:border-lgu-secondary hover:shadow-md transition-all duration-200">
+            <a href="{{ URL::signedRoute('admin.analytics.booking-statistics') }}" class="group block p-4 border-2 border-gray-200 rounded-lg hover:border-lgu-secondary hover:shadow-md transition-all duration-200">
                 <div class="flex items-start justify-between mb-3">
                     <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center group-hover:bg-lgu-secondary group-hover:text-white transition-colors duration-200">
                         <i data-lucide="calendar-check" class="w-5 h-5 text-purple-600 group-hover:text-white"></i>
@@ -124,7 +124,7 @@
             </a>
 
             <!-- Facility Utilization -->
-            <a href="{{ route('admin.analytics.facility-utilization') }}" class="group block p-4 border-2 border-gray-200 rounded-lg hover:border-lgu-secondary hover:shadow-md transition-all duration-200">
+            <a href="{{ URL::signedRoute('admin.analytics.facility-utilization') }}" class="group block p-4 border-2 border-gray-200 rounded-lg hover:border-lgu-secondary hover:shadow-md transition-all duration-200">
                 <div class="flex items-start justify-between mb-3">
                     <div class="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center group-hover:bg-lgu-secondary group-hover:text-white transition-colors duration-200">
                         <i data-lucide="building" class="w-5 h-5 text-yellow-600 group-hover:text-white"></i>
@@ -136,7 +136,7 @@
             </a>
 
             <!-- Operational Metrics -->
-            <a href="{{ route('admin.analytics.operational-metrics') }}" class="group block p-4 border-2 border-gray-200 rounded-lg hover:border-lgu-secondary hover:shadow-md transition-all duration-200">
+            <a href="{{ URL::signedRoute('admin.analytics.operational-metrics') }}" class="group block p-4 border-2 border-gray-200 rounded-lg hover:border-lgu-secondary hover:shadow-md transition-all duration-200">
                 <div class="flex items-start justify-between mb-3">
                     <div class="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center group-hover:bg-lgu-secondary group-hover:text-white transition-colors duration-200">
                         <i data-lucide="activity" class="w-5 h-5 text-red-600 group-hover:text-white"></i>
@@ -157,7 +157,7 @@
         </h3>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <!-- Citizen Analytics -->
-            <a href="{{ route('admin.analytics.citizen-analytics') }}" class="group block p-4 border-2 border-gray-200 rounded-lg hover:border-lgu-tertiary hover:shadow-md transition-all duration-200">
+            <a href="{{ URL::signedRoute('admin.analytics.citizen-analytics') }}" class="group block p-4 border-2 border-gray-200 rounded-lg hover:border-lgu-tertiary hover:shadow-md transition-all duration-200">
                 <div class="flex items-start justify-between mb-3">
                     <div class="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center group-hover:bg-lgu-tertiary group-hover:text-white transition-colors duration-200">
                         <i data-lucide="users" class="w-5 h-5 text-indigo-600 group-hover:text-white"></i>

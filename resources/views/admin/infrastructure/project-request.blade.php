@@ -78,7 +78,7 @@
     </div>
     @endif
 
-    <form action="{{ route('admin.infrastructure.project-request.store') }}" method="POST" enctype="multipart/form-data" id="projectRequestForm">
+    <form action="{{ URL::signedRoute('admin.infrastructure.project-request.store') }}" method="POST" enctype="multipart/form-data" id="projectRequestForm">
         @csrf
 
         {{-- Section 1: Contact Information --}}

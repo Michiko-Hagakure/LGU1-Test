@@ -25,7 +25,7 @@
     <script>
     function shareFavorites() {
         const facilityIds = @json($favorites->pluck('facility_id')->toArray());
-        const shareUrl = `{{ route('citizen.browse-facilities') }}?favorites=${facilityIds.join(',')}`;
+        const shareUrl = `{{ URL::signedRoute('citizen.browse-facilities') }}?favorites=${facilityIds.join(',')}`;
         
         Swal.fire({
             title: 'Share Your Favorites',
@@ -81,7 +81,7 @@
                 <i data-lucide="heart" class="w-16 h-16 mx-auto mb-gr-md text-gray-300"></i>
                 <h3 class="text-xl font-semibold text-lgu-headline mb-gr-xs">No favorites yet</h3>
                 <p class="text-lgu-paragraph mb-gr-lg">Start adding facilities to your favorites for quick access</p>
-                <a href="{{ route('citizen.browse-facilities') }}" 
+                <a href="{{ URL::signedRoute('citizen.browse-facilities') }}" 
                    class="inline-block bg-lgu-button text-lgu-button-text px-gr-lg py-gr-sm rounded-lg font-semibold hover:bg-opacity-90 transition-all">
                     <i data-lucide="building-2" class="w-4 h-4 inline mr-2"></i>
                     Browse Facilities
@@ -160,11 +160,11 @@
                             </div>
 
                             <div class="grid grid-cols-2 gap-gr-xs">
-                                <a href="{{ route('citizen.facility-details', $facility->facility_id) }}" 
+                                <a href="{{ URL::signedRoute('citizen.facility-details', $facility->facility_id) }}" 
                                    class="text-center bg-lgu-button text-lgu-button-text px-gr-md py-gr-xs rounded-lg font-semibold hover:bg-opacity-90 transition-all">
                                     View Details
                                 </a>
-                                <a href="{{ route('citizen.booking.create', $facility->facility_id) }}" 
+                                <a href="{{ URL::signedRoute('citizen.booking.create', $facility->facility_id) }}" 
                                    class="text-center bg-lgu-headline text-white px-gr-md py-gr-xs rounded-lg font-semibold hover:bg-opacity-90 transition-all">
                                     Book Now
                                 </a>

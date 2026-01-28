@@ -7,7 +7,7 @@
 @section('page-content')
 <!-- Breadcrumb -->
 <nav class="mb-6 text-sm">
-    <a href="{{ route('citizen.news.index') }}" class="text-blue-600 hover:text-blue-800">News</a>
+    <a href="{{ URL::signedRoute('citizen.news.index') }}" class="text-blue-600 hover:text-blue-800">News</a>
     <span class="text-gray-400 mx-2">/</span>
     <span class="text-gray-600">{{ $newsItem->title }}</span>
 </nav>
@@ -99,7 +99,7 @@
             <h3 class="font-bold text-gray-800 mb-4">Related News</h3>
             <div class="space-y-4">
                 @foreach($relatedNews as $related)
-                <a href="{{ route('citizen.news.show', $related->slug) }}" class="block hover:bg-gray-50 p-3 rounded-lg transition duration-200">
+                <a href="{{ URL::signedRoute('citizen.news.show', $related->slug) }}" class="block hover:bg-gray-50 p-3 rounded-lg transition duration-200">
                     <h4 class="font-semibold text-gray-800 mb-1">{{ $related->title }}</h4>
                     <p class="text-sm text-gray-600">{{ Str::limit($related->excerpt ?? strip_tags($related->content), 60) }}</p>
                     <p class="text-xs text-gray-500 mt-1">{{ $related->published_at->format('M j, Y') }}</p>

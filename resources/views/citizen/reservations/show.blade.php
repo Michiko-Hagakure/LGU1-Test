@@ -8,7 +8,7 @@
 <div class="space-y-6">
     <!-- Back Button -->
     <div>
-        <a href="{{ route('citizen.reservations') }}" 
+        <a href="{{ URL::signedRoute('citizen.reservations') }}" 
            class="inline-flex items-center text-lgu-button hover:text-lgu-highlight font-medium">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2">
                 <path d="m12 19-7-7 7-7"/><path d="M19 12H5"/>
@@ -125,7 +125,7 @@
                     <p class="text-sm text-gray-700 mt-1 mb-3">
                         Your event has ended. Please take a moment to share your experience and help us improve our services.
                     </p>
-                    <a href="{{ route('citizen.reviews.create', $booking->id) }}" 
+                    <a href="{{ URL::signedRoute('citizen.reviews.create', $booking->id) }}" 
                        class="inline-flex items-center gap-2 px-5 py-2.5 bg-lgu-highlight text-lgu-button-text font-bold rounded-lg hover:bg-lgu-hover transition shadow-md">
                         <i data-lucide="star" class="w-5 h-5"></i>
                         Leave a Review Now
@@ -569,7 +569,7 @@
                 <!-- Action Buttons -->
                 <div class="mt-6 space-y-3">
                     @if($booking->status === 'payment_pending')
-                        <a href="{{ route('citizen.payment-slips') }}" 
+                        <a href="{{ URL::signedRoute('citizen.payment-slips') }}" 
                            class="block w-full px-4 py-3 bg-lgu-button text-lgu-button-text text-center font-semibold rounded-lg hover:bg-lgu-highlight transition">
                             View Payment Slip
                         </a>
@@ -577,13 +577,13 @@
 
                     <!-- Leave Review Button (shows when event has passed and no review exists) -->
                     @if($canReview)
-                        <a href="{{ route('citizen.reviews.create', $booking->id) }}" 
+                        <a href="{{ URL::signedRoute('citizen.reviews.create', $booking->id) }}" 
                            class="block w-full px-4 py-3 bg-lgu-highlight text-lgu-button-text text-center font-bold rounded-lg hover:bg-lgu-hover transition shadow-md flex items-center justify-center gap-2">
                             <i data-lucide="star" class="w-5 h-5"></i>
                             Leave a Review
                         </a>
                     @elseif($existingReview)
-                        <a href="{{ route('citizen.reviews.edit', $existingReview->id) }}" 
+                        <a href="{{ URL::signedRoute('citizen.reviews.edit', $existingReview->id) }}" 
                            class="block w-full px-4 py-3 bg-blue-50 text-blue-700 text-center font-semibold rounded-lg hover:bg-blue-100 transition flex items-center justify-center gap-2 border-2 border-blue-200">
                             <i data-lucide="check-circle" class="w-5 h-5"></i>
                             Review Submitted
@@ -597,7 +597,7 @@
                         </button>
                     @endif
 
-                    <a href="{{ route('citizen.reservations') }}" 
+                    <a href="{{ URL::signedRoute('citizen.reservations') }}" 
                        class="block w-full px-4 py-3 bg-gray-200 text-gray-700 text-center font-semibold rounded-lg hover:bg-gray-300 transition">
                         Back to List
                     </a>

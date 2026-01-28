@@ -12,7 +12,7 @@
                 <p class="text-gray-600 mt-1">Monitor budget allocation and utilization for fiscal year {{ $fiscalYear }}</p>
             </div>
             
-            <form method="GET" action="{{ route('cbd.reports.budget-analysis') }}" class="flex items-center gap-3">
+            <form method="GET" action="{{ URL::signedRoute('cbd.reports.budget-analysis') }}" class="flex items-center gap-3">
                 <select name="fiscal_year" onchange="this.form.submit()" class="px-4 py-2 border border-lgu-stroke rounded-lg focus:ring-2 focus:ring-lgu-highlight focus:border-lgu-highlight">
                     @foreach($fiscalYears as $year)
                         <option value="{{ $year }}" {{ $year == $fiscalYear ? 'selected' : '' }}>

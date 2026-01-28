@@ -13,7 +13,7 @@
                 <p class="text-lgu-body">Manage system backups for data protection and disaster recovery</p>
             </div>
             <div class="flex gap-3">
-                <form method="POST" action="{{ route('admin.backup.clean') }}" class="inline" id="cleanBackupForm">
+                <form method="POST" action="{{ URL::signedRoute('admin.backup.clean') }}" class="inline" id="cleanBackupForm">
                     @csrf
                     <button type="button" 
                             class="px-6 py-3 bg-yellow-500 text-white font-semibold rounded-lg hover:bg-yellow-600 transition shadow-md flex items-center gap-2"
@@ -22,7 +22,7 @@
                         Clean Old Backups
                     </button>
                 </form>
-                <form method="POST" action="{{ route('admin.backup.create') }}" class="inline" id="createBackupForm">
+                <form method="POST" action="{{ URL::signedRoute('admin.backup.create') }}" class="inline" id="createBackupForm">
                     @csrf
                     <button type="button" 
                             class="px-6 py-3 bg-lgu-button text-white font-semibold rounded-lg hover:opacity-90 transition shadow-md flex items-center gap-2"
@@ -133,7 +133,7 @@
                                 </td>
                                 <td class="px-6 py-4">
                                     <div class="flex justify-center gap-2">
-                                        <form method="POST" action="{{ route('admin.backup.download', $backup['name']) }}" class="inline">
+                                        <form method="POST" action="{{ URL::signedRoute('admin.backup.download', $backup['name']) }}" class="inline">
                                             @csrf
                                             <button type="submit" 
                                                     class="px-4 py-2 bg-lgu-button text-white text-sm font-semibold rounded-lg hover:opacity-90 transition flex items-center gap-2">
@@ -141,7 +141,7 @@
                                                 Download
                                             </button>
                                         </form>
-                                        <form method="POST" action="{{ route('admin.backup.destroy', $backup['name']) }}" class="inline delete-backup-form">
+                                        <form method="POST" action="{{ URL::signedRoute('admin.backup.destroy', $backup['name']) }}" class="inline delete-backup-form">
                                             @csrf
                                             @method('DELETE')
                                             <button type="button" 
@@ -163,7 +163,7 @@
                 <i data-lucide="inbox" class="w-16 h-16 text-gray-300 mx-auto mb-4"></i>
                 <p class="text-gray-500 text-lg font-semibold mb-2">No backups available</p>
                 <p class="text-gray-400 text-sm mb-6">Create your first backup to get started</p>
-                <form method="POST" action="{{ route('admin.backup.create') }}" class="inline">
+                <form method="POST" action="{{ URL::signedRoute('admin.backup.create') }}" class="inline">
                     @csrf
                     <button type="submit" 
                             class="px-6 py-3 bg-lgu-button text-white font-semibold rounded-lg hover:opacity-90 transition shadow-md flex items-center gap-2 mx-auto">

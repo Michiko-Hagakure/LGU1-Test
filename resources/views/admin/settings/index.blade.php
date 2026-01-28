@@ -27,7 +27,7 @@
     @endif
 
     <!-- Settings Form -->
-    <form method="POST" action="{{ route('admin.settings.update') }}" id="settingsForm" enctype="multipart/form-data">
+    <form method="POST" action="{{ URL::signedRoute('admin.settings.update') }}" id="settingsForm" enctype="multipart/form-data">
         @csrf
         @method('PUT')
 
@@ -151,13 +151,13 @@
                 <i data-lucide="save" class="w-5 h-5 inline mr-2"></i>
                 Save Settings
             </button>
-            <a href="{{ route('admin.settings.clear-cache') }}" 
+            <a href="{{ URL::signedRoute('admin.settings.clear-cache') }}" 
                onclick="return confirm('Are you sure you want to clear the settings cache?')"
                class="px-6 py-3 bg-gray-500 text-white font-semibold rounded-lg hover:bg-gray-600 transition">
                 <i data-lucide="refresh-cw" class="w-5 h-5 inline mr-2"></i>
                 Clear Cache
             </a>
-            <a href="{{ route('admin.dashboard') }}" class="px-6 py-3 bg-gray-200 text-gray-700 font-semibold rounded-lg hover:bg-gray-300 transition">
+            <a href="{{ URL::signedRoute('admin.dashboard') }}" class="px-6 py-3 bg-gray-200 text-gray-700 font-semibold rounded-lg hover:bg-gray-300 transition">
                 <i data-lucide="x" class="w-5 h-5 inline mr-2"></i>
                 Cancel
             </a>

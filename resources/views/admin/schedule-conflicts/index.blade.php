@@ -25,7 +25,7 @@
 
     {{-- Filters --}}
     <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-gr-lg">
-        <form method="GET" action="{{ route('admin.schedule-conflicts.index') }}" class="space-y-gr-md">
+        <form method="GET" action="{{ URL::signedRoute('admin.schedule-conflicts.index') }}" class="space-y-gr-md">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-gr-md">
                 {{-- Facility Filter --}}
                 <div>
@@ -56,7 +56,7 @@
                         <i data-lucide="filter" class="w-5 h-5 mr-gr-xs"></i>
                         Apply Filters
                     </button>
-                    <a href="{{ route('admin.schedule-conflicts.index') }}" class="inline-flex items-center px-gr-md py-gr-sm bg-gray-100 text-gray-700 font-semibold rounded-lg hover:bg-gray-200 transition-colors duration-200">
+                    <a href="{{ URL::signedRoute('admin.schedule-conflicts.index') }}" class="inline-flex items-center px-gr-md py-gr-sm bg-gray-100 text-gray-700 font-semibold rounded-lg hover:bg-gray-200 transition-colors duration-200">
                         <i data-lucide="x" class="w-5 h-5"></i>
                     </a>
                 </div>
@@ -105,7 +105,7 @@
                                 </div>
                             </div>
                         </div>
-                        <a href="{{ route('admin.schedule-conflicts.show', $conflict['main_booking']->id) }}" class="inline-flex items-center px-gr-md py-gr-sm bg-lgu-button text-lgu-button-text font-semibold rounded-lg hover:bg-opacity-90 transition-colors duration-200">
+                        <a href="{{ URL::signedRoute('admin.schedule-conflicts.show', $conflict['main_booking']->id) }}" class="inline-flex items-center px-gr-md py-gr-sm bg-lgu-button text-lgu-button-text font-semibold rounded-lg hover:bg-opacity-90 transition-colors duration-200">
                             <i data-lucide="eye" class="w-5 h-5 mr-gr-xs"></i>
                             View Details
                         </a>
@@ -134,7 +134,7 @@
                                                 </span>
                                             </div>
                                         </div>
-                                        <a href="{{ route('admin.bookings.review', $conflicting->id) }}" class="text-lgu-button hover:underline text-small">
+                                        <a href="{{ URL::signedRoute('admin.bookings.review', $conflicting->id) }}" class="text-lgu-button hover:underline text-small">
                                             View →
                                         </a>
                                     </div>

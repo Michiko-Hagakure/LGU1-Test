@@ -20,7 +20,7 @@
 
     <!-- Filters Section -->
     <div class="bg-white rounded-xl shadow-sm border border-lgu-stroke p-gr-lg mb-gr-md">
-        <form method="GET" action="{{ route('staff.bookings.index') }}" class="space-y-gr-sm">
+        <form method="GET" action="{{ URL::signedRoute('staff.bookings.index') }}" class="space-y-gr-sm">
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-gr-sm">
                 <!-- Status Filter -->
                 <div>
@@ -79,7 +79,7 @@
                         Filter
                     </button>
                     @if(request()->hasAny(['status', 'facility_id', 'date_from', 'date_to', 'search']))
-                    <a href="{{ route('staff.bookings.index') }}" class="px-gr-md py-2.5 bg-gray-100 text-gray-700 font-semibold rounded-lg hover:bg-gray-200 transition-colors flex items-center whitespace-nowrap">
+                    <a href="{{ URL::signedRoute('staff.bookings.index') }}" class="px-gr-md py-2.5 bg-gray-100 text-gray-700 font-semibold rounded-lg hover:bg-gray-200 transition-colors flex items-center whitespace-nowrap">
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x mr-2">
                             <path d="M18 6 6 18"/>
                             <path d="m6 6 12 12"/>
@@ -193,7 +193,7 @@
 
                 <!-- Right: Action Button -->
                 <div class="flex-shrink-0">
-                    <a href="{{ route('staff.bookings.review', $booking->id) }}" 
+                    <a href="{{ URL::signedRoute('staff.bookings.review', $booking->id) }}" 
                        class="inline-flex items-center px-gr-md py-2.5 bg-lgu-button text-white font-semibold rounded-lg hover:bg-lgu-button-hover transition-colors shadow-sm whitespace-nowrap">
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-eye mr-2">
                             <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/>

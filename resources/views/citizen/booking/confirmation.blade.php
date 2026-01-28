@@ -149,11 +149,11 @@
 
         <!-- Action Buttons -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8">
-            <a href="{{ route('citizen.reservations') }}" 
+            <a href="{{ URL::signedRoute('citizen.reservations') }}" 
                class="px-6 py-3 bg-lgu-button text-lgu-button-text font-semibold rounded-lg hover:bg-lgu-highlight transition text-center shadow">
                 View My Bookings
             </a>
-            <a href="{{ route('citizen.browse-facilities') }}" 
+            <a href="{{ URL::signedRoute('citizen.browse-facilities') }}" 
                class="px-6 py-3 border-2 border-lgu-button text-lgu-button font-semibold rounded-lg hover:bg-lgu-bg transition text-center">
                 Book Another Facility
             </a>

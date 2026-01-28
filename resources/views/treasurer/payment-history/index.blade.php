@@ -64,7 +64,7 @@
 
     <!-- Filters and Search -->
     <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-gr-md">
-        <form method="GET" action="{{ route('treasurer.payment-history') }}" class="space-y-gr-md">
+        <form method="GET" action="{{ URL::signedRoute('treasurer.payment-history') }}" class="space-y-gr-md">
             
             <!-- Search and Payment Method Row -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-gr-md">
@@ -123,7 +123,7 @@
                     <i data-lucide="filter" class="w-4 h-4"></i>
                     Apply Filters
                 </button>
-                <a href="{{ route('treasurer.payment-history') }}" class="border border-gray-300 text-gray-700 px-gr-md py-gr-xs rounded-lg hover:bg-gray-50 transition-colors font-semibold text-body inline-flex items-center gap-gr-xs">
+                <a href="{{ URL::signedRoute('treasurer.payment-history') }}" class="border border-gray-300 text-gray-700 px-gr-md py-gr-xs rounded-lg hover:bg-gray-50 transition-colors font-semibold text-body inline-flex items-center gap-gr-xs">
                     <i data-lucide="x" class="w-4 h-4"></i>
                     Clear
                 </a>
@@ -216,7 +216,7 @@
                         <div class="text-xs text-gray-500 truncate">{{ \Carbon\Carbon::parse($slip->paid_at)->format('h:i A') }}</div>
                     </td>
                     <td class="px-2 py-2.5 whitespace-nowrap text-center">
-                        <a href="{{ route('treasurer.payment-slips.show', $slip->id) }}" class="inline-flex items-center justify-center text-lgu-button hover:text-lgu-highlight transition-colors" title="View Details">
+                        <a href="{{ URL::signedRoute('treasurer.payment-slips.show', $slip->id) }}" class="inline-flex items-center justify-center text-lgu-button hover:text-lgu-highlight transition-colors" title="View Details">
                             <i data-lucide="eye" class="w-4 h-4"></i>
                         </a>
                     </td>

@@ -7,7 +7,7 @@
 <div class="pb-gr-2xl">
     <!-- Back Button -->
     <div class="mb-gr-md">
-        <a href="{{ route('citizen.payment-methods.index') }}" class="inline-flex items-center text-small font-medium text-gray-600 hover:text-gray-900">
+        <a href="{{ URL::signedRoute('citizen.payment-methods.index') }}" class="inline-flex items-center text-small font-medium text-gray-600 hover:text-gray-900">
             <i data-lucide="arrow-left" class="w-4 h-4 mr-gr-xs"></i>
             Back to Payment Methods
         </a>
@@ -15,7 +15,7 @@
 
     <div class="max-w-2xl mx-auto">
         <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-gr-lg">
-            <form method="POST" action="{{ route('citizen.payment-methods.update', $paymentMethod->id) }}" novalidate>
+            <form method="POST" action="{{ URL::signedRoute('citizen.payment-methods.update', $paymentMethod->id) }}" novalidate>
                 @csrf
                 @method('PUT')
 
@@ -98,7 +98,7 @@
                         <i data-lucide="save" class="w-4 h-4 mr-gr-xs"></i>
                         Update Payment Method
                     </button>
-                    <a href="{{ route('citizen.payment-methods.index') }}" class="btn-secondary flex-1 flex items-center justify-center">
+                    <a href="{{ URL::signedRoute('citizen.payment-methods.index') }}" class="btn-secondary flex-1 flex items-center justify-center">
                         Cancel
                     </a>
                 </div>

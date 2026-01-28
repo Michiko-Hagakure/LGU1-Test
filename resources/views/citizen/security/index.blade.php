@@ -39,7 +39,7 @@
                     Change Password
                 </h2>
                 
-                <form action="{{ route('citizen.security.change-password') }}" method="POST" class="space-y-gr-md">
+                <form action="{{ URL::signedRoute('citizen.security.change-password') }}" method="POST" class="space-y-gr-md">
                     @csrf
                     
                     <div>
@@ -343,7 +343,7 @@
                     Privacy Settings
                 </h2>
                 
-                <form action="{{ route('citizen.security.privacy') }}" method="POST" class="space-y-gr-md">
+                <form action="{{ URL::signedRoute('citizen.security.privacy') }}" method="POST" class="space-y-gr-md">
                     @csrf
                     
                     <div>
@@ -413,7 +413,7 @@
                     </div>
                 </div>
                 
-                <form action="{{ route('citizen.security.data-download') }}" method="POST">
+                <form action="{{ URL::signedRoute('citizen.security.data-download') }}" method="POST">
                     @csrf
                     <button type="submit" class="px-gr-lg py-gr-sm bg-lgu-button text-lgu-button-text font-semibold rounded-lg hover:opacity-90 transition flex items-center gap-gr-xs">
                         <i data-lucide="download" class="w-4 h-4"></i>

@@ -25,13 +25,13 @@
     <div class="bg-lgu-tertiary/10 border border-lgu-tertiary rounded-xl p-gr-md flex items-center gap-3">
         <i data-lucide="heart" class="w-5 h-5 text-lgu-tertiary"></i>
         <span class="text-lgu-headline font-medium">You're viewing someone's shared favorite facilities</span>
-        <a href="{{ route('citizen.browse-facilities') }}" class="ml-auto text-sm text-lgu-highlight hover:underline">View All Facilities</a>
+        <a href="{{ URL::signedRoute('citizen.browse-facilities') }}" class="ml-auto text-sm text-lgu-highlight hover:underline">View All Facilities</a>
     </div>
     @endif
 
     <!-- Search and Filters -->
     <div class="bg-white shadow rounded-xl p-gr-lg transition-all duration-300 hover:shadow-lg">
-        <form method="GET" action="{{ route('citizen.browse-facilities') }}" class="space-y-gr-md" id="filterForm">
+        <form method="GET" action="{{ URL::signedRoute('citizen.browse-facilities') }}" class="space-y-gr-md" id="filterForm">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-gr-md">
                 <!-- Search -->
                 <div class="md:col-span-3 lg:col-span-2">
@@ -158,7 +158,7 @@
                     </div>
                 </div>
                 <div class="flex gap-gr-sm">
-                    <a href="{{ route('citizen.browse-facilities') }}" 
+                    <a href="{{ URL::signedRoute('citizen.browse-facilities') }}" 
                        class="px-gr-md py-gr-sm border-2 border-lgu-stroke text-lgu-headline rounded-lg hover:bg-lgu-bg transition-colors text-sm font-semibold">
                         Clear Filters
                     </a>
@@ -746,7 +746,7 @@
                 </div>
                 <h3 class="text-h3 text-gray-900 mb-gr-sm">No facilities found</h3>
                 <p class="text-body text-gray-600 mb-gr-lg">Try adjusting your search or filters</p>
-                <a href="{{ route('citizen.browse-facilities') }}" 
+                <a href="{{ URL::signedRoute('citizen.browse-facilities') }}" 
                    class="inline-flex items-center px-gr-md py-gr-sm bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors text-small font-medium">
                     View All Facilities
                 </a>
@@ -844,12 +844,12 @@
                             @endif
                             
                             <div class="grid grid-cols-2 gap-gr-sm">
-                                <a href="{{ route('citizen.facility-details', ['id' => $facility->facility_id ?? $facility->getKey()]) }}" 
+                                <a href="{{ URL::signedRoute('citizen.facility-details', ['id' => $facility->facility_id ?? $facility->getKey()]) }}" 
                                    class="px-gr-sm py-gr-sm border-2 border-lgu-stroke text-lgu-headline font-semibold rounded-lg hover:bg-lgu-bg transition-colors text-center text-sm">
                                     Details
                                 </a>
                                 @if($facility->is_available)
-                                    <a href="{{ route('citizen.booking.create', $facility->facility_id ?? $facility->getKey()) }}" 
+                                    <a href="{{ URL::signedRoute('citizen.booking.create', $facility->facility_id ?? $facility->getKey()) }}" 
                                        class="px-gr-sm py-gr-sm bg-lgu-button text-lgu-button-text font-semibold rounded-lg hover:opacity-90 transition-all shadow-sm text-center text-sm">
                                         Book Now
                                     </a>

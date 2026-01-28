@@ -13,7 +13,7 @@
             </div>
             
             <!-- Filter Form -->
-            <form method="GET" action="{{ route('cbd.reports.revenue') }}" class="flex flex-wrap items-end gap-3">
+            <form method="GET" action="{{ URL::signedRoute('cbd.reports.revenue') }}" class="flex flex-wrap items-end gap-3">
                 <!-- Report Type -->
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Report Type</label>

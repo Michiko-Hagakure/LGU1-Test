@@ -7,7 +7,7 @@
 <div class="max-w-4xl mx-auto space-y-gr-lg">
     {{-- Header --}}
     <div>
-        <a href="{{ route('admin.maintenance.index') }}" class="inline-flex items-center text-lgu-button hover:underline mb-gr-sm">
+        <a href="{{ URL::signedRoute('admin.maintenance.index') }}" class="inline-flex items-center text-lgu-button hover:underline mb-gr-sm">
             <i data-lucide="arrow-left" class="w-4 h-4 mr-2"></i>
             Back to Maintenance Schedule
         </a>
@@ -16,7 +16,7 @@
     </div>
 
     {{-- Form --}}
-    <form method="POST" action="{{ route('admin.maintenance.store') }}" class="space-y-gr-lg">
+    <form method="POST" action="{{ URL::signedRoute('admin.maintenance.store') }}" class="space-y-gr-lg">
         @csrf
 
         <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-gr-lg space-y-gr-md">
@@ -158,7 +158,7 @@
 
         {{-- Actions --}}
         <div class="flex items-center justify-between">
-            <a href="{{ route('admin.maintenance.index') }}" class="inline-flex items-center px-gr-lg py-gr-md bg-gray-100 text-gray-700 font-semibold rounded-lg hover:bg-gray-200 transition-colors duration-200">
+            <a href="{{ URL::signedRoute('admin.maintenance.index') }}" class="inline-flex items-center px-gr-lg py-gr-md bg-gray-100 text-gray-700 font-semibold rounded-lg hover:bg-gray-200 transition-colors duration-200">
                 <i data-lucide="x" class="w-5 h-5 mr-gr-xs"></i>
                 Cancel
             </a>

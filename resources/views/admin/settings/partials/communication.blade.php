@@ -1,4 +1,4 @@
-<form action="{{ route('admin.settings.communication.update') }}" method="POST" class="space-y-8">
+<form action="{{ URL::signedRoute('admin.settings.communication.update') }}" method="POST" class="space-y-8">
     @csrf
     
     <!-- Email Settings Section -->
@@ -184,7 +184,7 @@ function sendTestEmail() {
         return;
     }
     
-    fetch('{{ route('admin.settings.test-email') }}', {
+    fetch('{{ URL::signedRoute('admin.settings.test-email') }}', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -212,7 +212,7 @@ function sendTestSms() {
         return;
     }
     
-    fetch('{{ route('admin.settings.test-sms') }}', {
+    fetch('{{ URL::signedRoute('admin.settings.test-sms') }}', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',

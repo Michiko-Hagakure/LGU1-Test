@@ -7,7 +7,7 @@
 <div class="space-y-gr-xl">
     <!-- Back Button -->
     <div>
-        <a href="{{ route('admin.government-programs.index') }}" 
+        <a href="{{ URL::signedRoute('admin.government-programs.index') }}" 
            class="inline-flex items-center gap-2 text-lgu-paragraph hover:text-lgu-headline transition-colors">
             <i data-lucide="arrow-left" class="w-5 h-5"></i>
             <span class="font-medium">Back to Requests</span>
@@ -257,7 +257,7 @@
                     </p>
                     
                     <div class="space-y-gr-sm">
-                        <a href="{{ route('admin.government-programs.accept-form', $seminar->seminar_id) }}" 
+                        <a href="{{ URL::signedRoute('admin.government-programs.accept-form', $seminar->seminar_id) }}" 
                            class="w-full inline-flex items-center justify-center gap-2 px-gr-lg py-gr-md bg-lgu-button hover:bg-lgu-highlight text-lgu-button-text font-semibold rounded-lg transition-all duration-200 transform hover:scale-105 shadow-md hover:shadow-lg">
                             <i data-lucide="check-circle" class="w-5 h-5"></i>
                             Accept & Assign Facility
@@ -374,7 +374,7 @@
                 // Submit the form
                 const form = document.createElement('form');
                 form.method = 'POST';
-                form.action = '{{ route('admin.government-programs.accept', $seminar->seminar_id) }}';
+                form.action = '{{ URL::signedRoute('admin.government-programs.accept', $seminar->seminar_id) }}';
                 
                 const csrfInput = document.createElement('input');
                 csrfInput.type = 'hidden';

@@ -22,7 +22,7 @@
                     </svg>
                 </div>
             </div>
-            <a href="{{ route('staff.verification-queue') }}" class="text-small text-amber-800 hover:text-amber-900 font-bold flex items-center group">
+            <a href="{{ URL::signedRoute('staff.verification-queue') }}" class="text-small text-amber-800 hover:text-amber-900 font-bold flex items-center group">
                 View Queue
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-right ml-2 group-hover:translate-x-1 transition-transform">
                     <path d="M5 12h14"/>
@@ -90,7 +90,7 @@
         <h2 class="text-h3 font-bold text-lgu-headline mb-gr-md">Quick Actions</h2>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-gr-md">
             <!-- View Verification Queue -->
-            <a href="{{ route('staff.verification-queue') }}" class="flex items-center gap-gr-sm p-gr-md rounded-xl border-2 border-gray-200 hover:border-lgu-button hover:bg-amber-50 transition-all group">
+            <a href="{{ URL::signedRoute('staff.verification-queue') }}" class="flex items-center gap-gr-sm p-gr-md rounded-xl border-2 border-gray-200 hover:border-lgu-button hover:bg-amber-50 transition-all group">
                 <div class="w-16 h-16 bg-lgu-button rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform shadow-sm">
                     <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-clipboard-check text-white">
                         <rect width="8" height="4" x="8" y="2" rx="1" ry="1"/>
@@ -105,7 +105,7 @@
             </a>
 
             <!-- Calendar -->
-            <a href="{{ route('staff.calendar') }}" class="flex items-center gap-gr-sm p-gr-md rounded-xl border-2 border-purple-200 hover:border-purple-400 hover:shadow-md transition-all duration-200 bg-white group">
+            <a href="{{ URL::signedRoute('staff.calendar') }}" class="flex items-center gap-gr-sm p-gr-md rounded-xl border-2 border-purple-200 hover:border-purple-400 hover:shadow-md transition-all duration-200 bg-white group">
                 <div class="w-16 h-16 bg-purple-500 rounded-xl flex items-center justify-center flex-shrink-0 shadow-sm group-hover:shadow-md transition-shadow">
                     <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-calendar-days text-white">
                         <path d="M8 2v4"/>
@@ -159,7 +159,7 @@
                 <p class="text-body font-bold text-amber-900 mb-1">Action Required</p>
                 <p class="text-small text-amber-800">
                     You have <strong class="font-bold">{{ $stats['pending_verification'] }}</strong> booking(s) waiting for verification. 
-                    <a href="{{ route('staff.verification-queue') }}" class="underline font-semibold hover:text-amber-900">Review now</a>
+                    <a href="{{ URL::signedRoute('staff.verification-queue') }}" class="underline font-semibold hover:text-amber-900">Review now</a>
                 </p>
             </div>
         </div>

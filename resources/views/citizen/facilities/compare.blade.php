@@ -13,7 +13,7 @@
                     <h1 class="text-3xl font-bold text-lgu-headline mb-gr-xs">Compare Facilities</h1>
                     <p class="text-lgu-paragraph">Side-by-side comparison of up to 3 facilities</p>
                 </div>
-                <a href="{{ route('citizen.facilities.browse') }}" class="bg-gray-200 text-gray-700 px-gr-lg py-gr-sm rounded-lg font-semibold hover:bg-gray-300 transition-all">
+                <a href="{{ URL::signedRoute('citizen.facilities.browse') }}" class="bg-gray-200 text-gray-700 px-gr-lg py-gr-sm rounded-lg font-semibold hover:bg-gray-300 transition-all">
                     <i data-lucide="arrow-left" class="w-4 h-4 inline mr-2"></i>
                     Back to Browse
                 </a>
@@ -25,7 +25,7 @@
                 <i data-lucide="scale" class="w-16 h-16 mx-auto mb-gr-md text-gray-300"></i>
                 <h3 class="text-xl font-semibold text-lgu-headline mb-gr-xs">No facilities selected</h3>
                 <p class="text-lgu-paragraph mb-gr-lg">Please select 2-3 facilities to compare</p>
-                <a href="{{ route('citizen.facilities.browse') }}" class="inline-block bg-lgu-button text-lgu-button-text px-gr-lg py-gr-sm rounded-lg font-semibold hover:bg-opacity-90">
+                <a href="{{ URL::signedRoute('citizen.facilities.browse') }}" class="inline-block bg-lgu-button text-lgu-button-text px-gr-lg py-gr-sm rounded-lg font-semibold hover:bg-opacity-90">
                     Browse Facilities
                 </a>
             </div>
@@ -196,11 +196,11 @@
                             @foreach($facilities as $facility)
                                 <td class="px-gr-lg py-gr-lg">
                                     <div class="space-y-gr-xs">
-                                        <a href="{{ route('citizen.facilities.browse.show', $facility->id) }}" 
+                                        <a href="{{ URL::signedRoute('citizen.facilities.browse.show', $facility->id) }}" 
                                            class="block w-full text-center bg-lgu-button text-lgu-button-text px-gr-md py-gr-sm rounded-lg font-semibold hover:bg-opacity-90 transition-all">
                                             View Details
                                         </a>
-                                        <a href="{{ route('citizen.booking.create', $facility->id) }}" 
+                                        <a href="{{ URL::signedRoute('citizen.booking.create', $facility->id) }}" 
                                            class="block w-full text-center bg-lgu-headline text-white px-gr-md py-gr-sm rounded-lg font-semibold hover:bg-opacity-90 transition-all">
                                             Book Now
                                         </a>
@@ -219,7 +219,7 @@
             </div>
 
             <div class="mt-gr-lg text-center">
-                <a href="{{ route('citizen.facilities.browse') }}" class="inline-block bg-gray-200 text-gray-700 px-gr-lg py-gr-sm rounded-lg font-semibold hover:bg-gray-300 transition-all">
+                <a href="{{ URL::signedRoute('citizen.facilities.browse') }}" class="inline-block bg-gray-200 text-gray-700 px-gr-lg py-gr-sm rounded-lg font-semibold hover:bg-gray-300 transition-all">
                     <i data-lucide="grid-3x3" class="w-4 h-4 inline mr-2"></i>
                     Compare Different Facilities
                 </a>

@@ -25,7 +25,7 @@
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <!-- Notification Form -->
         <div class="lg:col-span-2">
-            <form action="{{ route('staff.notifications.send') }}" method="POST" class="bg-white rounded-2xl shadow-lg p-8">
+            <form action="{{ URL::signedRoute('staff.notifications.send') }}" method="POST" class="bg-white rounded-2xl shadow-lg p-8">
                 @csrf
 
                 <h2 class="text-2xl font-bold text-lgu-headline mb-6">Compose Notification</h2>

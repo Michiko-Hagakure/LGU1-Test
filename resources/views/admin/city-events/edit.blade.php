@@ -7,7 +7,7 @@
 <div class="space-y-6">
     <!-- Back Button -->
     <div>
-        <a href="{{ route('admin.city-events.show', $cityEvent) }}" class="inline-flex items-center gap-2 text-lgu-paragraph hover:text-lgu-headline transition-colors">
+        <a href="{{ URL::signedRoute('admin.city-events.show', $cityEvent) }}" class="inline-flex items-center gap-2 text-lgu-paragraph hover:text-lgu-headline transition-colors">
             <i data-lucide="arrow-left" class="w-4 h-4"></i>
             <span>Back to Event Details</span>
         </a>
@@ -20,7 +20,7 @@
     </div>
 
     <!-- Edit Form -->
-    <form method="POST" action="{{ route('admin.city-events.update', $cityEvent) }}" class="space-y-6">
+    <form method="POST" action="{{ URL::signedRoute('admin.city-events.update', $cityEvent) }}" class="space-y-6">
         @csrf
         @method('PUT')
 
@@ -237,7 +237,7 @@
                 <i data-lucide="save" class="w-5 h-5"></i>
                 <span>Save Changes</span>
             </button>
-            <a href="{{ route('admin.city-events.show', $cityEvent) }}" class="btn-secondary flex items-center gap-2">
+            <a href="{{ URL::signedRoute('admin.city-events.show', $cityEvent) }}" class="btn-secondary flex items-center gap-2">
                 <i data-lucide="x" class="w-5 h-5"></i>
                 <span>Cancel</span>
             </a>

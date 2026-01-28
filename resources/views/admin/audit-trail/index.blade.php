@@ -14,7 +14,7 @@
 
     <!-- Filters Card -->
     <div class="bg-white rounded-2xl shadow-lg p-6 mb-6">
-        <form method="GET" action="{{ route('admin.audit-trail.index') }}" id="filterForm">
+        <form method="GET" action="{{ URL::signedRoute('admin.audit-trail.index') }}" id="filterForm">
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
                 <!-- Search -->
                 <div>
@@ -92,7 +92,7 @@
                     <i data-lucide="filter" class="w-4 h-4 inline mr-2"></i>
                     Apply Filters
                 </button>
-                <a href="{{ route('admin.audit-trail.index') }}" class="px-6 py-2 bg-gray-200 text-gray-700 font-semibold rounded-lg hover:bg-gray-300 transition">
+                <a href="{{ URL::signedRoute('admin.audit-trail.index') }}" class="px-6 py-2 bg-gray-200 text-gray-700 font-semibold rounded-lg hover:bg-gray-300 transition">
                     <i data-lucide="x" class="w-4 h-4 inline mr-2"></i>
                     Clear
                 </a>
@@ -183,7 +183,7 @@
                                 {{ $log->ip_address ?? 'N/A' }}
                             </td>
                             <td class="px-4 py-3 text-center">
-                                <a href="{{ route('admin.audit-trail.show', $log->id) }}" 
+                                <a href="{{ URL::signedRoute('admin.audit-trail.show', $log->id) }}" 
                                    class="inline-flex items-center px-3 py-1 bg-lgu-button text-lgu-button-text text-sm font-semibold rounded hover:opacity-90 transition">
                                     <i data-lucide="eye" class="w-4 h-4 mr-1"></i>
                                     View Details

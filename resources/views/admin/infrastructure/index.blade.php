@@ -11,7 +11,7 @@
             <p class="text-gray-600">Track the status of your infrastructure project requests submitted to the Infrastructure PM system.</p>
         </div>
         <div class="flex items-center gap-3">
-            <form action="{{ route('admin.infrastructure.projects.sync-all') }}" method="POST" class="inline">
+            <form action="{{ URL::signedRoute('admin.infrastructure.projects.sync-all') }}" method="POST" class="inline">
                 @csrf
                 <button type="submit" class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors flex items-center gap-2">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -20,7 +20,7 @@
                     Sync All Statuses
                 </button>
             </form>
-            <a href="{{ route('admin.infrastructure.project-request') }}" class="px-4 py-2 bg-lgu-highlight text-white rounded-lg hover:bg-lgu-stroke transition-colors flex items-center gap-2">
+            <a href="{{ URL::signedRoute('admin.infrastructure.project-request') }}" class="px-4 py-2 bg-lgu-highlight text-white rounded-lg hover:bg-lgu-stroke transition-colors flex items-center gap-2">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                 </svg>
@@ -115,7 +115,7 @@
                         </td>
                         <td class="px-6 py-4 text-center">
                             <div class="flex items-center justify-center gap-2">
-                                <a href="{{ route('admin.infrastructure.projects.show', $request->id) }}" class="px-3 py-1.5 bg-lgu-highlight text-white text-xs font-medium rounded-lg hover:bg-lgu-stroke transition-colors">
+                                <a href="{{ URL::signedRoute('admin.infrastructure.projects.show', $request->id) }}" class="px-3 py-1.5 bg-lgu-highlight text-white text-xs font-medium rounded-lg hover:bg-lgu-stroke transition-colors">
                                     View
                                 </a>
                                 @if($request->external_project_id)
@@ -144,7 +144,7 @@
             </svg>
             <h3 class="mt-4 text-lg font-medium text-gray-900">No project requests yet</h3>
             <p class="mt-2 text-gray-500">Get started by submitting your first infrastructure project request.</p>
-            <a href="{{ route('admin.infrastructure.project-request') }}" class="mt-6 inline-flex items-center gap-2 px-4 py-2 bg-lgu-highlight text-white rounded-lg hover:bg-lgu-stroke transition-colors">
+            <a href="{{ URL::signedRoute('admin.infrastructure.project-request') }}" class="mt-6 inline-flex items-center gap-2 px-4 py-2 bg-lgu-highlight text-white rounded-lg hover:bg-lgu-stroke transition-colors">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                 </svg>

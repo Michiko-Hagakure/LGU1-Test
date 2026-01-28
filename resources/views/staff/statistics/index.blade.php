@@ -220,7 +220,7 @@
 
     {{-- Action Button --}}
     <div class="flex justify-center">
-        <a href="{{ route('staff.activity-log.index') }}" 
+        <a href="{{ URL::signedRoute('staff.activity-log.index') }}" 
            class="inline-flex items-center px-gr-lg py-gr-md bg-lgu-button text-lgu-button-text font-bold rounded-lg hover:bg-lgu-hover transition shadow-lg">
             <i data-lucide="file-text" class="w-5 h-5 mr-gr-sm"></i>
             View Detailed Activity Log

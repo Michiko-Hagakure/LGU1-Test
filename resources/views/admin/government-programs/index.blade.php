@@ -152,7 +152,7 @@
                             <div class="text-caption text-gray-500">{{ $seminar->target_area }}</div>
                         </td>
                         <td class="px-gr-md py-gr-sm">
-                            <a href="{{ route('admin.government-programs.preview', $seminar->seminar_id) }}" 
+                            <a href="{{ URL::signedRoute('admin.government-programs.preview', $seminar->seminar_id) }}" 
                                class="inline-flex items-center gap-1.5 px-gr-sm py-1.5 bg-lgu-button hover:bg-lgu-highlight text-lgu-button-text text-caption font-medium rounded-lg transition-colors">
                                 <i data-lucide="eye" class="w-4 h-4"></i>
                                 Review Request
@@ -219,7 +219,7 @@
                             </span>
                         </td>
                         <td class="px-gr-md py-gr-sm">
-                            <a href="{{ route('admin.government-programs.show', $program->id) }}" 
+                            <a href="{{ URL::signedRoute('admin.government-programs.show', $program->id) }}" 
                                class="inline-flex items-center gap-1.5 px-gr-sm py-1.5 bg-lgu-button hover:bg-lgu-highlight text-lgu-button-text text-caption font-medium rounded-lg transition-colors">
                                 <i data-lucide="eye" class="w-4 h-4"></i>
                                 View Details

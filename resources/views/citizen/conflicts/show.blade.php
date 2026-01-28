@@ -6,7 +6,7 @@
 @section('page-content')
 <div class="max-w-4xl mx-auto space-y-6">
     <div class="flex items-center gap-4">
-        <a href="{{ route('citizen.conflicts.index') }}" class="p-2 hover:bg-lgu-bg rounded-lg transition-colors">
+        <a href="{{ URL::signedRoute('citizen.conflicts.index') }}" class="p-2 hover:bg-lgu-bg rounded-lg transition-colors">
             <i data-lucide="arrow-left" class="w-5 h-5 text-lgu-headline"></i>
         </a>
         <div>
@@ -48,7 +48,7 @@
     </div>
 
     <!-- Resolution Options -->
-    <form action="{{ route('citizen.conflicts.resolve', $conflict) }}" method="POST" id="resolutionForm">
+    <form action="{{ URL::signedRoute('citizen.conflicts.resolve', $conflict) }}" method="POST" id="resolutionForm">
         @csrf
         
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">

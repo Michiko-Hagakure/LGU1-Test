@@ -9,7 +9,7 @@
     <div class="flex items-center justify-between">
         <div>
             <div class="flex items-center gap-gr-sm mb-gr-xs">
-                <a href="{{ route('admin.government-programs.index') }}" 
+                <a href="{{ URL::signedRoute('admin.government-programs.index') }}" 
                    class="text-lgu-paragraph hover:text-lgu-headline transition-colors">
                     <i data-lucide="arrow-left" class="w-5 h-5"></i>
                 </a>

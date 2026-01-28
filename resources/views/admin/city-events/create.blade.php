@@ -6,7 +6,7 @@
 @section('page-content')
 <div class="max-w-4xl mx-auto space-y-6">
     <div class="flex items-center gap-4">
-        <a href="{{ route('admin.city-events.index') }}" class="p-2 hover:bg-lgu-bg rounded-lg transition-colors">
+        <a href="{{ URL::signedRoute('admin.city-events.index') }}" class="p-2 hover:bg-lgu-bg rounded-lg transition-colors">
             <i data-lucide="arrow-left" class="w-5 h-5 text-lgu-headline"></i>
         </a>
         <div>
@@ -44,7 +44,7 @@
     </div>
     @endif
 
-    <form action="{{ route('admin.city-events.store') }}" method="POST" id="cityEventForm" class="space-y-6" onsubmit="return prepareFormSubmit()">
+    <form action="{{ URL::signedRoute('admin.city-events.store') }}" method="POST" id="cityEventForm" class="space-y-6" onsubmit="return prepareFormSubmit()">
         @csrf
 
         <!-- Event Details Card -->
@@ -260,7 +260,7 @@
                 <i data-lucide="check" class="w-5 h-5"></i>
                 <span>Create City Event</span>
             </button>
-            <a href="{{ route('admin.city-events.index') }}" class="btn-secondary flex items-center gap-2">
+            <a href="{{ URL::signedRoute('admin.city-events.index') }}" class="btn-secondary flex items-center gap-2">
                 <i data-lucide="x" class="w-5 h-5"></i>
                 <span>Cancel</span>
             </a>
@@ -336,7 +336,7 @@ function checkConflicts() {
             return;
         }
 
-        fetch('{{ route('admin.city-events.preview-conflicts') }}', {
+        fetch('{{ URL::signedRoute('admin.city-events.preview-conflicts') }}', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

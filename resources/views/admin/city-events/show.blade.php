@@ -7,7 +7,7 @@
 <div class="space-y-6">
     <!-- Back Button -->
     <div>
-        <a href="{{ route('admin.city-events.index') }}" class="inline-flex items-center gap-2 text-lgu-paragraph hover:text-lgu-headline transition-colors">
+        <a href="{{ URL::signedRoute('admin.city-events.index') }}" class="inline-flex items-center gap-2 text-lgu-paragraph hover:text-lgu-headline transition-colors">
             <i data-lucide="arrow-left" class="w-4 h-4"></i>
             <span>Back to City Events</span>
         </a>
@@ -44,7 +44,7 @@
             
             @if($cityEvent->status === 'scheduled')
             <div class="flex gap-2">
-                <a href="{{ route('admin.city-events.edit', $cityEvent) }}" class="btn-secondary flex items-center gap-2">
+                <a href="{{ URL::signedRoute('admin.city-events.edit', $cityEvent) }}" class="btn-secondary flex items-center gap-2">
                     <i data-lucide="edit" class="w-4 h-4"></i>
                     <span>Edit</span>
                 </a>
@@ -237,7 +237,7 @@ function deleteEvent(eventId) {
                         text: data.message,
                         confirmButtonColor: '#faae2b'
                     }).then(() => {
-                        window.location.href = '{{ route('admin.city-events.index') }}';
+                        window.location.href = '{{ URL::signedRoute('admin.city-events.index') }}';
                     });
                 } else {
                     Swal.fire({

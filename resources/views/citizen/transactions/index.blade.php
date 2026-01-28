@@ -46,7 +46,7 @@
 
     <!-- Filters -->
     <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-gr-md mb-gr-lg">
-        <form method="GET" action="{{ route('citizen.transactions.index') }}" class="grid grid-cols-1 md:grid-cols-4 gap-gr-md">
+        <form method="GET" action="{{ URL::signedRoute('citizen.transactions.index') }}" class="grid grid-cols-1 md:grid-cols-4 gap-gr-md">
             <div>
                 <label class="block text-caption font-semibold text-gray-700 mb-gr-2xs">Start Date</label>
                 <input type="date" name="start_date" value="{{ request('start_date') }}" class="input-field">
@@ -69,7 +69,7 @@
                     <i data-lucide="search" class="w-4 h-4 mr-gr-xs"></i>
                     Filter
                 </button>
-                <a href="{{ route('citizen.transactions.index') }}" class="btn-secondary">
+                <a href="{{ URL::signedRoute('citizen.transactions.index') }}" class="btn-secondary">
                     <i data-lucide="x" class="w-4 h-4"></i>
                 </a>
             </div>
@@ -82,7 +82,7 @@
         <i data-lucide="receipt" class="w-16 h-16 mx-auto mb-gr-md text-gray-400"></i>
         <h3 class="text-h5 font-bold text-gray-900 mb-gr-xs">No Transactions Yet</h3>
         <p class="text-small text-gray-600 mb-gr-lg">Your payment transactions will appear here</p>
-        <a href="{{ route('citizen.browse-facilities') }}" class="btn-primary inline-flex items-center">
+        <a href="{{ URL::signedRoute('citizen.browse-facilities') }}" class="btn-primary inline-flex items-center">
             <i data-lucide="search" class="w-4 h-4 mr-gr-xs"></i>
             Browse Facilities
         </a>
@@ -141,7 +141,7 @@
                             </span>
                         </td>
                         <td class="px-gr-md py-gr-sm">
-                            <a href="{{ route('citizen.transactions.show', $transaction->id) }}" class="text-lgu-green hover:text-lgu-green-dark font-medium text-small">
+                            <a href="{{ URL::signedRoute('citizen.transactions.show', $transaction->id) }}" class="text-lgu-green hover:text-lgu-green-dark font-medium text-small">
                                 View Details
                             </a>
                         </td>

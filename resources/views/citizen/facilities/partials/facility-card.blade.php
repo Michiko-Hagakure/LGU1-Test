@@ -53,7 +53,7 @@
                     <span class="text-2xl font-bold text-lgu-headline">₱{{ number_format($facility->hourly_rate, 2) }}</span>
                     <span class="text-sm text-lgu-paragraph">/hour</span>
                 </div>
-                <a href="{{ route('citizen.facility-details', $facility->id) }}" 
+                <a href="{{ URL::signedRoute('citizen.facility-details', $facility->id) }}" 
                    class="bg-lgu-button text-lgu-button-text px-gr-md py-gr-xs rounded-lg font-semibold hover:bg-opacity-90 transition-all">
                     View Details
                 </a>
@@ -118,7 +118,7 @@
                 </div>
 
                 <div class="flex justify-end">
-                    <a href="{{ route('citizen.facilities.browse.show', $facility->id) }}" 
+                    <a href="{{ URL::signedRoute('citizen.facilities.browse.show', $facility->id) }}" 
                        class="bg-lgu-button text-lgu-button-text px-gr-lg py-gr-sm rounded-lg font-semibold hover:bg-opacity-90 transition-all">
                         View Details
                     </a>

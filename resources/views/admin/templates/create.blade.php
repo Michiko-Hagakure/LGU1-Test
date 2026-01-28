@@ -18,7 +18,7 @@
         </div>
     @endif
 
-    <form action="{{ route('admin.templates.store') }}" method="POST" class="bg-white rounded-2xl shadow-lg p-8">
+    <form action="{{ URL::signedRoute('admin.templates.store') }}" method="POST" class="bg-white rounded-2xl shadow-lg p-8">
         @csrf
 
         <div class="space-y-6">
@@ -111,7 +111,7 @@
                     <i data-lucide="save" class="w-5 h-5 inline mr-2"></i>
                     Create Template
                 </button>
-                <a href="{{ route('admin.templates.index') }}" 
+                <a href="{{ URL::signedRoute('admin.templates.index') }}" 
                    class="px-8 py-3 bg-gray-200 text-gray-700 font-bold rounded-lg hover:bg-gray-300 transition">
                     <i data-lucide="x" class="w-5 h-5 inline mr-2"></i>
                     Cancel

@@ -8,7 +8,7 @@
 <div class="space-y-gr-lg">
     <!-- Filters -->
     <div class="bg-white rounded-xl shadow-sm border border-lgu-stroke p-gr-md">
-        <form method="GET" action="{{ route('staff.verification-queue') }}" class="grid grid-cols-1 md:grid-cols-4 gap-gr-md">
+        <form method="GET" action="{{ URL::signedRoute('staff.verification-queue') }}" class="grid grid-cols-1 md:grid-cols-4 gap-gr-md">
             <!-- Facility Filter -->
             <div>
                 <label for="facility_id" class="block text-small font-medium text-gray-700 mb-2">Facility</label>
@@ -140,7 +140,7 @@
 
                         <!-- Action Button -->
                         <div class="flex-shrink-0">
-                            <a href="{{ route('staff.bookings.review', $booking->id) }}" 
+                            <a href="{{ URL::signedRoute('staff.bookings.review', $booking->id) }}" 
                                class="inline-flex items-center px-6 py-3 bg-lgu-button text-lgu-button-text font-semibold rounded-lg hover:bg-lgu-highlight transition-colors shadow-sm">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-eye mr-2">
                                     <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/>
@@ -172,7 +172,7 @@
             <p class="text-body text-gray-600 mb-gr-md">
                 There are currently no bookings waiting for verification. Great job!
             </p>
-            <a href="{{ route('staff.dashboard') }}" class="inline-flex items-center text-lgu-button hover:text-lgu-highlight font-medium">
+            <a href="{{ URL::signedRoute('staff.dashboard') }}" class="inline-flex items-center text-lgu-button hover:text-lgu-highlight font-medium">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-left mr-2">
                     <path d="m12 19-7-7 7-7"/>
                     <path d="M19 12H5"/>

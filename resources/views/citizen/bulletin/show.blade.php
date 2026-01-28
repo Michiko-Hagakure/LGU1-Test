@@ -8,7 +8,7 @@
 <div class="space-y-6">
     <!-- Back Button -->
     <div>
-        <a href="{{ route('citizen.bulletin') }}" 
+        <a href="{{ URL::signedRoute('citizen.bulletin') }}" 
            class="inline-flex items-center text-lgu-button hover:text-lgu-highlight font-semibold transition-colors cursor-pointer">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2">
                 <path d="m12 19-7-7 7-7"/><path d="M19 12H5"/>
@@ -117,7 +117,7 @@
                                     <p class="text-sm text-green-700">Click to download the attached file</p>
                                 </div>
                             </div>
-                            <a href="{{ route('citizen.bulletin.download', $announcement->id) }}" 
+                            <a href="{{ URL::signedRoute('citizen.bulletin.download', $announcement->id) }}" 
                                class="px-6 py-3 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition-all duration-200 shadow-lg hover:shadow-xl cursor-pointer flex items-center gap-2">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/>
@@ -166,7 +166,7 @@
                         <h3 class="text-lg font-bold text-gray-900 mb-4">Related Announcements</h3>
                         <div class="space-y-4">
                             @foreach($relatedAnnouncements as $related)
-                                <a href="{{ route('citizen.bulletin.show', $related->id) }}" 
+                                <a href="{{ URL::signedRoute('citizen.bulletin.show', $related->id) }}" 
                                    class="block p-4 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors cursor-pointer border border-gray-200 hover:border-lgu-button">
                                     <h4 class="font-semibold text-gray-900 mb-2 line-clamp-2">{{ $related->title }}</h4>
                                     <p class="text-xs text-gray-600 flex items-center gap-2">
@@ -185,7 +185,7 @@
                 <div class="bg-white shadow-lg rounded-xl p-6">
                     <h3 class="text-lg font-bold text-gray-900 mb-4">Quick Actions</h3>
                     <div class="space-y-3">
-                        <a href="{{ route('citizen.bulletin') }}" 
+                        <a href="{{ URL::signedRoute('citizen.bulletin') }}" 
                            class="block w-full px-4 py-3 bg-lgu-button text-lgu-button-text text-center font-semibold rounded-lg hover:bg-lgu-highlight transition-all duration-200 shadow-md hover:shadow-lg cursor-pointer flex items-center justify-center gap-2">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="m12 19-7-7 7-7"/><path d="M19 12H5"/>

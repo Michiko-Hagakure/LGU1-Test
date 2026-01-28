@@ -26,7 +26,7 @@
 
     <!-- Filters & Search -->
     <div class="bg-white rounded-xl shadow-sm border border-lgu-stroke p-gr-lg">
-        <form method="GET" action="{{ route('admin.bookings.index') }}" class="space-y-gr-md">
+        <form method="GET" action="{{ URL::signedRoute('admin.bookings.index') }}" class="space-y-gr-md">
             <div class="flex flex-col lg:flex-row gap-gr-md">
                 <!-- Search -->
                 <div class="flex-1">
@@ -107,7 +107,7 @@
                         <i data-lucide="filter" class="w-5 h-5 inline mr-2"></i>
                         Apply Filters
                     </button>
-                    <a href="{{ route('admin.bookings.index') }}" class="px-gr-lg py-gr-sm bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold rounded-lg transition-colors whitespace-nowrap">
+                    <a href="{{ URL::signedRoute('admin.bookings.index') }}" class="px-gr-lg py-gr-sm bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold rounded-lg transition-colors whitespace-nowrap">
                         <i data-lucide="x" class="w-5 h-5 inline mr-2"></i>
                         Clear
                     </a>
@@ -131,7 +131,7 @@
                 @endif
             </p>
             @if(request()->hasAny(['search', 'status', 'facility_id', 'date_from', 'date_to']))
-                <a href="{{ route('admin.bookings.index') }}" class="inline-flex items-center px-gr-lg py-gr-sm bg-lgu-button hover:bg-lgu-highlight text-lgu-button-text font-semibold rounded-lg transition-colors">
+                <a href="{{ URL::signedRoute('admin.bookings.index') }}" class="inline-flex items-center px-gr-lg py-gr-sm bg-lgu-button hover:bg-lgu-highlight text-lgu-button-text font-semibold rounded-lg transition-colors">
                     <i data-lucide="refresh-cw" class="w-5 h-5 mr-2"></i>
                     Clear All Filters
                 </a>
@@ -251,7 +251,7 @@
 
                                 <!-- Actions -->
                                 <td class="px-gr-md py-gr-sm">
-                                    <a href="{{ route('admin.bookings.review', $booking->id) }}" class="inline-flex items-center gap-1.5 px-gr-sm py-1.5 bg-lgu-button hover:bg-lgu-highlight text-lgu-button-text text-caption font-medium rounded-lg transition-colors">
+                                    <a href="{{ URL::signedRoute('admin.bookings.review', $booking->id) }}" class="inline-flex items-center gap-1.5 px-gr-sm py-1.5 bg-lgu-button hover:bg-lgu-highlight text-lgu-button-text text-caption font-medium rounded-lg transition-colors">
                                         <i data-lucide="eye" class="w-4 h-4"></i>
                                         View Details
                                     </a>

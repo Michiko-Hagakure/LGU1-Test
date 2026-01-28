@@ -11,7 +11,7 @@
             <h1 class="text-h1 font-bold text-lgu-headline mb-gr-xs">Staff Accounts</h1>
             <p class="text-body text-lgu-paragraph">Total: {{ $staff->total() }} staff members</p>
         </div>
-        <a href="{{ route('admin.staff.create') }}" class="btn-primary">
+        <a href="{{ URL::signedRoute('admin.staff.create') }}" class="btn-primary">
             <i data-lucide="user-plus" class="w-5 h-5"></i>
             Add Staff Member
         </a>
@@ -19,7 +19,7 @@
 
     {{-- Search and Filters --}}
     <div class="bg-white rounded-xl shadow-md p-gr-md border-2 border-lgu-stroke">
-        <form method="GET" action="{{ route('admin.staff.index') }}" class="grid grid-cols-1 md:grid-cols-4 gap-gr-sm">
+        <form method="GET" action="{{ URL::signedRoute('admin.staff.index') }}" class="grid grid-cols-1 md:grid-cols-4 gap-gr-sm">
             {{-- Search --}}
             <div>
                 <label for="search" class="block text-sm font-semibold mb-gr-xs text-lgu-headline">Search</label>
@@ -57,7 +57,7 @@
                     <i data-lucide="search" class="w-4 h-4"></i>
                     Filter
                 </button>
-                <a href="{{ route('admin.staff.index') }}" class="px-gr-sm py-gr-xs rounded-lg border-2 border-lgu-stroke hover:bg-gray-50">
+                <a href="{{ URL::signedRoute('admin.staff.index') }}" class="px-gr-sm py-gr-xs rounded-lg border-2 border-lgu-stroke hover:bg-gray-50">
                     <i data-lucide="x" class="w-5 h-5 text-lgu-paragraph"></i>
                 </a>
             </div>
@@ -120,7 +120,7 @@
                             <td class="px-gr-md py-gr-sm">
                                 <div class="flex items-center justify-center gap-gr-xs">
                                     {{-- Edit Button --}}
-                                    <a href="{{ route('admin.staff.edit', $member->id) }}" 
+                                    <a href="{{ URL::signedRoute('admin.staff.edit', $member->id) }}" 
                                        class="p-gr-xs rounded-lg bg-blue-500 text-white hover:bg-blue-600 transition"
                                        title="Edit Staff">
                                         <i data-lucide="edit" class="w-4 h-4"></i>

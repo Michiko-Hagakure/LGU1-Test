@@ -7,7 +7,7 @@
 <div class="pb-gr-2xl">
     <!-- Back Button -->
     <div class="mb-gr-md">
-        <a href="{{ route('admin.transactions.index') }}" class="inline-flex items-center text-small font-medium text-gray-600 hover:text-gray-900">
+        <a href="{{ URL::signedRoute('admin.transactions.index') }}" class="inline-flex items-center text-small font-medium text-gray-600 hover:text-gray-900">
             <i data-lucide="arrow-left" class="w-4 h-4 mr-gr-xs"></i>
             Back to Transactions
         </a>
@@ -87,7 +87,7 @@
                             <p class="text-caption text-gray-600">Facility</p>
                             <p class="text-body font-semibold text-gray-900">{{ $booking->facility_name ?? 'N/A' }}</p>
                         </div>
-                        <a href="{{ route('admin.bookings.show', $transaction->booking_id) }}" class="text-lgu-green hover:text-lgu-green-dark font-medium text-small">
+                        <a href="{{ URL::signedRoute('admin.bookings.show', $transaction->booking_id) }}" class="text-lgu-green hover:text-lgu-green-dark font-medium text-small">
                             View Booking
                         </a>
                     </div>
@@ -260,7 +260,7 @@ function sendReceipt() {
             });
 
             // AJAX Call to Backend
-            fetch("{{ route('admin.transactions.email', $transaction->id) }}", {
+            fetch("{{ URL::signedRoute('admin.transactions.email', $transaction->id) }}", {
                 method: 'GET',
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest'

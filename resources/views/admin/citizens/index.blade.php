@@ -13,7 +13,7 @@
 
     {{-- Search and Filters --}}
     <div class="bg-white rounded-xl shadow-md p-gr-md border-2 border-lgu-stroke">
-        <form method="GET" action="{{ route('admin.citizens.index') }}" class="grid grid-cols-1 md:grid-cols-4 gap-gr-sm">
+        <form method="GET" action="{{ URL::signedRoute('admin.citizens.index') }}" class="grid grid-cols-1 md:grid-cols-4 gap-gr-sm">
             <div>
                 <label for="search" class="block text-sm font-semibold mb-gr-xs text-lgu-headline">Search</label>
                 <input type="text" name="search" id="search" value="{{ request('search') }}" 
@@ -47,7 +47,7 @@
                     <i data-lucide="search" class="w-4 h-4"></i>
                     Filter
                 </button>
-                <a href="{{ route('admin.citizens.index') }}" class="px-gr-sm py-gr-xs rounded-lg border-2 border-lgu-stroke hover:bg-gray-50">
+                <a href="{{ URL::signedRoute('admin.citizens.index') }}" class="px-gr-sm py-gr-xs rounded-lg border-2 border-lgu-stroke hover:bg-gray-50">
                     <i data-lucide="x" class="w-5 h-5 text-lgu-paragraph"></i>
                 </a>
             </div>
@@ -113,7 +113,7 @@
                             </td>
                             <td class="px-gr-md py-gr-sm">
                                 <div class="flex items-center justify-center gap-gr-xs">
-                                    <a href="{{ route('admin.citizens.show', $citizen->id) }}" 
+                                    <a href="{{ URL::signedRoute('admin.citizens.show', $citizen->id) }}" 
                                        class="p-gr-xs rounded-lg bg-blue-500 text-white hover:bg-blue-600 transition"
                                        title="View Details">
                                         <i data-lucide="eye" class="w-4 h-4"></i>

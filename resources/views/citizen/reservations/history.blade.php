@@ -8,7 +8,7 @@
 <div class="space-y-6">
     <!-- Back Button -->
     <div>
-        <a href="{{ route('citizen.reservations') }}" 
+        <a href="{{ URL::signedRoute('citizen.reservations') }}" 
            class="inline-flex items-center text-lgu-button hover:text-lgu-highlight font-medium">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2">
                 <path d="m12 19-7-7 7-7"/><path d="M19 12H5"/>
@@ -19,7 +19,7 @@
 
     <!-- Search -->
     <div class="bg-white shadow rounded-lg p-6">
-        <form method="GET" action="{{ route('citizen.reservation.history') }}">
+        <form method="GET" action="{{ URL::signedRoute('citizen.reservation.history') }}">
             <label for="search" class="block text-sm font-medium text-gray-700 mb-2">Search History</label>
             <div class="flex gap-3">
                 <input type="text" name="search" id="search" value="{{ $search }}" 
@@ -94,7 +94,7 @@
                                     </span>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                    <a href="{{ route('citizen.reservations.show', $booking->id) }}" 
+                                    <a href="{{ URL::signedRoute('citizen.reservations.show', $booking->id) }}" 
                                        class="text-lgu-button hover:text-lgu-highlight">View Details</a>
                                 </td>
                             </tr>

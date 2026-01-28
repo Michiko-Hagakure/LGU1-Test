@@ -8,7 +8,7 @@
     <div class="bg-white rounded-xl shadow-md p-gr-lg border-2 border-lgu-stroke">
         {{-- Header --}}
         <div class="flex items-center gap-gr-sm mb-gr-lg">
-            <a href="{{ route('admin.staff.index') }}" class="p-gr-xs rounded-lg hover:bg-gray-100">
+            <a href="{{ URL::signedRoute('admin.staff.index') }}" class="p-gr-xs rounded-lg hover:bg-gray-100">
                 <i data-lucide="arrow-left" class="w-5 h-5"></i>
             </a>
             <div>
@@ -18,7 +18,7 @@
         </div>
 
         {{-- Form --}}
-        <form method="POST" action="{{ route('admin.staff.store') }}" class="space-y-gr-md">
+        <form method="POST" action="{{ URL::signedRoute('admin.staff.store') }}" class="space-y-gr-md">
             @csrf
 
             {{-- Name --}}
@@ -111,7 +111,7 @@
                     <i data-lucide="user-plus" class="w-5 h-5"></i>
                     Add Staff Member
                 </button>
-                <a href="{{ route('admin.staff.index') }}" class="flex-1 btn-secondary">
+                <a href="{{ URL::signedRoute('admin.staff.index') }}" class="flex-1 btn-secondary">
                     <i data-lucide="x" class="w-5 h-5"></i>
                     Cancel
                 </a>

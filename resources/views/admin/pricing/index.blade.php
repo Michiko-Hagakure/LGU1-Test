@@ -20,7 +20,7 @@
 
     {{-- Search and Filters --}}
     <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-gr-lg mb-gr-lg">
-        <form method="GET" action="{{ route('admin.pricing.index') }}" class="space-y-gr-md">
+        <form method="GET" action="{{ URL::signedRoute('admin.pricing.index') }}" class="space-y-gr-md">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-gr-md">
                 {{-- Search --}}
                 <div>
@@ -52,7 +52,7 @@
                     <i data-lucide="filter" class="w-5 h-5 mr-gr-xs"></i>
                     Apply Filters
                 </button>
-                <a href="{{ route('admin.pricing.index') }}" class="inline-flex items-center px-gr-md py-gr-sm bg-gray-100 text-gray-700 font-semibold rounded-lg hover:bg-gray-200 transition-colors duration-200">
+                <a href="{{ URL::signedRoute('admin.pricing.index') }}" class="inline-flex items-center px-gr-md py-gr-sm bg-gray-100 text-gray-700 font-semibold rounded-lg hover:bg-gray-200 transition-colors duration-200">
                     <i data-lucide="x" class="w-5 h-5 mr-gr-xs"></i>
                     Clear
                 </a>

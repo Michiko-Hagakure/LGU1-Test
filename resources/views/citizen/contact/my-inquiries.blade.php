@@ -77,7 +77,7 @@
                             {{ $inquiry->created_at->format('M j, Y') }}
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm">
-                            <a href="{{ route('citizen.contact.show-inquiry', $inquiry->ticket_number) }}" 
+                            <a href="{{ URL::signedRoute('citizen.contact.show-inquiry', $inquiry->ticket_number) }}" 
                                 class="text-blue-600 hover:text-blue-800 font-medium">View Details</a>
                         </td>
                     </tr>
@@ -98,7 +98,7 @@
         </svg>
         <h3 class="text-lg font-semibold text-gray-800 mb-2">No Inquiries Yet</h3>
         <p class="text-gray-600 mb-6">You haven't submitted any inquiries.</p>
-        <a href="{{ route('citizen.contact.index') }}" 
+        <a href="{{ URL::signedRoute('citizen.contact.index') }}" 
             class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-lg transition duration-200">
             Submit an Inquiry
         </a>

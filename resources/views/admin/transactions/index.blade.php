@@ -21,7 +21,7 @@
 
     <!-- Filters -->
     <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-gr-md mb-gr-lg">
-        <form method="GET" action="{{ route('admin.transactions.index') }}" class="grid grid-cols-1 md:grid-cols-4 gap-gr-md">
+        <form method="GET" action="{{ URL::signedRoute('admin.transactions.index') }}" class="grid grid-cols-1 md:grid-cols-4 gap-gr-md">
             <!-- Date Range -->
             <div>
                 <label class="block text-caption font-semibold text-gray-700 mb-gr-2xs">Start Date</label>
@@ -65,7 +65,7 @@
                     <i data-lucide="search" class="w-4 h-4 mr-gr-xs"></i>
                     Filter
                 </button>
-                <a href="{{ route('admin.transactions.index') }}" class="btn-secondary">
+                <a href="{{ URL::signedRoute('admin.transactions.index') }}" class="btn-secondary">
                     <i data-lucide="x" class="w-4 h-4 mr-gr-xs"></i>
                     Clear
                 </a>
@@ -200,7 +200,7 @@
                             </span>
                         </td>
                         <td class="px-gr-md py-gr-sm">
-                            <a href="{{ route('admin.transactions.show', $transaction->id) }}" class="text-lgu-green hover:text-lgu-green-dark font-medium text-small">
+                            <a href="{{ URL::signedRoute('admin.transactions.show', $transaction->id) }}" class="text-lgu-green hover:text-lgu-green-dark font-medium text-small">
                                 View Details
                             </a>
                         </td>

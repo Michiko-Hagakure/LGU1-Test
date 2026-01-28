@@ -8,7 +8,7 @@
 <div class="container mx-auto px-gr-md py-gr-lg max-w-4xl">
     {{-- Back Button --}}
     <div class="mb-gr-md">
-        <a href="{{ route('admin.facilities.index') }}" class="inline-flex items-center text-lgu-paragraph hover:text-lgu-headline transition-colors duration-200">
+        <a href="{{ URL::signedRoute('admin.facilities.index') }}" class="inline-flex items-center text-lgu-paragraph hover:text-lgu-headline transition-colors duration-200">
             <i data-lucide="arrow-left" class="w-5 h-5 mr-gr-xs"></i>
             Back to Facilities
         </a>
@@ -38,7 +38,7 @@
     @endif
 
     {{-- Form --}}
-    <form action="{{ route('admin.facilities.store') }}" method="POST" enctype="multipart/form-data">
+    <form action="{{ URL::signedRoute('admin.facilities.store') }}" method="POST" enctype="multipart/form-data">
         @csrf
 
         {{-- Basic Information --}}
@@ -194,7 +194,7 @@
 
         {{-- Form Actions --}}
         <div class="flex items-center justify-end gap-gr-sm">
-            <a href="{{ route('admin.facilities.index') }}" class="inline-flex items-center px-gr-lg py-gr-sm bg-gray-100 text-gray-700 font-semibold rounded-lg hover:bg-gray-200 transition-colors duration-200">
+            <a href="{{ URL::signedRoute('admin.facilities.index') }}" class="inline-flex items-center px-gr-lg py-gr-sm bg-gray-100 text-gray-700 font-semibold rounded-lg hover:bg-gray-200 transition-colors duration-200">
                 Cancel
             </a>
             <button type="submit" class="inline-flex items-center px-gr-lg py-gr-sm bg-lgu-button text-lgu-button-text font-semibold rounded-lg hover:bg-opacity-90 transition-colors duration-200">

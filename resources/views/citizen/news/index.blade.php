@@ -13,7 +13,7 @@
 
 <!-- Search & Filters -->
 <div class="bg-white rounded-lg shadow-md p-6 mb-8">
-    <form method="GET" action="{{ route('citizen.news.index') }}" class="flex flex-col md:flex-row gap-4">
+    <form method="GET" action="{{ URL::signedRoute('citizen.news.index') }}" class="flex flex-col md:flex-row gap-4">
         <!-- Search -->
         <div class="flex-1">
             <input type="text" name="search" placeholder="Search news..." value="{{ request('search') }}"
@@ -62,7 +62,7 @@
                     <p class="text-gray-700 mb-3">{{ Str::limit($newsItem->excerpt ?? $newsItem->content, 150) }}</p>
                     <div class="flex items-center justify-between">
                         <span class="text-sm text-gray-500">{{ $newsItem->published_at->format('M j, Y') }}</span>
-                        <a href="{{ route('citizen.news.show', $newsItem->slug) }}" class="text-red-600 hover:text-red-800 font-semibold text-sm">
+                        <a href="{{ URL::signedRoute('citizen.news.show', $newsItem->slug) }}" class="text-red-600 hover:text-red-800 font-semibold text-sm">
                             Read More →
                         </a>
                     </div>
@@ -99,7 +99,7 @@
                 </div>
                 <h3 class="font-bold text-lg mb-2">{{ $newsItem->title }}</h3>
                 <p class="text-sm text-blue-100 mb-3">{{ Str::limit($newsItem->excerpt, 80) }}</p>
-                <a href="{{ route('citizen.news.show', $newsItem->slug) }}" class="inline-block bg-white text-blue-600 font-semibold px-4 py-2 rounded-lg hover:bg-blue-50 transition duration-200">
+                <a href="{{ URL::signedRoute('citizen.news.show', $newsItem->slug) }}" class="inline-block bg-white text-blue-600 font-semibold px-4 py-2 rounded-lg hover:bg-blue-50 transition duration-200">
                     Read More
                 </a>
             </div>
@@ -149,7 +149,7 @@
                         {{ $newsItem->view_count }}
                     </span>
                 </div>
-                <a href="{{ route('citizen.news.show', $newsItem->slug) }}" class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded-lg transition duration-200">
+                <a href="{{ URL::signedRoute('citizen.news.show', $newsItem->slug) }}" class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded-lg transition duration-200">
                     Read Full Article
                 </a>
             </div>

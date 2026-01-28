@@ -31,28 +31,28 @@
             Filter by Status
         </h3>
         <div class="flex flex-wrap gap-3">
-            <a href="{{ route('citizen.payment-slips', ['status' => 'all']) }}" 
+            <a href="{{ URL::signedRoute('citizen.payment-slips', ['status' => 'all']) }}" 
                class="group px-5 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 cursor-pointer flex items-center gap-2 {{ $status === 'all' ? 'bg-lgu-button text-lgu-button-text shadow-lg scale-105' : 'bg-gray-100 text-gray-700 hover:bg-gray-200 hover:scale-105' }}">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>
                 </svg>
                 All <span class="ml-1 px-2 py-0.5 rounded-full text-xs {{ $status === 'all' ? 'bg-white/20' : 'bg-gray-200' }}">{{ $statusCounts['all'] }}</span>
             </a>
-            <a href="{{ route('citizen.payment-slips', ['status' => 'unpaid']) }}" 
+            <a href="{{ URL::signedRoute('citizen.payment-slips', ['status' => 'unpaid']) }}" 
                class="group px-5 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 cursor-pointer flex items-center gap-2 {{ $status === 'unpaid' ? 'bg-orange-500 text-white shadow-lg scale-105' : 'bg-orange-100 text-orange-700 hover:bg-orange-200 hover:scale-105' }}">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
                 </svg>
                 Unpaid <span class="ml-1 px-2 py-0.5 rounded-full text-xs {{ $status === 'unpaid' ? 'bg-white/20' : 'bg-orange-200' }}">{{ $statusCounts['unpaid'] }}</span>
             </a>
-            <a href="{{ route('citizen.payment-slips', ['status' => 'paid']) }}" 
+            <a href="{{ URL::signedRoute('citizen.payment-slips', ['status' => 'paid']) }}" 
                class="group px-5 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 cursor-pointer flex items-center gap-2 {{ $status === 'paid' ? 'bg-green-500 text-white shadow-lg scale-105' : 'bg-green-100 text-green-700 hover:bg-green-200 hover:scale-105' }}">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/>
                 </svg>
                 Paid <span class="ml-1 px-2 py-0.5 rounded-full text-xs {{ $status === 'paid' ? 'bg-white/20' : 'bg-green-200' }}">{{ $statusCounts['paid'] }}</span>
             </a>
-            <a href="{{ route('citizen.payment-slips', ['status' => 'expired']) }}" 
+            <a href="{{ URL::signedRoute('citizen.payment-slips', ['status' => 'expired']) }}" 
                class="group px-5 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 cursor-pointer flex items-center gap-2 {{ $status === 'expired' ? 'bg-red-500 text-white shadow-lg scale-105' : 'bg-red-100 text-red-700 hover:bg-red-200 hover:scale-105' }}">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/>
@@ -73,7 +73,7 @@
             </div>
             <h3 class="text-2xl font-bold text-gray-900 mb-3">No Payment Slips Found</h3>
             <p class="text-gray-600 mb-8 text-lg">You don't have any payment slips{{ $status !== 'all' ? ' with this status' : '' }} yet.</p>
-            <a href="{{ route('citizen.browse-facilities') }}" 
+            <a href="{{ URL::signedRoute('citizen.browse-facilities') }}" 
                class="inline-flex items-center px-8 py-4 bg-lgu-button text-lgu-button-text font-semibold rounded-lg hover:bg-lgu-highlight transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1 cursor-pointer">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2">
                     <path d="M5 12h14"/><path d="M12 5v14"/>
@@ -183,7 +183,7 @@
 
                         <!-- Action Buttons -->
                         <div class="flex flex-wrap items-center gap-3">
-                            <a href="{{ route('citizen.payment-slips.show', $slip->id) }}" 
+                            <a href="{{ URL::signedRoute('citizen.payment-slips.show', $slip->id) }}" 
                                class="flex-1 min-w-[200px] px-6 py-3 bg-lgu-button text-lgu-button-text font-semibold rounded-lg hover:bg-lgu-highlight transition-all duration-200 text-center shadow-md hover:shadow-lg cursor-pointer flex items-center justify-center gap-2">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/>
@@ -191,7 +191,7 @@
                                 View Details & Pay
                             </a>
 
-                            <a href="{{ route('citizen.reservations.show', $slip->booking_id) }}" 
+                            <a href="{{ URL::signedRoute('citizen.reservations.show', $slip->booking_id) }}" 
                                class="px-6 py-3 bg-gray-200 text-gray-700 font-semibold rounded-lg hover:bg-gray-300 transition-all duration-200 shadow-md hover:shadow-lg cursor-pointer flex items-center gap-2">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <rect width="18" height="18" x="3" y="4" rx="2"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/>
@@ -228,7 +228,7 @@ function liveSearch(query) {
     clearTimeout(searchTimeout);
     searchTimeout = setTimeout(() => {
         const currentStatus = '{{ $status }}';
-        window.location.href = `{{ route('citizen.payment-slips') }}?status=${currentStatus}&search=${encodeURIComponent(query)}`;
+        window.location.href = `{{ URL::signedRoute('citizen.payment-slips') }}?status=${currentStatus}&search=${encodeURIComponent(query)}`;
     }, 500);
 }
 

@@ -39,17 +39,17 @@
 
     <!-- Filter Tabs -->
     <div class="flex gap-2 border-b border-gray-200">
-        <a href="{{ route('citizen.conflicts.index', ['filter' => 'pending']) }}" 
+        <a href="{{ URL::signedRoute('citizen.conflicts.index', ['filter' => 'pending']) }}" 
            class="px-4 py-2 -mb-px {{ request('filter', 'pending') === 'pending' ? 'border-b-2 border-lgu-highlight text-lgu-highlight font-semibold' : 'text-gray-600 hover:text-gray-800' }}">
             <i data-lucide="alert-circle" class="w-4 h-4 inline-block mr-1"></i>
             Pending
         </a>
-        <a href="{{ route('citizen.conflicts.index', ['filter' => 'resolved']) }}" 
+        <a href="{{ URL::signedRoute('citizen.conflicts.index', ['filter' => 'resolved']) }}" 
            class="px-4 py-2 -mb-px {{ request('filter') === 'resolved' ? 'border-b-2 border-lgu-highlight text-lgu-highlight font-semibold' : 'text-gray-600 hover:text-gray-800' }}">
             <i data-lucide="check-circle" class="w-4 h-4 inline-block mr-1"></i>
             Resolved
         </a>
-        <a href="{{ route('citizen.conflicts.index', ['filter' => 'all']) }}" 
+        <a href="{{ URL::signedRoute('citizen.conflicts.index', ['filter' => 'all']) }}" 
            class="px-4 py-2 -mb-px {{ request('filter') === 'all' ? 'border-b-2 border-lgu-highlight text-lgu-highlight font-semibold' : 'text-gray-600 hover:text-gray-800' }}">
             <i data-lucide="list" class="w-4 h-4 inline-block mr-1"></i>
             All
@@ -118,7 +118,7 @@
 
                         @if($conflict->status === 'pending')
                         <div class="flex-shrink-0 ml-4">
-                            <a href="{{ route('citizen.conflicts.show', $conflict) }}" 
+                            <a href="{{ URL::signedRoute('citizen.conflicts.show', $conflict) }}" 
                                class="btn-primary inline-flex items-center gap-2">
                                 <i data-lucide="calendar" class="w-4 h-4"></i>
                                 <span>Resolve</span>

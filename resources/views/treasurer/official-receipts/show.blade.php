@@ -105,7 +105,7 @@
 
 <!-- Back Button -->
 <div class="mb-6">
-    <a href="{{ route('treasurer.official-receipts') }}" 
+    <a href="{{ URL::signedRoute('treasurer.official-receipts') }}" 
        class="inline-flex items-center text-lgu-button hover:text-lgu-highlight font-medium">
         <i data-lucide="arrow-left" class="w-5 h-5 mr-2"></i>
         Back to Official Receipts
@@ -220,7 +220,7 @@
             <h3 class="text-lg font-bold text-gray-900 mb-4">Quick Actions</h3>
             
             <div class="space-y-3">
-                <a href="{{ route('treasurer.official-receipts.print', $paymentSlip->id) }}" 
+                <a href="{{ URL::signedRoute('treasurer.official-receipts.print', $paymentSlip->id) }}" 
                    class="w-full bg-lgu-button text-lgu-button-text font-bold py-3 rounded-lg hover:bg-lgu-highlight transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2">
                     <i data-lucide="download" class="w-5 h-5"></i>
                     Download PDF
@@ -232,7 +232,7 @@
                     Print Receipt
                 </button>
                 
-                <a href="{{ route('treasurer.payment-slips.show', $paymentSlip->id) }}" 
+                <a href="{{ URL::signedRoute('treasurer.payment-slips.show', $paymentSlip->id) }}" 
                    class="w-full border-2 border-lgu-button text-lgu-button font-semibold py-3 rounded-lg hover:bg-lgu-bg transition-all flex items-center justify-center gap-2">
                     <i data-lucide="file-check" class="w-5 h-5"></i>
                     View Payment Slip

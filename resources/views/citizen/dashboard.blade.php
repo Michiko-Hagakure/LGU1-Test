@@ -62,7 +62,7 @@
         <div class="bg-white shadow rounded-lg p-6">
             <h2 class="text-lg font-bold text-gray-900 mb-4">Available Facilities</h2>
             <p class="text-gray-600 mb-6">Browse and book public facilities easily.</p>
-            <a href="{{ route('citizen.browse-facilities') }}" class="inline-flex items-center px-6 py-3 bg-lgu-button text-lgu-button-text font-semibold rounded-lg hover:bg-lgu-highlight transition shadow-md">
+            <a href="{{ URL::signedRoute('citizen.browse-facilities') }}" class="inline-flex items-center px-6 py-3 bg-lgu-button text-lgu-button-text font-semibold rounded-lg hover:bg-lgu-highlight transition shadow-md">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/><path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/><path d="M10 18h4"/></svg>
                 Browse Facilities
             </a>
@@ -72,7 +72,7 @@
         <div class="bg-white shadow rounded-lg p-6">
             <h2 class="text-lg font-bold text-gray-900 mb-4">Facility Calendar</h2>
             <p class="text-gray-600 mb-6">View available dates and existing reservations.</p>
-            <a href="{{ route('citizen.facility-calendar') }}" class="inline-flex items-center px-6 py-3 bg-lgu-button text-lgu-button-text font-semibold rounded-lg hover:bg-lgu-highlight transition shadow-md">
+            <a href="{{ URL::signedRoute('citizen.facility-calendar') }}" class="inline-flex items-center px-6 py-3 bg-lgu-button text-lgu-button-text font-semibold rounded-lg hover:bg-lgu-highlight transition shadow-md">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/><path d="M8 14h.01"/><path d="M12 14h.01"/><path d="M16 14h.01"/><path d="M8 18h.01"/><path d="M12 18h.01"/><path d="M16 18h.01"/></svg>
                 View Calendar
             </a>
@@ -85,7 +85,7 @@
         <div class="bg-white shadow rounded-lg p-6">
             <div class="flex items-center justify-between mb-4">
                 <h2 class="text-lg font-bold text-gray-900">Upcoming Bookings</h2>
-                <a href="{{ route('citizen.reservations') }}" class="text-sm text-lgu-button hover:text-lgu-highlight font-medium">View All</a>
+                <a href="{{ URL::signedRoute('citizen.reservations') }}" class="text-sm text-lgu-button hover:text-lgu-highlight font-medium">View All</a>
             </div>
             
             @if(isset($upcomingBookings) && $upcomingBookings->count() > 0)
@@ -122,7 +122,7 @@
         <div class="bg-white shadow rounded-lg p-6">
             <div class="flex items-center justify-between mb-4">
                 <h2 class="text-lg font-bold text-gray-900">Pending Payments</h2>
-                <a href="{{ route('citizen.payment-slips') }}" class="text-sm text-lgu-button hover:text-lgu-highlight font-medium">View All</a>
+                <a href="{{ URL::signedRoute('citizen.payment-slips') }}" class="text-sm text-lgu-button hover:text-lgu-highlight font-medium">View All</a>
             </div>
             
             @if(isset($pendingPayments) && $pendingPayments->count() > 0)
@@ -138,7 +138,7 @@
                                     <p class="text-xs text-gray-600">₱{{ number_format($payment->amount_due, 2) }} • Due {{ \Carbon\Carbon::parse($payment->payment_deadline)->diffForHumans() }}</p>
                                 </div>
                             </div>
-                            <a href="{{ route('citizen.payment-slips.show', $payment->id) }}" class="text-yellow-600 hover:text-yellow-800 text-sm font-medium">
+                            <a href="{{ URL::signedRoute('citizen.payment-slips.show', $payment->id) }}" class="text-yellow-600 hover:text-yellow-800 text-sm font-medium">
                                 Pay Now
                             </a>
                         </div>

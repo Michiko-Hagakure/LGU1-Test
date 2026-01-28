@@ -14,7 +14,7 @@
             
             <!-- Date Range Filter & Export Buttons -->
             <div class="flex flex-wrap items-end gap-3">
-                <form method="GET" action="{{ route('admin.analytics.facility-utilization') }}" class="flex flex-wrap items-end gap-3">
+                <form method="GET" action="{{ URL::signedRoute('admin.analytics.facility-utilization') }}" class="flex flex-wrap items-end gap-3">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
                         <input type="date" name="start_date" value="{{ $startDate }}" 
@@ -43,11 +43,11 @@
                         <i data-lucide="chevron-down" class="w-4 h-4 ml-1"></i>
                     </button>
                     <div x-show="open" @click.away="open = false" class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-10">
-                        <a href="{{ route('admin.analytics.export-facility-utilization-excel', ['start_date' => $startDate, 'end_date' => $endDate]) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-lgu-bg">
+                        <a href="{{ URL::signedRoute('admin.analytics.export-facility-utilization-excel', ['start_date' => $startDate, 'end_date' => $endDate]) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-lgu-bg">
                             <i data-lucide="file-spreadsheet" class="w-4 h-4 inline mr-2"></i>
                             Export as Excel
                         </a>
-                        <a href="{{ route('admin.analytics.facility-utilization.export', ['start_date' => $startDate, 'end_date' => $endDate]) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-lgu-bg">
+                        <a href="{{ URL::signedRoute('admin.analytics.facility-utilization.export', ['start_date' => $startDate, 'end_date' => $endDate]) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-lgu-bg">
                             <i data-lucide="file-text" class="w-4 h-4 inline mr-2"></i>
                             Export as CSV
                         </a>

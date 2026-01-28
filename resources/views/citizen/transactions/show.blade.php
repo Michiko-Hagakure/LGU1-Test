@@ -7,7 +7,7 @@
 <div class="pb-gr-2xl">
     <!-- Back Button -->
     <div class="mb-gr-md">
-        <a href="{{ route('citizen.transactions.index') }}" class="inline-flex items-center text-small font-medium text-gray-600 hover:text-gray-900">
+        <a href="{{ URL::signedRoute('citizen.transactions.index') }}" class="inline-flex items-center text-small font-medium text-gray-600 hover:text-gray-900">
             <i data-lucide="arrow-left" class="w-4 h-4 mr-gr-xs"></i>
             Back to Transactions
         </a>
@@ -88,7 +88,7 @@
                             <p class="text-caption text-gray-500">{{ $booking->facility_address }}</p>
                             @endif
                         </div>
-                        <a href="{{ route('citizen.reservations.show', $booking->id) }}" class="text-lgu-green hover:text-lgu-green-dark font-medium text-small">
+                        <a href="{{ URL::signedRoute('citizen.reservations.show', $booking->id) }}" class="text-lgu-green hover:text-lgu-green-dark font-medium text-small">
                             View Booking
                         </a>
                     </div>

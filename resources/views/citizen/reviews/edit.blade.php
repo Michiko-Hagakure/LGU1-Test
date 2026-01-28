@@ -8,7 +8,7 @@
 <div class="max-w-4xl mx-auto space-y-6">
     <!-- Back Button -->
     <div>
-        <a href="{{ route('citizen.reviews.index') }}" 
+        <a href="{{ URL::signedRoute('citizen.reviews.index') }}" 
            class="inline-flex items-center text-lgu-button hover:text-lgu-highlight font-medium">
             <i data-lucide="arrow-left" class="w-5 h-5 mr-2"></i>
             Back to My Reviews
@@ -61,7 +61,7 @@
     </div>
 
     <!-- Review Form -->
-    <form action="{{ route('citizen.reviews.update', $review->id) }}" method="POST" class="bg-white shadow rounded-lg overflow-hidden">
+    <form action="{{ URL::signedRoute('citizen.reviews.update', $review->id) }}" method="POST" class="bg-white shadow rounded-lg overflow-hidden">
         @csrf
         @method('PUT')
 
@@ -148,7 +148,7 @@
 
         <!-- Form Actions -->
         <div class="px-6 py-4 bg-gray-50 border-t border-gray-200 flex justify-end gap-3">
-            <a href="{{ route('citizen.reviews.index') }}" 
+            <a href="{{ URL::signedRoute('citizen.reviews.index') }}" 
                class="px-6 py-3 bg-gray-200 text-gray-700 font-semibold rounded-lg hover:bg-gray-300 transition">
                 Cancel
             </a>

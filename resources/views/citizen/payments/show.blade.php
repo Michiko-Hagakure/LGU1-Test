@@ -50,7 +50,7 @@
 <div class="space-y-6 no-print">
     <!-- Back Button -->
     <div>
-        <a href="{{ route('citizen.payment-slips') }}" 
+        <a href="{{ URL::signedRoute('citizen.payment-slips') }}" 
            class="inline-flex items-center text-lgu-button hover:text-lgu-highlight font-medium">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2">
                 <path d="m12 19-7-7 7-7"/><path d="M19 12H5"/>
@@ -305,7 +305,7 @@
                                 <p class="text-sm text-gray-700 mb-3">
                                     Pay instantly via GCash, Maya, GrabPay, or Card. No reference number needed - payment is automatically confirmed!
                                 </p>
-                                <a href="{{ route('citizen.payment-slips.paymongo', $paymentSlip->id) }}"
+                                <a href="{{ URL::signedRoute('citizen.payment-slips.paymongo', $paymentSlip->id) }}"
                                    class="w-full bg-lgu-button text-lgu-button-text font-bold py-4 rounded-lg hover:bg-lgu-highlight transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2">
                                     <i data-lucide="credit-card" class="w-5 h-5"></i>
                                     Pay Instantly Now
@@ -330,7 +330,7 @@
                                 Pay using GCash, Maya, or Bank Transfer. Simply send payment and enter your reference number!
                                 @endif
                             </p>
-                            <a href="{{ route('citizen.payment-slips.cashless', $paymentSlip->id) }}"
+                            <a href="{{ URL::signedRoute('citizen.payment-slips.cashless', $paymentSlip->id) }}"
                                class="w-full {{ config('payment.paymongo_enabled') ? 'bg-gray-200 text-gray-700 hover:bg-gray-300' : 'bg-lgu-button text-lgu-button-text hover:bg-lgu-highlight' }} font-bold py-4 rounded-lg transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2">
                                 <i data-lucide="edit-3" class="w-5 h-5"></i>
                                 {{ config('payment.paymongo_enabled') ? 'Pay Manually (Enter Reference)' : 'Pay Online Now' }}
@@ -366,7 +366,7 @@
                         </div>
                     </div>
                     
-                    <a href="{{ route('citizen.payments.receipt', $paymentSlip->id) }}" 
+                    <a href="{{ URL::signedRoute('citizen.payments.receipt', $paymentSlip->id) }}" 
                        class="w-full bg-green-600 text-white font-bold py-4 rounded-lg hover:bg-green-700 transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2">
                         <i data-lucide="download" class="w-5 h-5"></i>
                         Download Official Receipt (PDF)
@@ -469,14 +469,14 @@
                 <div class="border-t border-gray-200 pt-4 no-print">
                     <h4 class="text-sm font-bold text-gray-900 mb-3">Quick Actions</h4>
                     <div class="space-y-3">
-                        <a href="{{ route('citizen.reservations.show', $paymentSlip->booking_id) }}" 
+                        <a href="{{ URL::signedRoute('citizen.reservations.show', $paymentSlip->booking_id) }}" 
                            class="block w-full px-4 py-3 bg-lgu-button text-lgu-button-text text-center font-semibold rounded-lg hover:bg-lgu-highlight transition-all duration-200 shadow-md hover:shadow-lg cursor-pointer flex items-center justify-center gap-2">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <rect width="18" height="18" x="3" y="4" rx="2"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/>
                             </svg>
                             View Booking
                         </a>
-                        <a href="{{ route('citizen.payment-slips') }}" 
+                        <a href="{{ URL::signedRoute('citizen.payment-slips') }}" 
                            class="block w-full px-4 py-3 bg-gray-200 text-gray-700 text-center font-semibold rounded-lg hover:bg-gray-300 transition-all duration-200 shadow-md hover:shadow-lg cursor-pointer flex items-center justify-center gap-2">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="m12 19-7-7 7-7"/><path d="M19 12H5"/>

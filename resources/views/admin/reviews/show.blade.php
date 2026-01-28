@@ -7,7 +7,7 @@
 <div class="space-y-gr-lg">
     {{-- Back Button --}}
     <div class="mb-gr-md">
-        <a href="{{ route('admin.reviews.index') }}" class="inline-flex items-center text-lgu-paragraph hover:text-lgu-headline transition-colors duration-200">
+        <a href="{{ URL::signedRoute('admin.reviews.index') }}" class="inline-flex items-center text-lgu-paragraph hover:text-lgu-headline transition-colors duration-200">
             <i data-lucide="arrow-left" class="w-5 h-5 mr-gr-xs"></i>
             Back to Reviews
         </a>

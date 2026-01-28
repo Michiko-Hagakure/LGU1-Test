@@ -45,7 +45,7 @@ use Illuminate\Support\Facades\Storage;
                 <h2 class="text-xl font-bold text-gray-900 mb-4">Available Equipment & Add-ons</h2>
                 <p class="text-sm text-gray-600 mb-6">Select additional equipment to enhance your event. You can skip this step if you don't need any equipment.</p>
 
-                <form action="{{ route('citizen.booking.step3') }}" method="POST" id="equipmentForm">
+                <form action="{{ URL::signedRoute('citizen.booking.step3') }}" method="POST" id="equipmentForm">
                     @csrf
 
                     @foreach($equipment as $category => $items)
@@ -119,7 +119,7 @@ use Illuminate\Support\Facades\Storage;
 
                     <!-- Navigation Buttons -->
                     <div class="flex items-center justify-between pt-6 border-t">
-                        <a href="{{ route('citizen.booking.create') }}" 
+                        <a href="{{ URL::signedRoute('citizen.booking.create') }}" 
                            class="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition cursor-pointer">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-left inline-block mr-2">
                                 <path d="m12 19-7-7 7-7"/>

@@ -7,7 +7,7 @@
 <div class="space-y-gr-lg">
     {{-- Back Button --}}
     <div class="flex items-center gap-gr-sm">
-        <a href="{{ route('admin.citizens.index') }}" class="p-gr-xs rounded-lg hover:bg-gray-100">
+        <a href="{{ URL::signedRoute('admin.citizens.index') }}" class="p-gr-xs rounded-lg hover:bg-gray-100">
             <i data-lucide="arrow-left" class="w-5 h-5"></i>
         </a>
         <div>
@@ -73,7 +73,7 @@
     <div class="bg-white rounded-xl shadow-md p-gr-lg border-2 border-lgu-stroke">
         <div class="flex justify-between items-center mb-gr-md">
             <h2 class="text-h3 font-bold text-lgu-headline">Recent Bookings</h2>
-            <a href="{{ route('admin.citizens.bookings', $citizen->id) }}" class="text-sm text-lgu-green hover:underline">
+            <a href="{{ URL::signedRoute('admin.citizens.bookings', $citizen->id) }}" class="text-sm text-lgu-green hover:underline">
                 View All →
             </a>
         </div>

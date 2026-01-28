@@ -11,7 +11,7 @@
             <h2 class="text-2xl font-bold text-lgu-headline">City Events</h2>
             <p class="text-sm text-lgu-paragraph mt-1">Schedule government events and manage conflicting reservations</p>
         </div>
-        <a href="{{ route('admin.city-events.create') }}" 
+        <a href="{{ URL::signedRoute('admin.city-events.create') }}" 
            class="btn-primary flex items-center gap-2">
             <i data-lucide="calendar-plus" class="w-5 h-5"></i>
             <span>Create City Event</span>
@@ -20,7 +20,7 @@
 
     <!-- Filters -->
     <div class="bg-white rounded-xl shadow-sm p-6">
-        <form method="GET" action="{{ route('admin.city-events.index') }}" class="space-y-4">
+        <form method="GET" action="{{ URL::signedRoute('admin.city-events.index') }}" class="space-y-4">
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 <!-- Search -->
                 <div>
@@ -88,7 +88,7 @@
                     <i data-lucide="filter" class="w-4 h-4"></i>
                     <span>Apply Filters</span>
                 </button>
-                <a href="{{ route('admin.city-events.index') }}" class="btn-secondary flex items-center gap-2">
+                <a href="{{ URL::signedRoute('admin.city-events.index') }}" class="btn-secondary flex items-center gap-2">
                     <i data-lucide="x" class="w-4 h-4"></i>
                     <span>Clear</span>
                 </a>
@@ -182,13 +182,13 @@
                             </td>
                             <td class="px-6 py-4">
                                 <div class="flex items-center justify-end gap-2">
-                                    <a href="{{ route('admin.city-events.show', $event) }}" 
+                                    <a href="{{ URL::signedRoute('admin.city-events.show', $event) }}" 
                                        class="p-2 text-lgu-headline hover:bg-lgu-bg rounded-lg transition-colors"
                                        title="View Details">
                                         <i data-lucide="eye" class="w-4 h-4"></i>
                                     </a>
                                     @if($event->status === 'scheduled')
-                                    <a href="{{ route('admin.city-events.edit', $event) }}" 
+                                    <a href="{{ URL::signedRoute('admin.city-events.edit', $event) }}" 
                                        class="p-2 text-lgu-headline hover:bg-lgu-bg rounded-lg transition-colors"
                                        title="Edit">
                                         <i data-lucide="edit" class="w-4 h-4"></i>
@@ -223,7 +223,7 @@
                     @endif
                 </p>
                 @if(!request()->hasAny(['search', 'status', 'event_type', 'date_from']))
-                <a href="{{ route('admin.city-events.create') }}" class="btn-primary inline-flex items-center gap-2">
+                <a href="{{ URL::signedRoute('admin.city-events.create') }}" class="btn-primary inline-flex items-center gap-2">
                     <i data-lucide="calendar-plus" class="w-5 h-5"></i>
                     <span>Create City Event</span>
                 </a>

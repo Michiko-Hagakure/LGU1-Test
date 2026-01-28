@@ -315,7 +315,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const facilityId = document.getElementById('facility-filter').value;
             const status = document.getElementById('status-filter').value;
             
-            const url = `{{ route('staff.calendar.events') }}?facility_id=${facilityId}&status=${status}&start=${info.startStr}&end=${info.endStr}`;
+            const url = `{{ URL::signedRoute('staff.calendar.events') }}?facility_id=${facilityId}&status=${status}&start=${info.startStr}&end=${info.endStr}`;
             console.log('Fetching calendar events:', url);
 
             // Fetch events from server with proper headers

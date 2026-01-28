@@ -12,7 +12,7 @@
                 <p class="text-gray-600 mt-1">Monitor system performance and workflow efficiency</p>
             </div>
             
-            <form method="GET" action="{{ route('admin.analytics.operational-metrics') }}" class="flex items-center gap-3">
+            <form method="GET" action="{{ URL::signedRoute('admin.analytics.operational-metrics') }}" class="flex items-center gap-3">
                 <input type="date" name="start_date" value="{{ $startDate }}" 
                        class="px-4 py-2 border border-lgu-stroke rounded-lg focus:ring-2 focus:ring-lgu-highlight focus:border-lgu-highlight">
                 <span class="text-gray-600">to</span>

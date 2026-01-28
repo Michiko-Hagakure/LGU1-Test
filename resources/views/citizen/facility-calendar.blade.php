@@ -11,7 +11,7 @@
         <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
             <!-- Month/Year Navigation -->
             <div class="flex items-center space-x-4">
-                <a href="{{ route('citizen.facility-calendar', ['month' => $prevMonth->month, 'year' => $prevMonth->year, 'facility_id' => $selectedFacilityId]) }}" 
+                <a href="{{ URL::signedRoute('citizen.facility-calendar', ['month' => $prevMonth->month, 'year' => $prevMonth->year, 'facility_id' => $selectedFacilityId]) }}" 
                    class="p-2 text-gray-600 hover:text-lgu-headline hover:bg-gray-100 rounded-lg transition">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
                 </a>
@@ -20,12 +20,12 @@
                     {{ $currentDate->format('F Y') }}
                 </h2>
                 
-                <a href="{{ route('citizen.facility-calendar', ['month' => $nextMonth->month, 'year' => $nextMonth->year, 'facility_id' => $selectedFacilityId]) }}" 
+                <a href="{{ URL::signedRoute('citizen.facility-calendar', ['month' => $nextMonth->month, 'year' => $nextMonth->year, 'facility_id' => $selectedFacilityId]) }}" 
                    class="p-2 text-gray-600 hover:text-lgu-headline hover:bg-gray-100 rounded-lg transition">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
                 </a>
                 
-                <a href="{{ route('citizen.facility-calendar') }}" 
+                <a href="{{ URL::signedRoute('citizen.facility-calendar') }}" 
                    class="px-4 py-2 text-sm text-lgu-button-text bg-lgu-button hover:bg-lgu-highlight rounded-lg transition font-medium">
                     Today
                 </a>
@@ -35,7 +35,7 @@
             <div class="flex items-center space-x-3">
                 <label for="facility_filter" class="text-sm font-medium text-gray-700">Filter by Facility:</label>
                 <select id="facility_filter" 
-                        onchange="window.location.href='{{ route('citizen.facility-calendar', ['month' => $currentDate->month, 'year' => $currentDate->year]) }}&facility_id=' + this.value"
+                        onchange="window.location.href='{{ URL::signedRoute('citizen.facility-calendar', ['month' => $currentDate->month, 'year' => $currentDate->year]) }}&facility_id=' + this.value"
                         class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-lgu-button focus:border-lgu-button">
                     <option value="">All Facilities</option>
                     @foreach($facilities as $facility)
@@ -248,7 +248,7 @@ function showDayDetails(dateString) {
     
     // Fetch bookings for this day
     const facilityId = document.getElementById('facility_filter').value;
-    fetch(`{{ route('citizen.facility-calendar.bookings') }}?date=${dateString}&facility_id=${facilityId}`)
+    fetch(`{{ URL::signedRoute('citizen.facility-calendar.bookings') }}?date=${dateString}&facility_id=${facilityId}`)
         .then(response => response.json())
         .then(data => {
             if (data.bookings.length === 0) {

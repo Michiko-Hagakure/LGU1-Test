@@ -38,7 +38,7 @@
 
     <!-- Search and Filters -->
     <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-        <form method="GET" action="{{ route('treasurer.official-receipts') }}" class="space-y-4">
+        <form method="GET" action="{{ URL::signedRoute('treasurer.official-receipts') }}" class="space-y-4">
             
             <!-- Search Bar -->
             <div class="relative">
@@ -81,7 +81,7 @@
                     <i data-lucide="filter" class="w-4 h-4"></i>
                     Apply Filters
                 </button>
-                <a href="{{ route('treasurer.official-receipts') }}" class="border border-gray-300 text-gray-700 px-6 py-2.5 rounded-lg hover:bg-gray-50 transition-colors font-semibold inline-flex items-center gap-2">
+                <a href="{{ URL::signedRoute('treasurer.official-receipts') }}" class="border border-gray-300 text-gray-700 px-6 py-2.5 rounded-lg hover:bg-gray-50 transition-colors font-semibold inline-flex items-center gap-2">
                     <i data-lucide="x" class="w-4 h-4"></i>
                     Clear
                 </a>
@@ -159,13 +159,13 @@
                     </td>
                     <td class="px-2 py-2 whitespace-nowrap">
                         <div class="flex items-center gap-2">
-                            <a href="{{ route('treasurer.official-receipts.show', $receipt->id) }}" 
+                            <a href="{{ URL::signedRoute('treasurer.official-receipts.show', $receipt->id) }}" 
                                class="text-lgu-button hover:text-lgu-highlight font-semibold text-sm inline-flex items-center gap-1">
                                 <i data-lucide="eye" class="w-4 h-4"></i>
                                 View
                             </a>
                             <span class="text-gray-300">|</span>
-                            <a href="{{ route('treasurer.official-receipts.print', $receipt->id) }}" 
+                            <a href="{{ URL::signedRoute('treasurer.official-receipts.print', $receipt->id) }}" 
                                target="_blank"
                                class="text-blue-600 hover:text-blue-800 font-semibold text-sm inline-flex items-center gap-1">
                                 <i data-lucide="download" class="w-4 h-4"></i>

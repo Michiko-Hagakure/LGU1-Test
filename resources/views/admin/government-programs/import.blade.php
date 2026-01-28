@@ -80,7 +80,7 @@ EE_DB_PASSWORD=</pre>
             </div>
 
             @if($notImported->count() > 0)
-                <form action="{{ route('admin.government-programs.import-bulk') }}" method="POST">
+                <form action="{{ URL::signedRoute('admin.government-programs.import-bulk') }}" method="POST">
                     @csrf
                     <button type="submit" class="px-6 py-3 bg-lgu-button text-lgu-button-text font-semibold rounded-lg hover:opacity-90 transition flex items-center gap-2">
                         <i data-lucide="download-cloud" class="w-5 h-5"></i>
@@ -133,7 +133,7 @@ EE_DB_PASSWORD=</pre>
                                 @endif
                             </div>
 
-                            <form action="{{ route('admin.government-programs.import-single', $seminar->seminar_id) }}" method="POST">
+                            <form action="{{ URL::signedRoute('admin.government-programs.import-single', $seminar->seminar_id) }}" method="POST">
                                 @csrf
                                 <button type="submit" class="px-4 py-2 bg-lgu-button text-lgu-button-text font-medium rounded-lg hover:opacity-90 transition flex items-center gap-2">
                                     <i data-lucide="download" class="w-4 h-4"></i>
@@ -172,7 +172,7 @@ EE_DB_PASSWORD=</pre>
                                 <h4 class="font-semibold text-lgu-headline">{{ $seminar->seminar_title }}</h4>
                                 <span class="text-gray-500 text-sm">{{ date('M j, Y', strtotime($seminar->seminar_date)) }}</span>
                             </div>
-                            <a href="{{ route('admin.government-programs.index') }}" class="text-lgu-button-text hover:underline text-sm font-medium">
+                            <a href="{{ URL::signedRoute('admin.government-programs.index') }}" class="text-lgu-button-text hover:underline text-sm font-medium">
                                 View Details →
                             </a>
                         </div>

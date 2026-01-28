@@ -13,7 +13,7 @@
 
     <!-- Search Bar -->
     <div class="max-w-3xl mx-auto mb-12">
-        <form action="{{ route('citizen.help-center.search') }}" method="GET" class="relative">
+        <form action="{{ URL::signedRoute('citizen.help-center.search') }}" method="GET" class="relative">
             <input type="text" name="q" placeholder="Search for help..." 
                 class="w-full px-6 py-4 pr-12 text-lg border-2 border-gray-300 rounded-full focus:ring-2 focus:ring-blue-500 focus:border-transparent shadow-lg">
             <button type="submit" class="absolute right-2 top-1/2 transform -translate-y-1/2 bg-blue-600 hover:bg-blue-700 text-white p-3 rounded-full transition duration-200">
@@ -30,7 +30,7 @@
         <h2 class="text-2xl font-bold text-gray-800 mb-6">Popular Articles</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             @foreach($popularArticles as $article)
-            <a href="{{ route('citizen.help-center.article', $article->slug) }}" 
+            <a href="{{ URL::signedRoute('citizen.help-center.article', $article->slug) }}" 
                 class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition duration-200">
                 <div class="flex items-start">
                     <div class="flex-shrink-0 bg-blue-100 rounded-lg p-3 mr-4">
@@ -122,10 +122,10 @@
     <div class="bg-blue-50 rounded-lg p-8 text-center">
         <h3 class="font-bold text-gray-800 mb-4 text-lg">Still need help?</h3>
         <div class="flex flex-col sm:flex-row gap-4 justify-center">
-            <a href="{{ route('citizen.help-center.articles') }}" class="bg-white hover:bg-gray-50 text-blue-600 font-semibold px-6 py-3 rounded-lg transition duration-200 shadow-md">
+            <a href="{{ URL::signedRoute('citizen.help-center.articles') }}" class="bg-white hover:bg-gray-50 text-blue-600 font-semibold px-6 py-3 rounded-lg transition duration-200 shadow-md">
                 Browse All Articles
             </a>
-            <a href="{{ route('citizen.contact.index') }}" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-lg transition duration-200 shadow-md">
+            <a href="{{ URL::signedRoute('citizen.contact.index') }}" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-lg transition duration-200 shadow-md">
                 Contact Support
             </a>
         </div>
@@ -146,7 +146,7 @@ function toggleFaq(id) {
 }
 
 function markHelpful(type, id, helpful) {
-    fetch(`{{ route('citizen.help-center.helpful', ['type' => 'TYPE', 'id' => 'ID']) }}`.replace('TYPE', type).replace('ID', id), {
+    fetch(`{{ URL::signedRoute('citizen.help-center.helpful', ['type' => 'TYPE', 'id' => 'ID']) }}`.replace('TYPE', type).replace('ID', id), {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',

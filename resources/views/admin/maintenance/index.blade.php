@@ -11,7 +11,7 @@
             <h1 class="text-h1 font-bold text-lgu-headline mb-gr-xs">Maintenance Schedule</h1>
             <p class="text-body text-lgu-paragraph">Schedule and track facility maintenance periods</p>
         </div>
-        <a href="{{ route('admin.maintenance.create') }}" class="inline-flex items-center px-gr-lg py-gr-md bg-lgu-button text-lgu-button-text font-semibold rounded-lg hover:bg-opacity-90 transition-colors duration-200">
+        <a href="{{ URL::signedRoute('admin.maintenance.create') }}" class="inline-flex items-center px-gr-lg py-gr-md bg-lgu-button text-lgu-button-text font-semibold rounded-lg hover:bg-opacity-90 transition-colors duration-200">
             <i data-lucide="plus" class="w-5 h-5 mr-gr-xs"></i>
             Schedule Maintenance
         </a>
@@ -45,7 +45,7 @@
 
     {{-- Filters --}}
     <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-gr-lg">
-        <form method="GET" action="{{ route('admin.maintenance.index') }}" class="space-y-gr-md">
+        <form method="GET" action="{{ URL::signedRoute('admin.maintenance.index') }}" class="space-y-gr-md">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-gr-md">
                 <div>
                     <label for="facility_id" class="block text-small font-semibold text-lgu-headline mb-gr-xs">Facility</label>
@@ -87,7 +87,7 @@
                     <i data-lucide="filter" class="w-5 h-5 mr-gr-xs"></i>
                     Apply Filters
                 </button>
-                <a href="{{ route('admin.maintenance.index') }}" class="inline-flex items-center px-gr-md py-gr-sm bg-gray-100 text-gray-700 font-semibold rounded-lg hover:bg-gray-200 transition-colors duration-200">
+                <a href="{{ URL::signedRoute('admin.maintenance.index') }}" class="inline-flex items-center px-gr-md py-gr-sm bg-gray-100 text-gray-700 font-semibold rounded-lg hover:bg-gray-200 transition-colors duration-200">
                     <i data-lucide="x" class="w-5 h-5 mr-gr-xs"></i>
                     Clear
                 </a>
@@ -154,7 +154,7 @@
                             <p class="text-body text-gray-700">{{ $schedule->description }}</p>
                         </div>
 
-                        <form method="POST" action="{{ route('admin.maintenance.destroy', $schedule->id) }}" onsubmit="return confirm('Cancel this maintenance schedule?');">
+                        <form method="POST" action="{{ URL::signedRoute('admin.maintenance.destroy', $schedule->id) }}" onsubmit="return confirm('Cancel this maintenance schedule?');">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors duration-200" title="Cancel Maintenance">
@@ -177,7 +177,7 @@
             <i data-lucide="calendar-clock" class="w-16 h-16 text-gray-300 mb-gr-md mx-auto"></i>
             <h3 class="text-h3 font-bold text-lgu-headline mb-gr-xs">No Maintenance Scheduled</h3>
             <p class="text-body text-gray-600 mb-gr-md">Schedule maintenance to block booking slots</p>
-            <a href="{{ route('admin.maintenance.create') }}" class="inline-flex items-center px-gr-lg py-gr-md bg-lgu-button text-lgu-button-text font-semibold rounded-lg hover:bg-opacity-90 transition-colors duration-200">
+            <a href="{{ URL::signedRoute('admin.maintenance.create') }}" class="inline-flex items-center px-gr-lg py-gr-md bg-lgu-button text-lgu-button-text font-semibold rounded-lg hover:bg-opacity-90 transition-colors duration-200">
                 <i data-lucide="plus" class="w-5 h-5 mr-gr-xs"></i>
                 Schedule Maintenance
             </a>

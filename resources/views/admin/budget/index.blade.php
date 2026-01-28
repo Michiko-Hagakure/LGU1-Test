@@ -15,7 +15,7 @@
             </div>
             
             <div class="flex items-center gap-3">
-                <form method="GET" action="{{ route('admin.budget.index') }}" class="flex items-center gap-3">
+                <form method="GET" action="{{ URL::signedRoute('admin.budget.index') }}" class="flex items-center gap-3">
                     <select name="fiscal_year" onchange="this.form.submit()" class="px-4 py-2 border border-lgu-stroke rounded-lg focus:ring-2 focus:ring-lgu-highlight focus:border-lgu-highlight">
                         @foreach($fiscalYears as $year)
                             <option value="{{ $year }}" {{ $year == $fiscalYear ? 'selected' : '' }}>
@@ -141,7 +141,7 @@
     <div class="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
         <h3 class="text-xl font-semibold text-lgu-headline mb-4">Add Budget Allocation</h3>
         
-        <form method="POST" action="{{ route('admin.budget.store') }}">
+        <form method="POST" action="{{ URL::signedRoute('admin.budget.store') }}">
             @csrf
             <div class="space-y-4">
                 <div>
@@ -251,7 +251,7 @@
         <p class="text-sm text-gray-600 mb-4">Category: <span id="expCategory" class="font-semibold"></span></p>
         <p class="text-sm text-gray-600 mb-4">Available: <span id="expAvailable" class="font-semibold text-green-600"></span></p>
         
-        <form method="POST" action="{{ route('admin.budget.expenditure.store') }}">
+        <form method="POST" action="{{ URL::signedRoute('admin.budget.expenditure.store') }}">
             @csrf
             <input type="hidden" name="budget_allocation_id" id="expBudgetId">
             
