@@ -63,7 +63,7 @@ return [
                 PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
             ]) : [],
             'dump' => [
-                'dump_binary_path' => env('DB_DUMP_PATH', 'C:/laragon/bin/mysql/mysql-8.0.42-winx64/bin'),
+                'dump_binary_path' => env('DB_DUMP_PATH', PHP_OS_FAMILY === 'Windows' ? 'C:/laragon/bin/mysql/mysql-8.0.42-winx64/bin' : '/usr/bin'),
                 'use_single_transaction' => true,
                 'timeout' => 60 * 5,
             ],
@@ -89,7 +89,7 @@ return [
                 PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
             ]) : [],
             'dump' => [
-                'dump_binary_path' => env('DB_DUMP_PATH', 'C:/laragon/bin/mysql/mysql-8.0.42-winx64/bin'),
+                'dump_binary_path' => env('DB_DUMP_PATH', PHP_OS_FAMILY === 'Windows' ? 'C:/laragon/bin/mysql/mysql-8.0.42-winx64/bin' : '/usr/bin'),
                 'use_single_transaction' => true,
                 'timeout' => 60 * 5,
             ],
