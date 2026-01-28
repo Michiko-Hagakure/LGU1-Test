@@ -45,6 +45,11 @@ return [
         'timeout' => env('INFRASTRUCTURE_PM_TIMEOUT', 30),
     ],
 
+    'community_cim' => [
+        'base_url' => env('COMMUNITY_CIM_URL', 'https://community.local-government-unit-1-ph.com'),
+        'timeout' => env('COMMUNITY_CIM_TIMEOUT', 30),
+    ],
+
     'google' => [
         'client_id' => env('GOOGLE_CLIENT_ID'),
         'client_secret' => env('GOOGLE_CLIENT_SECRET'),

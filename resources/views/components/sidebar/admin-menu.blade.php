@@ -121,6 +121,25 @@
     </ul>
 </div>
 
+<!-- COMMUNITY INFRASTRUCTURE MAINTENANCE SUBMODULE -->
+<div class="px-gr-md mb-gr-lg">
+    <h4 class="text-gray-400 text-caption font-semibold uppercase tracking-wider mb-gr-xs">Community Maintenance</h4>
+    <ul class="space-y-gr-xs">
+        <li>
+            <a href="{{ URL::signedRoute('admin.community-maintenance.create') }}" class="sidebar-link flex items-center px-gr-sm py-gr-xs text-small font-medium rounded-lg transition-colors duration-200 {{ request()->routeIs('admin.community-maintenance.create') ? 'active' : '' }}">
+                <i data-lucide="wrench" class="w-5 h-5 mr-gr-xs flex-shrink-0"></i>
+                <span>Request Maintenance</span>
+            </a>
+        </li>
+        <li>
+            <a href="{{ URL::signedRoute('admin.community-maintenance.index') }}" class="sidebar-link flex items-center px-gr-sm py-gr-xs text-small font-medium rounded-lg transition-colors duration-200 {{ request()->routeIs('admin.community-maintenance.index') ? 'active' : '' }}">
+                <i data-lucide="clipboard-list" class="w-5 h-5 mr-gr-xs flex-shrink-0"></i>
+                <span>My Maintenance Reports</span>
+            </a>
+        </li>
+    </ul>
+</div>
+
 <!-- USER MANAGEMENT SUBMODULE -->
 <div class="px-gr-md mb-gr-lg">
     <h4 class="text-gray-400 text-caption font-semibold uppercase tracking-wider mb-gr-xs">Users</h4>

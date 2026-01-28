@@ -1985,6 +1985,12 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::post('/infrastructure/projects/{id}/refresh', [\App\Http\Controllers\Admin\InfrastructureProjectController::class, 'refreshStatus'])->name('infrastructure.projects.refresh');
     Route::post('/infrastructure/projects/sync-all', [\App\Http\Controllers\Admin\InfrastructureProjectController::class, 'syncAllStatuses'])->name('infrastructure.projects.sync-all');
 
+    // Community Infrastructure Maintenance Integration
+    Route::get('/community-maintenance/request', [\App\Http\Controllers\Admin\CommunityMaintenanceController::class, 'create'])->name('community-maintenance.create');
+    Route::post('/community-maintenance/request', [\App\Http\Controllers\Admin\CommunityMaintenanceController::class, 'store'])->name('community-maintenance.store');
+    Route::get('/community-maintenance/reports', [\App\Http\Controllers\Admin\CommunityMaintenanceController::class, 'index'])->name('community-maintenance.index');
+    Route::post('/community-maintenance/refresh', [\App\Http\Controllers\Admin\CommunityMaintenanceController::class, 'refreshStatuses'])->name('community-maintenance.refresh');
+
 });
 
 // Default Dashboard Route (redirects based on role)
