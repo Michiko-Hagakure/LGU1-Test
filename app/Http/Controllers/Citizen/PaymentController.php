@@ -380,7 +380,6 @@ class PaymentController extends Controller
                 ->table('payment_slips')
                 ->join('bookings', 'payment_slips.booking_id', '=', 'bookings.id')
                 ->join('facilities', 'bookings.facility_id', '=', 'facilities.facility_id')
-                ->leftJoin('auth_db.users as verified_users', 'payment_slips.verified_by', '=', 'verified_users.id')
                 ->select(
                     'payment_slips.*',
                     'bookings.applicant_name',
@@ -392,12 +391,22 @@ class PaymentController extends Controller
                     'bookings.purpose',
                     'bookings.expected_attendees',
                     'facilities.name as facility_name',
-                    'facilities.address as facility_address',
-                    'verified_users.full_name as verified_by_name'
+                    'facilities.address as facility_address'
                 )
                 ->where('payment_slips.id', $id)
-                ->where('bookings.user_id', $userId) // Ensure it belongs to this citizen
+                ->where('bookings.user_id', $userId)
                 ->first();
+            
+            // Get verified_by name from auth_db separately if needed
+            if ($paymentSlip && $paymentSlip->verified_by) {
+                $verifiedBy = DB::connection('auth_db')
+                    ->table('users')
+                    ->where('id', $paymentSlip->verified_by)
+                    ->value('full_name');
+                $paymentSlip->verified_by_name = $verifiedBy ?? 'System';
+            } else if ($paymentSlip) {
+                $paymentSlip->verified_by_name = 'System';
+            }
             
             if (!$paymentSlip || $paymentSlip->status !== 'paid') {
                 return redirect()->back()->with('error', 'Official receipt not available. Payment must be verified first.');
@@ -429,6 +438,227 @@ class PaymentController extends Controller
             \Log::error('Citizen Receipt Download Error: ' . $e->getMessage());
             return redirect()->back()->with('error', 'Failed to download receipt.');
         }
+    }
+
+    /**
+     * Redirect to Paymongo checkout for automated payment (includes QR Ph option)
+     */
+    public function initiatePaymongoCheckout($id)
+    {
+        $userId = session('user_id');
+        
+        if (!$userId) {
+            return redirect()->route('login')->with('error', 'Please login to continue.');
+        }
+
+        $paymentSlip = DB::connection('facilities_db')
+            ->table('payment_slips')
+            ->join('bookings', 'payment_slips.booking_id', '=', 'bookings.id')
+            ->join('facilities', 'bookings.facility_id', '=', 'facilities.facility_id')
+            ->select(
+                'payment_slips.*',
+                'bookings.user_id',
+                'facilities.name as facility_name'
+            )
+            ->where('payment_slips.id', $id)
+            ->where('bookings.user_id', $userId)
+            ->first();
+
+        if (!$paymentSlip) {
+            return redirect()->route('citizen.payment-slips')->with('error', 'Payment slip not found.');
+        }
+
+        if ($paymentSlip->status !== 'unpaid') {
+            return redirect()->route('citizen.payment-slips.show', $id)->with('error', 'This payment slip has already been processed.');
+        }
+
+        $paymongoService = new \App\Services\PaymongoService();
+        
+        if (!$paymongoService->isEnabled()) {
+            return redirect()->route('citizen.payment-slips.cashless', $id)
+                ->with('info', 'Automated payment is not available. Please use manual payment.');
+        }
+
+        $booking = (object)['facility_name' => $paymentSlip->facility_name];
+        
+        $successUrl = route('citizen.payment-slips.paymongo-success', ['id' => $id]);
+        $cancelUrl = route('citizen.payment-slips.show', $id);
+
+        $result = $paymongoService->createCheckoutSession($paymentSlip, $booking, $successUrl, $cancelUrl);
+
+        if (!$result['success']) {
+            return redirect()->route('citizen.payment-slips.cashless', $id)
+                ->with('error', 'Failed to create checkout: ' . $result['error']);
+        }
+
+        // Store checkout session ID
+        DB::connection('facilities_db')
+            ->table('payment_slips')
+            ->where('id', $id)
+            ->update([
+                'paymongo_checkout_id' => $result['checkout_session_id'],
+                'updated_at' => Carbon::now(),
+            ]);
+
+        // Redirect to Paymongo's hosted checkout page (has QR Ph option)
+        return redirect()->away($result['checkout_url']);
+    }
+
+    /**
+     * Handle Paymongo checkout success callback
+     */
+    public function paymongoSuccess(Request $request, $id)
+    {
+        $userId = session('user_id');
+        
+        if (!$userId) {
+            return redirect()->route('login')->with('error', 'Please login to continue.');
+        }
+
+        $paymentSlip = DB::connection('facilities_db')
+            ->table('payment_slips')
+            ->join('bookings', 'payment_slips.booking_id', '=', 'bookings.id')
+            ->select('payment_slips.*', 'bookings.user_id', 'bookings.id as booking_id')
+            ->where('payment_slips.id', $id)
+            ->where('bookings.user_id', $userId)
+            ->first();
+
+        if (!$paymentSlip) {
+            return redirect()->route('citizen.payment-slips')->with('error', 'Payment slip not found.');
+        }
+
+        if ($paymentSlip->status === 'paid') {
+            return redirect()->route('citizen.payment-slips.show', $id)
+                ->with('success', 'Payment already confirmed!');
+        }
+
+        $checkoutSessionId = $paymentSlip->paymongo_checkout_id;
+        
+        if (!$checkoutSessionId) {
+            return redirect()->route('citizen.payment-slips.show', $id)
+                ->with('error', 'No checkout session found.');
+        }
+
+        $paymongoService = new \App\Services\PaymongoService();
+        
+        // Verify payment was successful
+        if (!$paymongoService->isPaymentSuccessful($checkoutSessionId)) {
+            return redirect()->route('citizen.payment-slips.show', $id)
+                ->with('error', 'Payment was not completed. Please try again.');
+        }
+
+        // Get payment details
+        $paymentDetails = $paymongoService->getPaymentDetails($checkoutSessionId);
+        
+        // Update payment slip as paid
+        DB::connection('facilities_db')
+            ->table('payment_slips')
+            ->where('id', $id)
+            ->update([
+                'status' => 'paid',
+                'payment_method' => $paymentDetails['payment_method'] ?? 'paymongo',
+                'payment_channel' => 'paymongo',
+                'transaction_reference' => $paymentDetails['reference_number'] ?? $checkoutSessionId,
+                'gateway_reference_number' => $paymentDetails['payment_id'] ?? $checkoutSessionId,
+                'paid_at' => Carbon::now(),
+                'updated_at' => Carbon::now(),
+            ]);
+
+        // Update booking status to confirmed (skip treasurer verification)
+        DB::connection('facilities_db')
+            ->table('bookings')
+            ->where('id', $paymentSlip->booking_id)
+            ->update([
+                'status' => 'confirmed',
+                'updated_at' => Carbon::now(),
+            ]);
+
+        // Send notification
+        try {
+            $user = User::find($userId);
+            $bookingWithFacility = DB::connection('facilities_db')
+                ->table('bookings')
+                ->join('facilities', 'bookings.facility_id', '=', 'facilities.facility_id')
+                ->where('bookings.id', $paymentSlip->booking_id)
+                ->selectRaw('bookings.*, facilities.name as facility_name, CONCAT("BK", LPAD(bookings.id, 6, "0")) as booking_reference')
+                ->first();
+            
+            $paymentSlipFresh = DB::connection('facilities_db')
+                ->table('payment_slips')
+                ->where('id', $id)
+                ->first();
+            
+            if ($user && $bookingWithFacility && $paymentSlipFresh) {
+                $user->notify(new \App\Notifications\PaymentConfirmed($bookingWithFacility, $paymentSlipFresh));
+            }
+        } catch (\Exception $e) {
+            \Log::error('Failed to send payment confirmation notification: ' . $e->getMessage());
+        }
+
+        return redirect()->route('citizen.payment-slips.show', $id)
+            ->with('success', 'Payment successful! Your reservation is now confirmed.');
+    }
+
+    /**
+     * Check QR payment status via AJAX
+     */
+    public function checkQRStatus(Request $request, $id)
+    {
+        $userId = session('user_id');
+        
+        if (!$userId) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        $paymentIntentId = $request->query('intent');
+        
+        if (!$paymentIntentId) {
+            return response()->json(['error' => 'Missing payment intent ID'], 400);
+        }
+
+        $paymongoService = new \App\Services\PaymongoService();
+        $result = $paymongoService->getPaymentIntentStatus($paymentIntentId);
+
+        if (!$result['success']) {
+            return response()->json(['status' => 'pending']);
+        }
+
+        // If payment succeeded, update the payment slip
+        if ($result['status'] === 'succeeded') {
+            $payment = $result['payments'][0] ?? null;
+            $referenceNumber = $payment['id'] ?? $paymentIntentId;
+
+            DB::connection('facilities_db')
+                ->table('payment_slips')
+                ->where('id', $id)
+                ->update([
+                    'status' => 'paid',
+                    'transaction_reference' => $referenceNumber,
+                    'payment_method' => 'paymongo_qrph',
+                    'paid_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+                ]);
+
+            // Update booking status
+            $paymentSlip = DB::connection('facilities_db')
+                ->table('payment_slips')
+                ->where('id', $id)
+                ->first();
+
+            if ($paymentSlip) {
+                DB::connection('facilities_db')
+                    ->table('bookings')
+                    ->where('id', $paymentSlip->booking_id)
+                    ->update([
+                        'status' => 'confirmed',
+                        'updated_at' => Carbon::now(),
+                    ]);
+            }
+
+            return response()->json(['status' => 'succeeded']);
+        }
+
+        return response()->json(['status' => $result['status']]);
     }
 }
 

@@ -1,6 +1,8 @@
 
 
 <?php $__env->startSection('title', 'Contact Us'); ?>
+<?php $__env->startSection('page-title', 'Contact Us'); ?>
+<?php $__env->startSection('page-subtitle', 'Have a question or issue? We\'re here to help!'); ?>
 
 <?php $__env->startSection('page-content'); ?>
 <!-- Header -->

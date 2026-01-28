@@ -1,6 +1,8 @@
 @extends('layouts.admin')
 
 @section('title', 'Reports & Analytics Hub - Admin')
+@section('page-title', 'Reports & Analytics')
+@section('page-subtitle', 'View system reports and analytics')
 
 @section('page-content')
 <div class="space-y-6">

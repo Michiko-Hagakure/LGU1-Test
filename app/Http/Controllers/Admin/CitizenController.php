@@ -121,11 +121,11 @@ class CitizenController extends Controller
 
         // Get recent bookings
         $recentBookings = DB::connection('facilities_db')->table('bookings')
-            ->leftJoin('facilities', 'bookings.facility_id', '=', 'facilities.id')
+            ->leftJoin('facilities', 'bookings.facility_id', '=', 'facilities.facility_id')
             ->where('bookings.user_id', $id)
             ->select(
                 'bookings.*',
-                'facilities.facility_name'
+                'facilities.name as facility_name'
             )
             ->orderBy('bookings.created_at', 'desc')
             ->limit(5)
@@ -133,12 +133,11 @@ class CitizenController extends Controller
 
         // Get reviews
         $reviews = DB::connection('facilities_db')->table('facility_reviews')
-            ->leftJoin('facilities', 'facility_reviews.facility_id', '=', 'facilities.id')
+            ->leftJoin('facilities', 'facility_reviews.facility_id', '=', 'facilities.facility_id')
             ->where('facility_reviews.user_id', $id)
-            ->whereNull('facility_reviews.deleted_at')
             ->select(
                 'facility_reviews.*',
-                'facilities.facility_name'
+                'facilities.name as facility_name'
             )
             ->orderBy('facility_reviews.created_at', 'desc')
             ->limit(5)

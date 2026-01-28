@@ -305,10 +305,97 @@ class SecurityController extends Controller
             return redirect()->route('login');
         }
         
-        // In a real implementation, this would queue a job to generate the data
-        // For now, we'll just show a success message
+        // Gather user data from auth database
+        $userData = DB::connection('auth_db')
+            ->table('users')
+            ->where('id', $userId)
+            ->first();
         
-        return back()->with('success', 'Your data download request has been received. You will receive an email with the download link within 24 hours.');
+        // Gather booking data from facilities database
+        $bookings = DB::connection('facilities_db')
+            ->table('bookings')
+            ->join('facilities', 'bookings.facility_id', '=', 'facilities.facility_id')
+            ->where('bookings.user_id', $userId)
+            ->select(
+                'bookings.id',
+                'bookings.status',
+                'bookings.start_time',
+                'bookings.end_time',
+                'bookings.purpose',
+                'bookings.created_at',
+                'facilities.name as facility_name'
+            )
+            ->orderBy('bookings.created_at', 'desc')
+            ->get();
+        
+        // Gather reviews
+        $reviews = DB::connection('facilities_db')
+            ->table('facility_reviews')
+            ->join('facilities', 'facility_reviews.facility_id', '=', 'facilities.facility_id')
+            ->where('facility_reviews.user_id', $userId)
+            ->select(
+                'facility_reviews.rating',
+                'facility_reviews.review',
+                'facility_reviews.created_at',
+                'facilities.name as facility_name'
+            )
+            ->get();
+        
+        // Build CSV content
+        $csvContent = "";
+        
+        // Section 1: User Information
+        $csvContent .= "=== MY PERSONAL DATA EXPORT ===\r\n";
+        $csvContent .= "Export Date," . now()->format('F d, Y h:i A') . "\r\n\r\n";
+        
+        $csvContent .= "=== USER INFORMATION ===\r\n";
+        $csvContent .= "Username," . ($userData->username ?? 'N/A') . "\r\n";
+        $csvContent .= "Email," . ($userData->email ?? 'N/A') . "\r\n";
+        $csvContent .= "Full Name," . ($userData->full_name ?? 'N/A') . "\r\n";
+        $csvContent .= "Account Created," . ($userData->created_at ?? 'N/A') . "\r\n\r\n";
+        
+        // Section 2: Bookings
+        $csvContent .= "=== BOOKING HISTORY (" . count($bookings) . " records) ===\r\n";
+        $csvContent .= "ID,Facility,Purpose,Status,Date,Time,Created At\r\n";
+        
+        foreach ($bookings as $booking) {
+            $date = date('M d, Y', strtotime($booking->start_time));
+            $startTime = date('h:i A', strtotime($booking->start_time));
+            $endTime = date('h:i A', strtotime($booking->end_time));
+            $csvContent .= sprintf(
+                "%d,\"%s\",\"%s\",%s,%s,%s - %s,%s\r\n",
+                $booking->id,
+                str_replace('"', '""', $booking->facility_name),
+                str_replace('"', '""', $booking->purpose),
+                ucfirst($booking->status),
+                $date,
+                $startTime,
+                $endTime,
+                $booking->created_at
+            );
+        }
+        
+        $csvContent .= "\r\n";
+        
+        // Section 3: Reviews
+        $csvContent .= "=== MY REVIEWS (" . count($reviews) . " records) ===\r\n";
+        $csvContent .= "Facility,Rating,Review,Date\r\n";
+        
+        foreach ($reviews as $review) {
+            $csvContent .= sprintf(
+                "\"%s\",%d stars,\"%s\",%s\r\n",
+                str_replace('"', '""', $review->facility_name),
+                $review->rating,
+                str_replace('"', '""', $review->review ?? ''),
+                date('M d, Y', strtotime($review->created_at))
+            );
+        }
+        
+        $filename = 'my_data_export_' . date('Y-m-d') . '.csv';
+        
+        return response($csvContent)
+            ->header('Content-Type', 'text/csv; charset=UTF-8')
+            ->header('Content-Disposition', 'attachment; filename="' . $filename . '"');
     }
     
     private function getLocationFromIP($ip)

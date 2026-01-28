@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
 use App\Http\Controllers\Admin\TransactionController;
 use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\SettingsController as ProfileSettingsController;
@@ -21,9 +22,9 @@ use App\Http\Controllers\Admin\SystemSettingsController;
 |
 */
 
-// Root Route - Redirect to Login
+// Root Route - Landing Page
 Route::get('/', function () {
-    return redirect()->route('login');
+    return view('welcome');
 })->name('landing');
 
 // CSRF Token Refresh Endpoint - For preventing stale token issues
@@ -88,6 +89,26 @@ Route::get('/auth/google/callback', [\App\Http\Controllers\Auth\GoogleController
 Route::post('/login', function () {
     $email = request('email');
     $password = request('password');
+    $ip = request()->ip();
+    
+    // Login attempt tracking - 3 attempts, 3 minute lockout
+    $maxAttempts = 3;
+    $lockoutMinutes = 3;
+    $attemptKey = 'login_attempts_' . $ip;
+    $lockoutKey = 'login_lockout_' . $ip;
+    
+    // Check if currently locked out
+    if (Cache::has($lockoutKey)) {
+        $lockoutEnd = Cache::get($lockoutKey);
+        $remainingSeconds = max(0, $lockoutEnd - time());
+        
+        return response()->json([
+            'success' => false,
+            'locked' => true,
+            'remaining_seconds' => $remainingSeconds,
+            'message' => 'Too many login attempts. Please wait before trying again.'
+        ]);
+    }
 
     // Get user with roles
     $user = DB::connection('auth_db')
@@ -100,6 +121,8 @@ Route::post('/login', function () {
         ->first();
 
     if ($user && Hash::check($password, $user->password_hash)) {
+        // Clear login attempts on successful login
+        Cache::forget($attemptKey);
         // Check if email is verified
         if (!$user->is_email_verified) {
             return response()->json([
@@ -150,9 +173,30 @@ Route::post('/login', function () {
         ]);
     }
 
+    // Track failed login attempt
+    $attempts = Cache::get($attemptKey, 0) + 1;
+    Cache::put($attemptKey, $attempts, now()->addMinutes($lockoutMinutes));
+    
+    $attemptsRemaining = $maxAttempts - $attempts;
+    
+    // If max attempts reached, set lockout
+    if ($attempts >= $maxAttempts) {
+        $lockoutEnd = time() + ($lockoutMinutes * 60);
+        Cache::put($lockoutKey, $lockoutEnd, now()->addMinutes($lockoutMinutes));
+        Cache::forget($attemptKey);
+        
+        return response()->json([
+            'success' => false,
+            'locked' => true,
+            'remaining_seconds' => $lockoutMinutes * 60,
+            'message' => 'Too many login attempts. Please wait ' . $lockoutMinutes . ' minutes before trying again.'
+        ]);
+    }
+    
     return response()->json([
         'success' => false,
-        'message' => 'Invalid email or password.'
+        'attempts_remaining' => $attemptsRemaining,
+        'message' => 'Invalid email or password. ' . $attemptsRemaining . ' attempt(s) remaining.'
     ]);
 })->name('login.post');
 
@@ -1493,6 +1537,8 @@ Route::middleware(['auth', 'role:Admin'])->group(function () {
     Route::put('/admin/facilities/{id}', [\App\Http\Controllers\Admin\FacilityController::class, 'update'])->name('admin.facilities.update');
     Route::delete('/admin/facilities/{id}', [\App\Http\Controllers\Admin\FacilityController::class, 'destroy'])->name('admin.facilities.destroy');
     Route::post('/admin/facilities/{id}/restore', [\App\Http\Controllers\Admin\FacilityController::class, 'restore'])->name('admin.facilities.restore');
+    Route::delete('/admin/facilities/{facilityId}/images/{imageId}', [\App\Http\Controllers\Admin\FacilityController::class, 'deleteImage'])->name('admin.facilities.images.delete');
+    Route::delete('/admin/facilities/{facilityId}/primary-image', [\App\Http\Controllers\Admin\FacilityController::class, 'deletePrimaryImage'])->name('admin.facilities.primary-image.delete');
 
     // Equipment Management
     Route::get('/admin/equipment', [\App\Http\Controllers\Admin\EquipmentController::class, 'index'])->name('admin.equipment.index');
@@ -1503,6 +1549,16 @@ Route::middleware(['auth', 'role:Admin'])->group(function () {
     Route::delete('/admin/equipment/{id}', [\App\Http\Controllers\Admin\EquipmentController::class, 'destroy'])->name('admin.equipment.destroy');
     Route::post('/admin/equipment/{id}/restore', [\App\Http\Controllers\Admin\EquipmentController::class, 'restore'])->name('admin.equipment.restore');
     Route::post('/admin/equipment/{id}/toggle', [\App\Http\Controllers\Admin\EquipmentController::class, 'toggleAvailability'])->name('admin.equipment.toggle');
+    
+    // City Events Management
+    Route::get('/admin/city-events', [\App\Http\Controllers\Admin\CityEventController::class, 'index'])->name('admin.city-events.index');
+    Route::get('/admin/city-events/create', [\App\Http\Controllers\Admin\CityEventController::class, 'create'])->name('admin.city-events.create');
+    Route::post('/admin/city-events', [\App\Http\Controllers\Admin\CityEventController::class, 'store'])->name('admin.city-events.store');
+    Route::post('/admin/city-events/preview-conflicts', [\App\Http\Controllers\Admin\CityEventController::class, 'previewConflicts'])->name('admin.city-events.preview-conflicts');
+    Route::get('/admin/city-events/{cityEvent}', [\App\Http\Controllers\Admin\CityEventController::class, 'show'])->name('admin.city-events.show');
+    Route::get('/admin/city-events/{cityEvent}/edit', [\App\Http\Controllers\Admin\CityEventController::class, 'edit'])->name('admin.city-events.edit');
+    Route::put('/admin/city-events/{cityEvent}', [\App\Http\Controllers\Admin\CityEventController::class, 'update'])->name('admin.city-events.update');
+    Route::delete('/admin/city-events/{cityEvent}', [\App\Http\Controllers\Admin\CityEventController::class, 'destroy'])->name('admin.city-events.destroy');
     
     // System Settings
     Route::get('/admin/settings', [\App\Http\Controllers\Admin\SystemSettingsController::class, 'index'])->name('admin.settings.index');
@@ -1776,6 +1832,11 @@ Route::middleware(['auth', 'role:citizen', \App\Http\Middleware\CheckSessionTime
     Route::post('/citizen/reservations/{id}/cancel', [\App\Http\Controllers\Citizen\ReservationController::class, 'cancel'])->name('citizen.reservations.cancel');
     Route::post('/citizen/reservations/{id}/upload', [\App\Http\Controllers\Citizen\ReservationController::class, 'uploadDocument'])->name('citizen.reservations.upload');
 
+    // Booking Conflicts (City Events)
+    Route::get('/citizen/booking-conflicts', [\App\Http\Controllers\Citizen\BookingConflictController::class, 'index'])->name('citizen.conflicts.index');
+    Route::get('/citizen/booking-conflicts/{id}', [\App\Http\Controllers\Citizen\BookingConflictController::class, 'show'])->name('citizen.conflicts.show');
+    Route::post('/citizen/booking-conflicts/{id}/resolve', [\App\Http\Controllers\Citizen\BookingConflictController::class, 'resolveConflict'])->name('citizen.conflicts.resolve');
+
     // Payments
     Route::get('/citizen/payments', [\App\Http\Controllers\Citizen\PaymentController::class, 'index'])->name('citizen.payment-slips');
     Route::get('/citizen/payments/{id}', [\App\Http\Controllers\Citizen\PaymentController::class, 'show'])->name('citizen.payment-slips.show');
@@ -1783,6 +1844,11 @@ Route::middleware(['auth', 'role:citizen', \App\Http\Middleware\CheckSessionTime
     Route::post('/citizen/payments/{id}/cashless', [\App\Http\Controllers\Citizen\PaymentController::class, 'submitCashless'])->name('citizen.payment-slips.submit-cashless');
     Route::post('/citizen/payments/{id}/upload-proof', [\App\Http\Controllers\Citizen\PaymentController::class, 'uploadProof'])->name('citizen.payments.upload-proof');
     Route::get('/citizen/payments/{id}/receipt', [\App\Http\Controllers\Citizen\PaymentController::class, 'downloadReceipt'])->name('citizen.payments.receipt');
+    
+    // Paymongo automated checkout
+    Route::get('/citizen/payments/{id}/paymongo', [\App\Http\Controllers\Citizen\PaymentController::class, 'initiatePaymongoCheckout'])->name('citizen.payment-slips.paymongo');
+    Route::get('/citizen/payments/{id}/paymongo/success', [\App\Http\Controllers\Citizen\PaymentController::class, 'paymongoSuccess'])->name('citizen.payment-slips.paymongo-success');
+    Route::get('/citizen/payments/{id}/check-qr-status', [\App\Http\Controllers\Citizen\PaymentController::class, 'checkQRStatus'])->name('citizen.payment-slips.check-qr-status');
 
     // Reviews & Feedback
     Route::get('/citizen/reviews', [\App\Http\Controllers\Citizen\ReviewController::class, 'index'])->name('citizen.reviews.index');
@@ -1816,6 +1882,7 @@ Route::middleware(['auth', 'role:citizen', \App\Http\Middleware\CheckSessionTime
     Route::post('/citizen/profile/update', [\App\Http\Controllers\Citizen\ProfileController::class, 'update'])->name('citizen.profile.update');
     Route::post('/citizen/profile/password', [\App\Http\Controllers\Citizen\ProfileController::class, 'updatePassword'])->name('citizen.profile.password');
     Route::post('/citizen/profile/avatar', [\App\Http\Controllers\Citizen\ProfileController::class, 'uploadAvatar'])->name('citizen.profile.avatar');
+    Route::delete('/citizen/profile/avatar', [\App\Http\Controllers\Citizen\ProfileController::class, 'removeAvatar'])->name('citizen.profile.avatar.remove');
     
     // Security Settings
     Route::get('/citizen/security', [\App\Http\Controllers\Citizen\SecurityController::class, 'index'])->name('citizen.security');

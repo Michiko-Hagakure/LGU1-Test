@@ -80,23 +80,16 @@
                     @enderror
                 </div>
 
-                {{-- Facility Type --}}
+                {{-- Available --}}
                 <div>
-                    <label for="type" class="block text-small font-semibold text-lgu-headline mb-gr-xs">
-                        Facility Type <span class="text-red-500">*</span>
+                    <label for="is_available" class="block text-small font-semibold text-lgu-headline mb-gr-xs">
+                        Availability
                     </label>
-                    <select id="type" name="type" required
-                        class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-lgu-highlight focus:border-transparent @error('type') border-red-500 @enderror">
-                        <option value="">Select Type</option>
-                        @foreach($facilityTypes as $key => $label)
-                            <option value="{{ $key }}" {{ old('type') == $key ? 'selected' : '' }}>
-                                {{ $label }}
-                            </option>
-                        @endforeach
+                    <select id="is_available" name="is_available"
+                        class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-lgu-highlight focus:border-transparent">
+                        <option value="1" {{ old('is_available', 1) == 1 ? 'selected' : '' }}>Available</option>
+                        <option value="0" {{ old('is_available') == 0 ? 'selected' : '' }}>Not Available</option>
                     </select>
-                    @error('type')
-                        <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
-                    @enderror
                 </div>
 
                 {{-- Capacity --}}
@@ -111,24 +104,7 @@
                     @enderror
                 </div>
 
-                {{-- Status --}}
-                <div>
-                    <label for="status" class="block text-small font-semibold text-lgu-headline mb-gr-xs">
-                        Status <span class="text-red-500">*</span>
-                    </label>
-                    <select id="status" name="status" required
-                        class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-lgu-highlight focus:border-transparent @error('status') border-red-500 @enderror">
-                        @foreach($statusOptions as $key => $label)
-                            <option value="{{ $key }}" {{ old('status', 'active') == $key ? 'selected' : '' }}>
-                                {{ $label }}
-                            </option>
-                        @endforeach
-                    </select>
-                    @error('status')
-                        <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
-                    @enderror
-                </div>
-
+                
                 {{-- Description --}}
                 <div class="md:col-span-2">
                     <label for="description" class="block text-small font-semibold text-lgu-headline mb-gr-xs">
@@ -163,19 +139,7 @@
                     @enderror
                 </div>
 
-                {{-- Google Maps URL --}}
-                <div>
-                    <label for="google_maps_url" class="block text-small font-semibold text-lgu-headline mb-gr-xs">
-                        Google Maps URL
-                    </label>
-                    <input type="url" id="google_maps_url" name="google_maps_url" value="{{ old('google_maps_url') }}"
-                        placeholder="https://maps.google.com/..."
-                        class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-lgu-highlight focus:border-transparent @error('google_maps_url') border-red-500 @enderror">
-                    @error('google_maps_url')
-                        <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
-                    @enderror
-                </div>
-            </div>
+                            </div>
         </div>
 
         {{-- Pricing Information --}}
@@ -186,84 +150,24 @@
             </h2>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-gr-md">
-                {{-- Base Rate --}}
-                <div>
-                    <label for="base_rate" class="block text-small font-semibold text-lgu-headline mb-gr-xs">
-                        Base Rate (3 hours) <span class="text-red-500">*</span>
-                    </label>
-                    <div class="relative">
-                        <span class="absolute left-3 top-1/2 -translate-y-1/2 text-lgu-paragraph font-semibold">₱</span>
-                        <input type="number" id="base_rate" name="base_rate" value="{{ old('base_rate') }}" min="0" step="0.01" required
-                            class="w-full pl-8 pr-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-lgu-highlight focus:border-transparent @error('base_rate') border-red-500 @enderror">
-                    </div>
-                    @error('base_rate')
-                        <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
-                    @enderror
-                </div>
-
-                {{-- Extension Rate --}}
-                <div>
-                    <label for="extension_rate" class="block text-small font-semibold text-lgu-headline mb-gr-xs">
-                        Extension Rate (per 2 hours) <span class="text-red-500">*</span>
-                    </label>
-                    <div class="relative">
-                        <span class="absolute left-3 top-1/2 -translate-y-1/2 text-lgu-paragraph font-semibold">₱</span>
-                        <input type="number" id="extension_rate" name="extension_rate" value="{{ old('extension_rate') }}" min="0" step="0.01" required
-                            class="w-full pl-8 pr-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-lgu-highlight focus:border-transparent @error('extension_rate') border-red-500 @enderror">
-                    </div>
-                    @error('extension_rate')
-                        <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
-                    @enderror
-                </div>
-
                 {{-- Per Person Rate --}}
                 <div>
                     <label for="per_person_rate" class="block text-small font-semibold text-lgu-headline mb-gr-xs">
-                        Per Person Rate (Optional)
+                        Per Person Rate <span class="text-red-500">*</span>
                     </label>
                     <div class="relative">
                         <span class="absolute left-3 top-1/2 -translate-y-1/2 text-lgu-paragraph font-semibold">₱</span>
-                        <input type="number" id="per_person_rate" name="per_person_rate" value="{{ old('per_person_rate') }}" min="0" step="0.01"
+                        <input type="number" id="per_person_rate" name="per_person_rate" value="{{ old('per_person_rate') }}" min="0" step="0.01" required
                             class="w-full pl-8 pr-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-lgu-highlight focus:border-transparent @error('per_person_rate') border-red-500 @enderror">
                     </div>
                     @error('per_person_rate')
                         <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
                     @enderror
                 </div>
-
-                {{-- Minimum Hours --}}
-                <div>
-                    <label for="minimum_hours" class="block text-small font-semibold text-lgu-headline mb-gr-xs">
-                        Minimum Hours <span class="text-red-500">*</span>
-                    </label>
-                    <input type="number" id="minimum_hours" name="minimum_hours" value="{{ old('minimum_hours', 3) }}" min="1" max="24" required
-                        class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-lgu-highlight focus:border-transparent @error('minimum_hours') border-red-500 @enderror">
-                    @error('minimum_hours')
-                        <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
-                    @enderror
-                </div>
             </div>
         </div>
 
-        {{-- Amenities --}}
-        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-gr-lg mb-gr-md">
-            <h2 class="text-h3 font-bold text-lgu-headline mb-gr-md flex items-center">
-                <i data-lucide="sparkles" class="w-6 h-6 mr-gr-sm"></i>
-                Amenities
-            </h2>
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-gr-sm">
-                @foreach($amenitiesList as $key => $label)
-                    <label class="flex items-center p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors duration-200">
-                        <input type="checkbox" name="amenities[]" value="{{ $key }}" 
-                            {{ in_array($key, old('amenities', [])) ? 'checked' : '' }}
-                            class="rounded border-gray-300 text-lgu-button focus:ring-lgu-highlight">
-                        <span class="ml-2 text-small text-lgu-paragraph">{{ $label }}</span>
-                    </label>
-                @endforeach
-            </div>
-        </div>
-
+        
         {{-- Rules & Photo --}}
         <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-gr-lg mb-gr-md">
             <h2 class="text-h3 font-bold text-lgu-headline mb-gr-md flex items-center">
@@ -272,18 +176,7 @@
             </h2>
 
             <div class="space-y-gr-md">
-                {{-- Rules --}}
-                <div>
-                    <label for="rules" class="block text-small font-semibold text-lgu-headline mb-gr-xs">
-                        Facility Rules
-                    </label>
-                    <textarea id="rules" name="rules" rows="4"
-                        class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-lgu-highlight focus:border-transparent @error('rules') border-red-500 @enderror">{{ old('rules') }}</textarea>
-                    @error('rules')
-                        <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
-                    @enderror
-                </div>
-
+                
                 {{-- Facility Photo --}}
                 <div>
                     <label for="image_path" class="block text-small font-semibold text-lgu-headline mb-gr-xs">

@@ -294,13 +294,46 @@
                                 <i data-lucide="smartphone" class="w-5 h-5 text-lgu-button"></i>
                                 Pay Online (Cashless)
                             </h4>
+                            
+                            @if(config('payment.paymongo_enabled'))
+                            <!-- Paymongo Automated Payment (Primary) -->
+                            <div class="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <i data-lucide="zap" class="w-4 h-4 text-blue-600"></i>
+                                    <span class="text-sm font-bold text-blue-800">Instant Payment</span>
+                                </div>
+                                <p class="text-sm text-gray-700 mb-3">
+                                    Pay instantly via GCash, Maya, GrabPay, or Card. No reference number needed - payment is automatically confirmed!
+                                </p>
+                                <a href="{{ route('citizen.payment-slips.paymongo', $paymentSlip->id) }}"
+                                   class="w-full bg-lgu-button text-lgu-button-text font-bold py-4 rounded-lg hover:bg-lgu-highlight transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2">
+                                    <i data-lucide="credit-card" class="w-5 h-5"></i>
+                                    Pay Instantly Now
+                                </a>
+                            </div>
+                            
+                            <div class="relative my-4">
+                                <div class="absolute inset-0 flex items-center">
+                                    <div class="w-full border-t border-gray-300"></div>
+                                </div>
+                                <div class="relative flex justify-center text-sm">
+                                    <span class="bg-white px-2 text-gray-500">or pay manually</span>
+                                </div>
+                            </div>
+                            @endif
+                            
+                            <!-- Manual Payment (Fallback) -->
                             <p class="text-sm text-gray-700 mb-4">
+                                @if(config('payment.paymongo_enabled'))
+                                Prefer to pay manually? Send payment via GCash/Maya/Bank, then enter your reference number.
+                                @else
                                 Pay using GCash, Maya, or Bank Transfer. Simply send payment and enter your reference number!
+                                @endif
                             </p>
                             <a href="{{ route('citizen.payment-slips.cashless', $paymentSlip->id) }}"
-                               class="w-full bg-lgu-button text-lgu-button-text font-bold py-4 rounded-lg hover:bg-lgu-highlight transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2">
-                                <i data-lucide="credit-card" class="w-5 h-5"></i>
-                                Pay Online Now
+                               class="w-full {{ config('payment.paymongo_enabled') ? 'bg-gray-200 text-gray-700 hover:bg-gray-300' : 'bg-lgu-button text-lgu-button-text hover:bg-lgu-highlight' }} font-bold py-4 rounded-lg transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2">
+                                <i data-lucide="edit-3" class="w-5 h-5"></i>
+                                {{ config('payment.paymongo_enabled') ? 'Pay Manually (Enter Reference)' : 'Pay Online Now' }}
                             </a>
                         </div>
                     </div>

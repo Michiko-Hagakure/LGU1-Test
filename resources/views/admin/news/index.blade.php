@@ -1,6 +1,8 @@
 @extends('layouts.admin')
 
 @section('title', 'News Management')
+@section('page-title', 'News Management')
+@section('page-subtitle', 'Manage news articles and announcements')
 
 @section('page-content')
 <div class="mb-6 flex justify-between items-center">

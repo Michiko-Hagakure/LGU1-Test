@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 class StaffController extends Controller
 {
@@ -99,9 +100,9 @@ class StaffController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:lgu1_auth.users,email',
+            'email' => 'required|email|unique:auth_db.users,email',
             'phone' => 'required|string|max:20',
-            'city_id' => 'required|exists:lgu1_facilities.lgu_cities,id',
+            'city_id' => 'required|exists:facilities_db.lgu_cities,id',
             'password' => 'required|string|min:8|confirmed',
         ]);
 
@@ -178,9 +179,8 @@ class StaffController extends Controller
 
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:lgu1_auth.users,email,' . $id,
             'phone' => 'required|string|max:20',
-            'city_id' => 'required|exists:lgu1_facilities.lgu_cities,id',
+            'city_id' => 'required|exists:facilities_db.lgu_cities,id',
             'password' => 'nullable|string|min:8|confirmed',
         ]);
 
@@ -193,7 +193,6 @@ class StaffController extends Controller
         try {
             $updateData = [
                 'full_name' => $request->name,
-                'email' => $request->email,
                 'mobile_number' => $request->phone,
                 'city_id' => $request->city_id,
                 'updated_at' => now(),

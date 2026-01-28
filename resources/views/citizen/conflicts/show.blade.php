@@ -66,24 +66,49 @@
                     </div>
 
                     <div class="space-y-4">
+                        <!-- Date Picker -->
                         <div>
-                            <label class="block text-sm font-medium text-lgu-headline mb-2">New Start Date & Time</label>
-                            <input 
-                                type="datetime-local" 
-                                name="new_start_time" 
-                                id="new_start_time"
-                                class="w-full px-4 py-2 border-2 border-lgu-stroke rounded-lg focus:border-lgu-highlight focus:outline-none"
-                            />
+                            <label class="block text-sm font-medium text-lgu-headline mb-2">New Date</label>
+                            <button 
+                                type="button"
+                                onclick="openDatePicker()"
+                                class="w-full px-4 py-3 border-2 border-lgu-stroke rounded-lg hover:border-lgu-highlight focus:border-lgu-highlight focus:outline-none text-left flex items-center justify-between"
+                            >
+                                <span id="new_date_display" class="text-gray-400">Select new date</span>
+                                <i data-lucide="calendar" class="w-5 h-5 text-lgu-headline"></i>
+                            </button>
+                            <input type="hidden" id="new_date" value="">
                         </div>
-                        <div>
-                            <label class="block text-sm font-medium text-lgu-headline mb-2">New End Date & Time</label>
-                            <input 
-                                type="datetime-local" 
-                                name="new_end_time" 
-                                id="new_end_time"
-                                class="w-full px-4 py-2 border-2 border-lgu-stroke rounded-lg focus:border-lgu-highlight focus:outline-none"
-                            />
+                        
+                        <!-- Time Pickers -->
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-sm font-medium text-lgu-headline mb-2">Start Time</label>
+                                <button 
+                                    type="button"
+                                    onclick="openTimePicker('start')"
+                                    class="w-full px-4 py-3 border-2 border-lgu-stroke rounded-lg hover:border-lgu-highlight focus:border-lgu-highlight focus:outline-none text-left flex items-center justify-between"
+                                >
+                                    <span id="start_time_display" class="text-gray-400">Select</span>
+                                    <i data-lucide="clock" class="w-5 h-5 text-lgu-headline"></i>
+                                </button>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-lgu-headline mb-2">End Time</label>
+                                <button 
+                                    type="button"
+                                    onclick="openTimePicker('end')"
+                                    class="w-full px-4 py-3 border-2 border-lgu-stroke rounded-lg hover:border-lgu-highlight focus:border-lgu-highlight focus:outline-none text-left flex items-center justify-between"
+                                >
+                                    <span id="end_time_display" class="text-gray-400">Select</span>
+                                    <i data-lucide="clock" class="w-5 h-5 text-lgu-headline"></i>
+                                </button>
+                            </div>
                         </div>
+                        
+                        <!-- Hidden inputs for form submission -->
+                        <input type="hidden" name="new_start_time" id="new_start_time" value="">
+                        <input type="hidden" name="new_end_time" id="new_end_time" value="">
                     </div>
 
                     <button type="button" onclick="selectOption('reschedule')" class="w-full mt-6 btn-primary flex items-center justify-center gap-2">
@@ -152,6 +177,200 @@
 <script>
 if (typeof lucide !== 'undefined') {
     lucide.createIcons();
+}
+
+// Selected date and time values
+let selectedDate = '';
+let selectedStartTime = '';
+let selectedEndTime = '';
+let currentCalendarYear = new Date().getFullYear();
+let currentCalendarMonth = new Date().getMonth();
+
+// Generate calendar HTML for SweetAlert2
+function generateCalendarHTML(year, month, selectedDate) {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    const firstDay = new Date(year, month, 1);
+    const lastDay = new Date(year, month + 1, 0);
+    const startingDay = firstDay.getDay();
+    const monthLength = lastDay.getDate();
+    
+    const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 
+                        'July', 'August', 'September', 'October', 'November', 'December'];
+    
+    let html = `
+        <div class="calendar-container">
+            <div class="flex items-center justify-between mb-4">
+                <button type="button" onclick="changeMonth(-1)" class="p-2 hover:bg-gray-100 rounded-lg">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                    </svg>
+                </button>
+                <span class="text-lg font-semibold">${monthNames[month]} ${year}</span>
+                <button type="button" onclick="changeMonth(1)" class="p-2 hover:bg-gray-100 rounded-lg">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                </button>
+            </div>
+            <div class="grid grid-cols-7 gap-1 text-center mb-2">
+                <div class="text-xs font-medium text-gray-500 py-2">Sun</div>
+                <div class="text-xs font-medium text-gray-500 py-2">Mon</div>
+                <div class="text-xs font-medium text-gray-500 py-2">Tue</div>
+                <div class="text-xs font-medium text-gray-500 py-2">Wed</div>
+                <div class="text-xs font-medium text-gray-500 py-2">Thu</div>
+                <div class="text-xs font-medium text-gray-500 py-2">Fri</div>
+                <div class="text-xs font-medium text-gray-500 py-2">Sat</div>
+            </div>
+            <div class="grid grid-cols-7 gap-1">
+    `;
+    
+    // Empty cells before first day
+    for (let i = 0; i < startingDay; i++) {
+        html += '<div class="p-2"></div>';
+    }
+    
+    // Days of the month
+    for (let day = 1; day <= monthLength; day++) {
+        const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+        const currentDate = new Date(year, month, day);
+        const isPast = currentDate < today;
+        const isSelected = dateStr === selectedDate;
+        const isToday = currentDate.getTime() === today.getTime();
+        
+        let classes = 'p-2 text-sm rounded-lg cursor-pointer transition-colors ';
+        if (isPast) {
+            classes += 'text-gray-300 cursor-not-allowed';
+        } else if (isSelected) {
+            classes += 'bg-lgu-highlight text-white font-semibold';
+        } else if (isToday) {
+            classes += 'bg-blue-100 text-blue-700 font-semibold hover:bg-blue-200';
+        } else {
+            classes += 'hover:bg-gray-100';
+        }
+        
+        html += `<div class="${classes}" ${!isPast ? `onclick="selectDate('${dateStr}')"` : ''}>${day}</div>`;
+    }
+    
+    html += '</div></div>';
+    return html;
+}
+
+// Open date picker modal
+function openDatePicker() {
+    Swal.fire({
+        title: 'Select New Date',
+        html: generateCalendarHTML(currentCalendarYear, currentCalendarMonth, selectedDate),
+        showCancelButton: true,
+        showConfirmButton: false,
+        cancelButtonText: 'Close',
+        cancelButtonColor: '#6b7280',
+        width: '400px',
+        didOpen: () => {
+            window.selectDate = function(dateStr) {
+                selectedDate = dateStr;
+                const dateObj = new Date(dateStr + 'T00:00:00');
+                document.getElementById('new_date').value = dateStr;
+                document.getElementById('new_date_display').textContent = dateObj.toLocaleDateString('en-US', { 
+                    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' 
+                });
+                document.getElementById('new_date_display').classList.remove('text-gray-400');
+                document.getElementById('new_date_display').classList.add('text-lgu-headline', 'font-medium');
+                updateHiddenDateTime();
+                Swal.close();
+            };
+            
+            window.changeMonth = function(delta) {
+                currentCalendarMonth += delta;
+                if (currentCalendarMonth > 11) {
+                    currentCalendarMonth = 0;
+                    currentCalendarYear++;
+                } else if (currentCalendarMonth < 0) {
+                    currentCalendarMonth = 11;
+                    currentCalendarYear--;
+                }
+                document.querySelector('.swal2-html-container').innerHTML = 
+                    generateCalendarHTML(currentCalendarYear, currentCalendarMonth, selectedDate);
+            };
+        }
+    });
+}
+
+// Generate time picker HTML (citizen version with 3-hour slots)
+function generateTimePickerHTML(type, selectedTime) {
+    const timeSlots = [
+        { value: '08:00', label: '8:00 AM - 11:00 AM', display: '8:00 AM' },
+        { value: '11:00', label: '11:00 AM - 2:00 PM', display: '11:00 AM' },
+        { value: '14:00', label: '2:00 PM - 5:00 PM', display: '2:00 PM' },
+        { value: '17:00', label: '5:00 PM - 8:00 PM', display: '5:00 PM' }
+    ];
+    
+    let html = '<div class="grid grid-cols-1 gap-2">';
+    
+    timeSlots.forEach(slot => {
+        const isSelected = slot.value === selectedTime;
+        const classes = isSelected 
+            ? 'p-4 rounded-lg cursor-pointer transition-colors bg-lgu-highlight text-white font-semibold'
+            : 'p-4 rounded-lg cursor-pointer transition-colors bg-gray-50 hover:bg-gray-100 text-lgu-headline';
+        
+        html += `<div class="${classes}" onclick="selectTime('${type}', '${slot.value}', '${slot.display}')">${slot.label}</div>`;
+    });
+    
+    html += '</div>';
+    return html;
+}
+
+// Open time picker modal
+function openTimePicker(type) {
+    const currentTime = type === 'start' ? selectedStartTime : selectedEndTime;
+    
+    Swal.fire({
+        title: type === 'start' ? 'Select Start Time' : 'Select End Time',
+        html: generateTimePickerHTML(type, currentTime),
+        showCancelButton: true,
+        showConfirmButton: false,
+        cancelButtonText: 'Close',
+        cancelButtonColor: '#6b7280',
+        width: '350px',
+        didOpen: () => {
+            window.selectTime = function(timeType, value, display) {
+                if (timeType === 'start') {
+                    selectedStartTime = value;
+                    // Auto-set end time (3 hours later)
+                    const endHour = parseInt(value.split(':')[0]) + 3;
+                    selectedEndTime = `${String(endHour).padStart(2, '0')}:00`;
+                    
+                    document.getElementById('start_time_display').textContent = display;
+                    document.getElementById('start_time_display').classList.remove('text-gray-400');
+                    document.getElementById('start_time_display').classList.add('text-lgu-headline', 'font-medium');
+                    
+                    // Update end time display
+                    const endDisplay = endHour <= 12 ? `${endHour}:00 AM` : `${endHour - 12}:00 PM`;
+                    document.getElementById('end_time_display').textContent = endDisplay;
+                    document.getElementById('end_time_display').classList.remove('text-gray-400');
+                    document.getElementById('end_time_display').classList.add('text-lgu-headline', 'font-medium');
+                } else {
+                    selectedEndTime = value;
+                    document.getElementById('end_time_display').textContent = display;
+                    document.getElementById('end_time_display').classList.remove('text-gray-400');
+                    document.getElementById('end_time_display').classList.add('text-lgu-headline', 'font-medium');
+                }
+                updateHiddenDateTime();
+                Swal.close();
+            };
+        }
+    });
+}
+
+// Update hidden datetime inputs
+function updateHiddenDateTime() {
+    if (selectedDate && selectedStartTime) {
+        document.getElementById('new_start_time').value = `${selectedDate}T${selectedStartTime}:00`;
+    }
+    if (selectedDate && selectedEndTime) {
+        document.getElementById('new_end_time').value = `${selectedDate}T${selectedEndTime}:00`;
+    }
 }
 
 function selectOption(choice) {

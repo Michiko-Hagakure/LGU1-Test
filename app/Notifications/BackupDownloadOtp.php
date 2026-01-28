@@ -2,14 +2,11 @@
 
 namespace App\Notifications;
 
-use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class BackupDownloadOtp extends Notification implements ShouldQueue
+class BackupDownloadOtp extends Notification
 {
-    use Queueable;
 
     public $otp;
     public $backupFile;

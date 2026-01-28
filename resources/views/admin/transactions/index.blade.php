@@ -229,7 +229,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest"></script>
 <script>
     async function runAIAudit() {
-        console.log("🚀 AI Audit: Initializing Strict Security Model...");
+        console.log("[AI Audit] Initializing Strict Security Model...");
 
         const model = tf.sequential();
         model.add(tf.layers.dense({units: 12, inputShape: [3], activation: 'relu'}));
@@ -261,7 +261,7 @@
         ]); 
 
         await model.fit(xs, ys, {epochs: 50, verbose: 0});
-        console.log("✅ AI Training Complete using Real DB Data.");
+        console.log("[AI Audit] Training Complete using Real DB Data.");
 
         // 3. EXECUTE PREDICTION (STRICT ENFORCEMENT)
         for (let row of rows) {

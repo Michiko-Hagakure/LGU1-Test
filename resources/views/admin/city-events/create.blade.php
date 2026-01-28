@@ -164,19 +164,35 @@
                 @enderror
             </div>
 
-            <!-- Date & Time with Modal Picker -->
+            <!-- Date Picker -->
+            <div>
+                <label class="block text-sm font-medium text-lgu-headline mb-2">
+                    Event Date <span class="text-lgu-tertiary">*</span>
+                </label>
+                <button 
+                    type="button"
+                    onclick="openDatePicker()"
+                    class="w-full px-4 py-3 border-2 border-lgu-stroke rounded-lg hover:border-lgu-highlight focus:border-lgu-highlight focus:outline-none text-left text-lgu-paragraph flex items-center justify-between"
+                >
+                    <span id="event_date_display" class="text-gray-400">Select event date</span>
+                    <i data-lucide="calendar" class="w-5 h-5 text-lgu-headline"></i>
+                </button>
+                <input type="hidden" id="event_date" value="{{ old('event_date') }}">
+            </div>
+
+            <!-- Time Pickers (Start & End) -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                     <label class="block text-sm font-medium text-lgu-headline mb-2">
-                        Start Date & Time <span class="text-lgu-tertiary">*</span>
+                        Start Time <span class="text-lgu-tertiary">*</span>
                     </label>
                     <button 
                         type="button"
-                        onclick="openDateTimeModal('start')"
+                        onclick="openTimePicker('start')"
                         class="w-full px-4 py-3 border-2 border-lgu-stroke rounded-lg hover:border-lgu-highlight focus:border-lgu-highlight focus:outline-none text-left text-lgu-paragraph flex items-center justify-between @error('start_time') border-lgu-tertiary @enderror"
                     >
-                        <span id="start_time_display" class="text-gray-400">Select start date & time</span>
-                        <i data-lucide="calendar-clock" class="w-5 h-5 text-lgu-headline"></i>
+                        <span id="start_time_display" class="text-gray-400">Select start time</span>
+                        <i data-lucide="clock" class="w-5 h-5 text-lgu-headline"></i>
                     </button>
                     <input type="hidden" name="start_time" id="start_time" value="{{ old('start_time') }}" required>
                     @error('start_time')
@@ -186,15 +202,15 @@
 
                 <div>
                     <label class="block text-sm font-medium text-lgu-headline mb-2">
-                        End Date & Time <span class="text-lgu-tertiary">*</span>
+                        End Time <span class="text-lgu-tertiary">*</span>
                     </label>
                     <button 
                         type="button"
-                        onclick="openDateTimeModal('end')"
+                        onclick="openTimePicker('end')"
                         class="w-full px-4 py-3 border-2 border-lgu-stroke rounded-lg hover:border-lgu-highlight focus:border-lgu-highlight focus:outline-none text-left text-lgu-paragraph flex items-center justify-between @error('end_time') border-lgu-tertiary @enderror"
                     >
-                        <span id="end_time_display" class="text-gray-400">Select end date & time</span>
-                        <i data-lucide="calendar-clock" class="w-5 h-5 text-lgu-headline"></i>
+                        <span id="end_time_display" class="text-gray-400">Select end time</span>
+                        <i data-lucide="clock" class="w-5 h-5 text-lgu-headline"></i>
                     </button>
                     <input type="hidden" name="end_time" id="end_time" value="{{ old('end_time') }}" required>
                     @error('end_time')
@@ -233,63 +249,6 @@
                     <button type="button" onclick="closeConflictModal()" class="btn-secondary flex items-center gap-2">
                         <i data-lucide="x" class="w-4 h-4"></i>
                         <span>Close</span>
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Date & Time Picker Modal -->
-        <div id="dateTimeModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-            <div class="bg-white rounded-xl shadow-2xl max-w-md w-full">
-                <!-- Modal Header -->
-                <div class="bg-lgu-highlight bg-opacity-10 border-b-2 border-lgu-highlight px-6 py-4 flex items-center justify-between">
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 bg-lgu-highlight bg-opacity-20 rounded-full flex items-center justify-center">
-                            <i data-lucide="calendar-clock" class="w-6 h-6 text-lgu-headline"></i>
-                        </div>
-                        <h3 class="text-lg font-bold text-lgu-headline" id="modalTitle">Select Date & Time</h3>
-                    </div>
-                    <button type="button" onclick="closeDateTimeModal()" class="p-2 hover:bg-lgu-highlight hover:bg-opacity-10 rounded-lg transition-colors">
-                        <i data-lucide="x" class="w-5 h-5 text-lgu-headline"></i>
-                    </button>
-                </div>
-
-                <!-- Modal Body -->
-                <div class="p-6 space-y-6">
-                    <!-- Date Input -->
-                    <div>
-                        <label class="block text-sm font-medium text-lgu-headline mb-2">
-                            Date <span class="text-lgu-tertiary">*</span>
-                        </label>
-                        <input 
-                            type="date" 
-                            id="modal_date"
-                            class="w-full px-4 py-3 border-2 border-lgu-stroke rounded-lg focus:border-lgu-highlight focus:outline-none text-lgu-paragraph"
-                        />
-                    </div>
-
-                    <!-- Time Input -->
-                    <div>
-                        <label class="block text-sm font-medium text-lgu-headline mb-2">
-                            Time <span class="text-lgu-tertiary">*</span>
-                        </label>
-                        <input 
-                            type="time" 
-                            id="modal_time"
-                            class="w-full px-4 py-3 border-2 border-lgu-stroke rounded-lg focus:border-lgu-highlight focus:outline-none text-lgu-paragraph"
-                        />
-                    </div>
-                </div>
-
-                <!-- Modal Footer -->
-                <div class="bg-gray-50 px-6 py-4 border-t border-gray-200 flex justify-end gap-3">
-                    <button type="button" onclick="closeDateTimeModal()" class="btn-secondary flex items-center gap-2">
-                        <i data-lucide="x" class="w-4 h-4"></i>
-                        <span>Cancel</span>
-                    </button>
-                    <button type="button" onclick="saveDateTimeSelection()" class="btn-primary flex items-center gap-2">
-                        <i data-lucide="check" class="w-4 h-4"></i>
-                        <span>Confirm</span>
                     </button>
                 </div>
             </div>
@@ -460,91 +419,247 @@ document.addEventListener('click', function(event) {
     if (event.target === modal) {
         closeConflictModal();
     }
-    
-    const dateTimeModal = document.getElementById('dateTimeModal');
-    if (event.target === dateTimeModal) {
-        closeDateTimeModal();
-    }
 });
 
-// Date-Time Modal Functions
-let currentDateTimeField = '';
+// Selected date and times storage
+let selectedDate = null;
+let selectedStartTime = null;
+let selectedEndTime = null;
 
-function openDateTimeModal(field) {
-    currentDateTimeField = field;
-    const modal = document.getElementById('dateTimeModal');
-    const modalTitle = document.getElementById('modalTitle');
-    const modalDate = document.getElementById('modal_date');
-    const modalTime = document.getElementById('modal_time');
+// Generate calendar HTML for SweetAlert2
+function generateCalendarHTML(year, month, selectedDate) {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
     
-    // Set modal title
-    modalTitle.textContent = field === 'start' ? 'Select Start Date & Time' : 'Select End Date & Time';
+    const firstDay = new Date(year, month, 1);
+    const lastDay = new Date(year, month + 1, 0);
+    const startingDay = firstDay.getDay();
+    const monthLength = lastDay.getDate();
     
-    // Get current value if exists
-    const currentValue = document.getElementById(field + '_time').value;
-    if (currentValue) {
-        const dateTime = new Date(currentValue);
-        modalDate.value = dateTime.toISOString().split('T')[0];
-        modalTime.value = dateTime.toTimeString().slice(0, 5);
-    } else {
-        // Set to current date/time as default
-        const now = new Date();
-        modalDate.value = now.toISOString().split('T')[0];
-        modalTime.value = now.toTimeString().slice(0, 5);
+    const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 
+                        'July', 'August', 'September', 'October', 'November', 'December'];
+    
+    let html = `
+        <div class="calendar-container">
+            <div class="flex items-center justify-between mb-4">
+                <button type="button" onclick="changeMonth(-1)" class="p-2 hover:bg-gray-100 rounded-lg">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                    </svg>
+                </button>
+                <span class="text-lg font-bold text-gray-800">${monthNames[month]} ${year}</span>
+                <button type="button" onclick="changeMonth(1)" class="p-2 hover:bg-gray-100 rounded-lg">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                </button>
+            </div>
+            <div class="grid grid-cols-7 gap-1 mb-2">
+                <div class="text-center text-xs font-semibold text-gray-500 py-2">Sun</div>
+                <div class="text-center text-xs font-semibold text-gray-500 py-2">Mon</div>
+                <div class="text-center text-xs font-semibold text-gray-500 py-2">Tue</div>
+                <div class="text-center text-xs font-semibold text-gray-500 py-2">Wed</div>
+                <div class="text-center text-xs font-semibold text-gray-500 py-2">Thu</div>
+                <div class="text-center text-xs font-semibold text-gray-500 py-2">Fri</div>
+                <div class="text-center text-xs font-semibold text-gray-500 py-2">Sat</div>
+            </div>
+            <div class="grid grid-cols-7 gap-1">
+    `;
+    
+    // Empty cells before first day
+    for (let i = 0; i < startingDay; i++) {
+        html += '<div class="p-2"></div>';
     }
     
-    modal.classList.remove('hidden');
-    lucide.createIcons();
-}
-
-function closeDateTimeModal() {
-    const modal = document.getElementById('dateTimeModal');
-    modal.classList.add('hidden');
-    currentDateTimeField = '';
-}
-
-function saveDateTimeSelection() {
-    const modalDate = document.getElementById('modal_date');
-    const modalTime = document.getElementById('modal_time');
+    // Days of the month
+    for (let day = 1; day <= monthLength; day++) {
+        const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+        const currentDate = new Date(year, month, day);
+        const isPast = currentDate < today;
+        const isSelected = selectedDate === dateStr;
+        const isToday = currentDate.getTime() === today.getTime();
+        
+        let classes = 'p-2 text-center rounded-lg cursor-pointer transition-colors ';
+        if (isPast) {
+            classes += 'text-gray-300 cursor-not-allowed';
+        } else if (isSelected) {
+            classes += 'bg-amber-500 text-white font-bold';
+        } else if (isToday) {
+            classes += 'bg-amber-100 text-amber-800 font-semibold hover:bg-amber-200';
+        } else {
+            classes += 'hover:bg-gray-100 text-gray-700';
+        }
+        
+        const onclick = isPast ? '' : `onclick="selectDate('${dateStr}')"`;
+        html += `<div class="${classes}" ${onclick}>${day}</div>`;
+    }
     
-    if (!modalDate.value || !modalTime.value) {
+    html += '</div></div>';
+    return html;
+}
+
+let currentCalendarYear, currentCalendarMonth;
+
+function openDatePicker() {
+    const now = new Date();
+    currentCalendarYear = now.getFullYear();
+    currentCalendarMonth = now.getMonth();
+    
+    const currentSelectedDate = document.getElementById('event_date').value || null;
+    
+    Swal.fire({
+        title: 'Select Event Date',
+        html: generateCalendarHTML(currentCalendarYear, currentCalendarMonth, currentSelectedDate),
+        showCancelButton: true,
+        showConfirmButton: false,
+        cancelButtonText: 'Cancel',
+        cancelButtonColor: '#6b7280',
+        width: 400,
+        customClass: {
+            popup: 'rounded-xl'
+        }
+    });
+}
+
+function changeMonth(delta) {
+    currentCalendarMonth += delta;
+    if (currentCalendarMonth > 11) {
+        currentCalendarMonth = 0;
+        currentCalendarYear++;
+    } else if (currentCalendarMonth < 0) {
+        currentCalendarMonth = 11;
+        currentCalendarYear--;
+    }
+    
+    const currentSelectedDate = document.getElementById('event_date').value || null;
+    Swal.update({
+        html: generateCalendarHTML(currentCalendarYear, currentCalendarMonth, currentSelectedDate)
+    });
+}
+
+function selectDate(dateStr) {
+    selectedDate = dateStr;
+    document.getElementById('event_date').value = dateStr;
+    
+    // Format display
+    const date = new Date(dateStr + 'T00:00:00');
+    const displayText = date.toLocaleDateString('en-US', {
+        weekday: 'long',
+        month: 'long',
+        day: 'numeric',
+        year: 'numeric'
+    });
+    
+    const displayEl = document.getElementById('event_date_display');
+    displayEl.textContent = displayText;
+    displayEl.classList.remove('text-gray-400');
+    displayEl.classList.add('text-lgu-headline', 'font-medium');
+    
+    Swal.close();
+    updateHiddenDateTimeFields();
+}
+
+// Generate time slots HTML for SweetAlert2 (8:00 AM to 9:00 PM)
+function generateTimePickerHTML(type, selectedTime) {
+    const times = [];
+    // Generate times from 8:00 AM to 9:00 PM (21:00)
+    for (let hour = 8; hour <= 21; hour++) {
+        const hour24 = String(hour).padStart(2, '0');
+        const hour12 = hour > 12 ? hour - 12 : (hour === 0 ? 12 : hour);
+        const ampm = hour >= 12 ? 'PM' : 'AM';
+        times.push({
+            value: `${hour24}:00`,
+            display: `${hour12}:00 ${ampm}`
+        });
+    }
+    
+    let html = `
+        <div class="time-picker-container">
+            <p class="text-sm text-gray-500 mb-4">Select ${type === 'start' ? 'start' : 'end'} time (8:00 AM - 9:00 PM)</p>
+            <div class="grid grid-cols-3 gap-2 max-h-64 overflow-y-auto">
+    `;
+    
+    times.forEach(time => {
+        const isSelected = selectedTime === time.value;
+        const classes = isSelected 
+            ? 'bg-amber-500 text-white font-bold' 
+            : 'bg-gray-100 hover:bg-amber-100 text-gray-700';
+        html += `
+            <button type="button" 
+                onclick="selectTime('${type}', '${time.value}', '${time.display}')"
+                class="px-3 py-3 rounded-lg text-sm transition-colors ${classes}">
+                ${time.display}
+            </button>
+        `;
+    });
+    
+    html += '</div></div>';
+    return html;
+}
+
+function openTimePicker(type) {
+    // Check if date is selected first
+    const eventDate = document.getElementById('event_date').value;
+    if (!eventDate) {
         Swal.fire({
             icon: 'warning',
-            title: 'Incomplete Selection',
-            text: 'Please select both date and time.',
+            title: 'Select Date First',
+            text: 'Please select an event date before choosing the time.',
             confirmButtonColor: '#faae2b'
         });
         return;
     }
     
-    // Combine date and time
-    const dateTimeValue = modalDate.value + 'T' + modalTime.value;
+    const currentTime = type === 'start' ? selectedStartTime : selectedEndTime;
     
-    // Set hidden input value
-    document.getElementById(currentDateTimeField + '_time').value = dateTimeValue;
-    
-    // Format display text
-    const dateTime = new Date(dateTimeValue);
-    const displayText = dateTime.toLocaleString('en-US', {
-        month: 'short',
-        day: 'numeric',
-        year: 'numeric',
-        hour: 'numeric',
-        minute: '2-digit',
-        hour12: true
+    Swal.fire({
+        title: type === 'start' ? 'Select Start Time' : 'Select End Time',
+        html: generateTimePickerHTML(type, currentTime),
+        showCancelButton: true,
+        showConfirmButton: false,
+        cancelButtonText: 'Cancel',
+        cancelButtonColor: '#6b7280',
+        width: 380,
+        customClass: {
+            popup: 'rounded-xl'
+        }
     });
+}
+
+function selectTime(type, timeValue, displayText) {
+    if (type === 'start') {
+        selectedStartTime = timeValue;
+        const displayEl = document.getElementById('start_time_display');
+        displayEl.textContent = displayText;
+        displayEl.classList.remove('text-gray-400');
+        displayEl.classList.add('text-lgu-headline', 'font-medium');
+    } else {
+        selectedEndTime = timeValue;
+        const displayEl = document.getElementById('end_time_display');
+        displayEl.textContent = displayText;
+        displayEl.classList.remove('text-gray-400');
+        displayEl.classList.add('text-lgu-headline', 'font-medium');
+    }
     
-    // Update display button
-    const displayElement = document.getElementById(currentDateTimeField + '_time_display');
-    displayElement.textContent = displayText;
-    displayElement.classList.remove('text-gray-400');
-    displayElement.classList.add('text-lgu-headline', 'font-medium');
+    Swal.close();
+    updateHiddenDateTimeFields();
+}
+
+function updateHiddenDateTimeFields() {
+    const eventDate = document.getElementById('event_date').value;
     
-    // Close modal
-    closeDateTimeModal();
+    if (eventDate && selectedStartTime) {
+        document.getElementById('start_time').value = eventDate + 'T' + selectedStartTime;
+    }
     
-    // Check for conflicts
-    checkConflicts();
+    if (eventDate && selectedEndTime) {
+        document.getElementById('end_time').value = eventDate + 'T' + selectedEndTime;
+    }
+    
+    // Check for conflicts if both times are set
+    if (eventDate && selectedStartTime && selectedEndTime) {
+        checkConflicts();
+    }
 }
 </script>
 @endpush

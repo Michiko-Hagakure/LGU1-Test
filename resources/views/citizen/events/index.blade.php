@@ -1,6 +1,8 @@
 @extends('layouts.citizen')
 
 @section('title', 'Events')
+@section('page-title', 'City Events')
+@section('page-subtitle', 'Stay updated with upcoming city events and activities')
 
 @section('page-content')
 <!-- Header -->

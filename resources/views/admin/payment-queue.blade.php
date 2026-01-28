@@ -121,7 +121,7 @@
                             <div class="text-right">
                                 @if($booking->is_overdue)
                                     <div class="bg-red-100 border border-red-200 rounded-lg px-gr-md py-gr-sm">
-                                        <p class="text-caption text-red-700 font-medium mb-1">⚠️ OVERDUE</p>
+                                        <p class="text-caption text-red-700 font-medium mb-1 flex items-center gap-1"><i data-lucide="alert-triangle" class="w-3 h-3"></i> OVERDUE</p>
                                         <p class="text-small font-bold text-red-900">Payment Deadline Passed</p>
                                     </div>
                                 @else

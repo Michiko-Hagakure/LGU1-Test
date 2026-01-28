@@ -1,8 +1,10 @@
 @extends('layouts.citizen')
 
 @section('title', 'Compare Facilities')
+@section('page-title', 'Compare Facilities')
+@section('page-subtitle', 'Compare features and pricing of different facilities')
 
-@section('content')
+@section('page-content')
 <div class="min-h-screen bg-lgu-bg">
     <div class="p-gr-lg">
         <div class="mb-gr-xl">

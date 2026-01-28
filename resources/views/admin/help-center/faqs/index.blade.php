@@ -1,6 +1,8 @@
 @extends('layouts.admin')
 
 @section('title', 'FAQs')
+@section('page-title', 'FAQs')
+@section('page-subtitle', 'Manage frequently asked questions')
 
 @section('page-content')
 <div class="mb-6 flex justify-between items-center">

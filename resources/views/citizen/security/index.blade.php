@@ -44,14 +44,28 @@
                     
                     <div>
                         <label class="block text-sm font-semibold text-lgu-headline mb-gr-xs">Current Password</label>
-                        <input type="password" name="current_password" required
-                               class="w-full px-gr-md py-gr-sm border-2 border-gray-300 rounded-lg focus:border-lgu-stroke focus:outline-none">
+                        <div class="relative">
+                            <input type="password" name="current_password" id="currentPassword" required
+                                   class="w-full px-gr-md py-gr-sm border-2 border-gray-300 rounded-lg focus:border-lgu-stroke focus:outline-none pr-12">
+                            <button type="button" onclick="togglePasswordVisibility('currentPassword')" 
+                                    class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none">
+                                <i data-lucide="eye" class="w-5 h-5 password-eye-icon"></i>
+                                <i data-lucide="eye-off" class="w-5 h-5 password-eye-off-icon hidden"></i>
+                            </button>
+                        </div>
                     </div>
                     
                     <div>
                         <label class="block text-sm font-semibold text-lgu-headline mb-gr-xs">New Password</label>
-                        <input type="password" name="new_password" id="newPassword" required
-                               class="w-full px-gr-md py-gr-sm border-2 border-gray-300 rounded-lg focus:border-lgu-stroke focus:outline-none">
+                        <div class="relative">
+                            <input type="password" name="new_password" id="newPassword" required
+                                   class="w-full px-gr-md py-gr-sm border-2 border-gray-300 rounded-lg focus:border-lgu-stroke focus:outline-none pr-12">
+                            <button type="button" onclick="togglePasswordVisibility('newPassword')" 
+                                    class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none">
+                                <i data-lucide="eye" class="w-5 h-5 password-eye-icon"></i>
+                                <i data-lucide="eye-off" class="w-5 h-5 password-eye-off-icon hidden"></i>
+                            </button>
+                        </div>
                         <div id="passwordStrength" class="mt-gr-xs h-2 bg-gray-200 rounded-full overflow-hidden hidden">
                             <div id="passwordStrengthBar" class="h-full transition-all duration-300"></div>
                         </div>
@@ -62,8 +76,15 @@
                     
                     <div>
                         <label class="block text-sm font-semibold text-lgu-headline mb-gr-xs">Confirm New Password</label>
-                        <input type="password" name="confirm_password" required
-                               class="w-full px-gr-md py-gr-sm border-2 border-gray-300 rounded-lg focus:border-lgu-stroke focus:outline-none">
+                        <div class="relative">
+                            <input type="password" name="confirm_password" id="confirmPassword" required
+                                   class="w-full px-gr-md py-gr-sm border-2 border-gray-300 rounded-lg focus:border-lgu-stroke focus:outline-none pr-12">
+                            <button type="button" onclick="togglePasswordVisibility('confirmPassword')" 
+                                    class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none">
+                                <i data-lucide="eye" class="w-5 h-5 password-eye-icon"></i>
+                                <i data-lucide="eye-off" class="w-5 h-5 password-eye-off-icon hidden"></i>
+                            </button>
+                        </div>
                     </div>
                     
                     <button type="submit" class="px-gr-lg py-gr-sm bg-lgu-button text-lgu-button-text font-semibold rounded-lg hover:opacity-90 transition flex items-center gap-gr-xs">
@@ -405,6 +426,24 @@
 </div>
 
 <script>
+// Toggle password visibility
+function togglePasswordVisibility(inputId) {
+    const input = document.getElementById(inputId);
+    const button = input.parentElement.querySelector('button');
+    const eyeIcon = button.querySelector('.password-eye-icon');
+    const eyeOffIcon = button.querySelector('.password-eye-off-icon');
+    
+    if (input.type === 'password') {
+        input.type = 'text';
+        eyeIcon.classList.add('hidden');
+        eyeOffIcon.classList.remove('hidden');
+    } else {
+        input.type = 'password';
+        eyeIcon.classList.remove('hidden');
+        eyeOffIcon.classList.add('hidden');
+    }
+}
+
 // Tab switching
 function showSecurityTab(tabName) {
     document.querySelectorAll('.security-tab-content').forEach(content => {

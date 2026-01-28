@@ -1,6 +1,8 @@
 
 
 <?php $__env->startSection('title', 'Help Center'); ?>
+<?php $__env->startSection('page-title', 'Help Center'); ?>
+<?php $__env->startSection('page-subtitle', 'Find answers to your questions'); ?>
 
 <?php $__env->startSection('page-content'); ?>
 <!-- Header -->
