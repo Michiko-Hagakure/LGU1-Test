@@ -48,5 +48,8 @@ Route::prefix('facility-reservation')->group(function () {
     
     // POST https://facilities.local-government-unit-1-ph.com/api/facility-reservation
     Route::post('/', [\App\Http\Controllers\Api\FacilityReservationApiController::class, 'store']);
+    
+    // POST https://facilities.local-government-unit-1-ph.com/api/facility-reservation/payment-complete
+    Route::post('/payment-complete', [\App\Http\Controllers\Api\FacilityReservationApiController::class, 'paymentComplete']);
 });
 

@@ -1,6 +1,8 @@
 @extends('layouts.citizen')
 
 @section('title', $newsItem->title)
+@section('page-title', $newsItem->title)
+@section('page-subtitle', 'News Article')
 
 @section('page-content')
 <!-- Breadcrumb -->

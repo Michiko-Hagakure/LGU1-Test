@@ -95,12 +95,7 @@
                                         <span>{{ \Carbon\Carbon::parse($review->created_at)->format('M j, Y') }}</span>
                                     </div>
                                 </div>
-                                <div class="flex items-center gap-gr-xs">
-                                    <a href="{{ route('admin.reviews.show', $review->id) }}" class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors duration-200" title="View Details">
-                                        <i data-lucide="eye" class="w-5 h-5"></i>
-                                    </a>
-                                </div>
-                            </div>
+                                                            </div>
 
                             <div class="flex items-center gap-gr-xs mb-gr-sm">
                                 @for($i = 1; $i <= 5; $i++)

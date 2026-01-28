@@ -395,7 +395,7 @@
                         Please read and accept the Terms and Conditions to continue
                     </span>
                     <span x-show="termsAccepted">
-                        ✓ Terms and Conditions accepted
+                        Terms and Conditions accepted
                     </span>
                 </div>
                 <div class="d-grid">

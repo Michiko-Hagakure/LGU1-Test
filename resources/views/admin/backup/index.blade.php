@@ -1,5 +1,9 @@
 @extends('layouts.admin')
 
+@section('title', 'Database Backup')
+@section('page-title', 'Database Backup & Restore')
+@section('page-subtitle', 'Manage system backups for data protection')
+
 @section('page-content')
 <div class="container mx-auto px-4 py-8">
     <div class="mb-8">

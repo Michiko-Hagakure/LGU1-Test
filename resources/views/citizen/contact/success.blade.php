@@ -1,6 +1,8 @@
 @extends('layouts.citizen')
 
 @section('title', 'Inquiry Submitted')
+@section('page-title', 'Inquiry Submitted')
+@section('page-subtitle', 'Your message has been received')
 
 @section('page-content')
 <div class="max-w-2xl mx-auto text-center">

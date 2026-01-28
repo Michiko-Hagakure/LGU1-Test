@@ -1,6 +1,8 @@
 @extends('layouts.admin')
 
 @section('title', 'Events Management')
+@section('page-title', 'Events Management')
+@section('page-subtitle', 'Manage city events and activities')
 
 @section('page-content')
 <div class="mb-6 flex justify-between items-center">

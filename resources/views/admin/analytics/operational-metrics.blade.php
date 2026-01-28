@@ -36,7 +36,7 @@
             </div>
             <p class="text-3xl font-bold text-lgu-headline">{{ round($avgStaffVerificationTime ?? 0, 1) }}h</p>
             <p class="text-xs {{ ($avgStaffVerificationTime ?? 0) > 48 ? 'text-red-600' : 'text-gray-500' }} mt-2">
-                {{ ($avgStaffVerificationTime ?? 0) > 48 ? '⚠️ Above target (48h)' : '✓ Within target' }}
+                {{ ($avgStaffVerificationTime ?? 0) > 48 ? 'Above target (48h)' : 'Within target' }}
             </p>
         </div>
 
@@ -48,7 +48,7 @@
             </div>
             <p class="text-3xl font-bold text-lgu-headline">{{ round($avgPaymentTime ?? 0, 1) }}h</p>
             <p class="text-xs {{ ($avgPaymentTime ?? 0) > 24 ? 'text-yellow-600' : 'text-gray-500' }} mt-2">
-                {{ ($avgPaymentTime ?? 0) > 24 ? '⚠️ Above target (24h)' : '✓ Within target' }}
+                {{ ($avgPaymentTime ?? 0) > 24 ? 'Above target (24h)' : 'Within target' }}
             </p>
         </div>
 

@@ -1,6 +1,8 @@
 @extends('layouts.citizen')
 
 @section('title', 'News')
+@section('page-title', 'City News & Announcements')
+@section('page-subtitle', 'Stay informed with the latest updates from the city')
 
 @section('page-content')
 <!-- Header -->

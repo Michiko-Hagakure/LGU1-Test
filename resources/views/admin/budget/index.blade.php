@@ -1,6 +1,8 @@
 @extends('layouts.admin')
 
 @section('title', 'Budget Management - Admin')
+@section('page-title', 'Budget Management')
+@section('page-subtitle', 'Manage facility budgets and allocations')
 
 @section('page-content')
 <div class="space-y-6">

@@ -50,13 +50,15 @@ class BackupController extends Controller
     public function create(Request $request)
     {
         try {
-            $exitCode = Artisan::call('backup:run', ['--only-db' => true]);
+            // Use shell_exec with cmd.exe to run artisan in proper Windows environment
+            $artisanPath = base_path('artisan');
+            $command = 'cd /d "' . base_path() . '" && php "' . $artisanPath . '" backup:run --only-db 2>&1';
             
-            $output = Artisan::output();
+            $output = shell_exec($command);
             
             // Check if backup actually succeeded
-            if ($exitCode !== 0 || str_contains($output, 'Backup failed') || str_contains($output, 'failed')) {
-                Log::error('Backup creation failed', ['exit_code' => $exitCode, 'output' => $output]);
+            if ($output === null || (!str_contains($output, 'Backup completed') && str_contains(strtolower($output ?? ''), 'failed'))) {
+                Log::error('Backup creation failed', ['output' => $output]);
                 return redirect()->route('admin.backup.index')
                     ->with('error', 'Backup failed. Please check that MySQL is running and try again.');
             }
@@ -156,12 +158,21 @@ class BackupController extends Controller
             $disk = Storage::disk(config('backup.backup.destination.disks')[0]);
             $backupPath = config('backup.backup.name');
             $filePath = $backupPath . '/' . $fileName;
+            $trashPath = $backupPath . '/trash';
 
             if ($disk->exists($filePath)) {
-                $disk->delete($filePath);
+                // Soft delete: move to trash folder instead of permanent deletion
+                if (!$disk->exists($trashPath)) {
+                    $disk->makeDirectory($trashPath);
+                }
+                
+                $trashedFilePath = $trashPath . '/' . $fileName;
+                $disk->move($filePath, $trashedFilePath);
+                
+                Log::info('Backup soft deleted (moved to trash)', ['file' => $fileName]);
                 
                 return redirect()->route('admin.backup.index')
-                    ->with('success', 'Backup deleted successfully.');
+                    ->with('success', 'Backup moved to trash successfully.');
             }
 
             return redirect()->route('admin.backup.index')

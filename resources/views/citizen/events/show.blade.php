@@ -1,6 +1,8 @@
 @extends('layouts.citizen')
 
 @section('title', $event->title)
+@section('page-title', $event->title)
+@section('page-subtitle', 'Event Details')
 
 @section('page-content')
 <!-- Breadcrumb -->

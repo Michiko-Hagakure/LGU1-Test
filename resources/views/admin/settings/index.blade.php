@@ -1,5 +1,9 @@
 @extends('layouts.admin')
 
+@section('title', 'System Settings')
+@section('page-title', 'System Settings')
+@section('page-subtitle', 'Configure system behavior and preferences')
+
 @section('page-content')
 <div class="p-6">
     <!-- Header -->

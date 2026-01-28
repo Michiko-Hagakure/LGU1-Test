@@ -1,5 +1,9 @@
 
 
+<?php $__env->startSection('title', 'Database Backup'); ?>
+<?php $__env->startSection('page-title', 'Database Backup & Restore'); ?>
+<?php $__env->startSection('page-subtitle', 'Manage system backups for data protection'); ?>
+
 <?php $__env->startSection('page-content'); ?>
 <div class="container mx-auto px-4 py-8">
     <div class="mb-8">

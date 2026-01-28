@@ -12,7 +12,6 @@ class FaqController extends Controller
     public function index()
     {
         $faqs = Faq::with('category')
-            ->orderBy('display_order')
             ->orderBy('question')
             ->paginate(20);
         
@@ -22,7 +21,6 @@ class FaqController extends Controller
     public function create()
     {
         $categories = FaqCategory::where('is_active', true)
-            ->orderBy('display_order')
             ->orderBy('name')
             ->get();
         
@@ -52,7 +50,6 @@ class FaqController extends Controller
     {
         $faq = Faq::findOrFail($id);
         $categories = FaqCategory::where('is_active', true)
-            ->orderBy('display_order')
             ->orderBy('name')
             ->get();
         

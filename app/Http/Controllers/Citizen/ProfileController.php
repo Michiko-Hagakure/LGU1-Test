@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Validator;
 use Carbon\Carbon;
 
@@ -45,6 +46,22 @@ class ProfileController extends Controller
             return redirect()->route('login')->with('error', 'User not found.');
         }
 
+        $paymentSlipAmountColumn = null;
+        if (Schema::connection('facilities_db')->hasColumn('payment_slips', 'amount')) {
+            $paymentSlipAmountColumn = 'amount';
+        } elseif (Schema::connection('facilities_db')->hasColumn('payment_slips', 'amount_due')) {
+            $paymentSlipAmountColumn = 'amount_due';
+        }
+
+        $totalSpentQuery = DB::connection('facilities_db')->table('payment_slips');
+        if (Schema::connection('facilities_db')->hasColumn('payment_slips', 'user_id')) {
+            $totalSpentQuery->where('user_id', $userId);
+        } else {
+            $totalSpentQuery
+                ->join('bookings', 'payment_slips.booking_id', '=', 'bookings.id')
+                ->where('bookings.user_id', $userId);
+        }
+
         // Get user statistics from facilities database
         $stats = [
             'total_bookings' => DB::connection('facilities_db')
@@ -61,11 +78,9 @@ class ProfileController extends Controller
                 ->where('user_id', $userId)
                 ->where('status', 'completed')
                 ->count(),
-            'total_spent' => DB::connection('facilities_db')
-                ->table('payment_slips')
-                ->where('user_id', $userId)
-                ->where('status', 'paid')
-                ->sum('amount'),
+            'total_spent' => $paymentSlipAmountColumn
+                ? $totalSpentQuery->where('payment_slips.status', 'paid')->sum($paymentSlipAmountColumn)
+                : 0,
         ];
 
         // Get recent activity (last 5 bookings)
@@ -201,32 +216,95 @@ class ProfileController extends Controller
             return response()->json(['success' => false, 'message' => $validator->errors()->first()], 400);
         }
 
+        $avatarColumn = null;
+        if (Schema::connection('auth_db')->hasColumn('users', 'avatar_path')) {
+            $avatarColumn = 'avatar_path';
+        } elseif (Schema::connection('auth_db')->hasColumn('users', 'profile_photo_path')) {
+            $avatarColumn = 'profile_photo_path';
+        }
+
         // Delete old avatar if exists
         $user = DB::connection('auth_db')
             ->table('users')
             ->where('id', $userId)
             ->first();
 
-        if ($user->avatar_path && file_exists(storage_path('app/public/' . $user->avatar_path))) {
-            unlink(storage_path('app/public/' . $user->avatar_path));
+        $oldAvatarPath = $avatarColumn ? ($user->{$avatarColumn} ?? null) : null;
+        if ($oldAvatarPath && file_exists(storage_path('app/public/' . $oldAvatarPath))) {
+            unlink(storage_path('app/public/' . $oldAvatarPath));
         }
 
         // Store new avatar
         $avatarPath = $request->file('avatar')->store('avatars', 'public');
 
         // Update user avatar path
+        $updatePayload = [
+            'updated_at' => Carbon::now(),
+        ];
+        if ($avatarColumn) {
+            $updatePayload[$avatarColumn] = $avatarPath;
+        }
+
         DB::connection('auth_db')
             ->table('users')
             ->where('id', $userId)
-            ->update([
-                'avatar_path' => $avatarPath,
-                'updated_at' => Carbon::now(),
-            ]);
+            ->update($updatePayload);
 
         return response()->json([
             'success' => true, 
             'message' => 'Avatar updated successfully!',
             'avatar_url' => asset('storage/' . $avatarPath)
+        ]);
+    }
+
+    /**
+     * Remove avatar
+     */
+    public function removeAvatar()
+    {
+        $userId = session('user_id');
+        
+        if (!$userId) {
+            return response()->json(['success' => false, 'message' => 'Please login to continue.'], 401);
+        }
+
+        // Determine which avatar column exists
+        $avatarColumn = null;
+        if (Schema::connection('auth_db')->hasColumn('users', 'avatar_path')) {
+            $avatarColumn = 'avatar_path';
+        } elseif (Schema::connection('auth_db')->hasColumn('users', 'profile_photo_path')) {
+            $avatarColumn = 'profile_photo_path';
+        }
+
+        if (!$avatarColumn) {
+            return response()->json(['success' => false, 'message' => 'Avatar feature not available.'], 400);
+        }
+
+        // Get current avatar path
+        $user = DB::connection('auth_db')
+            ->table('users')
+            ->where('id', $userId)
+            ->first([$avatarColumn]);
+
+        $currentAvatarPath = $user->{$avatarColumn} ?? null;
+
+        // Delete the file if it exists
+        if ($currentAvatarPath && file_exists(storage_path('app/public/' . $currentAvatarPath))) {
+            unlink(storage_path('app/public/' . $currentAvatarPath));
+        }
+
+        // Update database to remove avatar path
+        DB::connection('auth_db')
+            ->table('users')
+            ->where('id', $userId)
+            ->update([
+                $avatarColumn => null,
+                'updated_at' => Carbon::now(),
+            ]);
+
+        return response()->json([
+            'success' => true, 
+            'message' => 'Profile photo removed successfully!'
         ]);
     }
 }

@@ -132,8 +132,8 @@
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <div class="lg:col-span-2 bg-gray-900 rounded-3xl p-6 shadow-2xl border border-gray-800">
-                <div class="flex items-center justify-between mb-6 text-white/50">
+            <div class="lg:col-span-2 bg-white rounded-3xl p-6 shadow-2xl border border-gray-200">
+                <div class="flex items-center justify-between mb-6 text-gray-500">
                     <span class="text-[10px] font-bold uppercase tracking-[0.2em]">Hourly Demand Probability</span>
                     <i data-lucide="activity" class="w-4 h-4"></i>
                 </div>
@@ -316,7 +316,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
     const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
-    console.log("🚀 AI Engine: Initializing data from database...");
+    console.log("[AI Engine] Initializing data from database...");
 
     // 1. DYNAMIC DATA ANALYSIS
 
@@ -324,7 +324,7 @@ document.addEventListener('DOMContentLoaded', async function() {
 
         if (!dbData || dbData.length === 0) {
 
-            console.warn("⚠️ AI Engine: No historical data found for analysis.");
+            console.warn("[AI Engine] No historical data found for analysis.");
             return null;
         }
 
@@ -383,7 +383,7 @@ document.addEventListener('DOMContentLoaded', async function() {
                 Holiday Impact: <b>${holidayName}</b>
             `;
         }
-        console.log(`📊 Analysis: Top user ${topUser ? topUser[0] : 'N/A'}. Historical peak: ${months[peakMonthIdx]}.`);
+        console.log(`[Analysis] Top user ${topUser ? topUser[0] : 'N/A'}. Historical peak: ${months[peakMonthIdx]}.`);
         return { hourDensity, peakHour, peakDayIdx, peakMonthIdx };
     }
     const liveStats = analyzeHistoricalData();
@@ -392,7 +392,7 @@ document.addEventListener('DOMContentLoaded', async function() {
 
     async function trainModel() {
 
-        console.log("🧠 TensorFlow: Building Neural Network...");
+        console.log("[TensorFlow] Building Neural Network...");
         const model = tf.sequential();
 
         model.add(tf.layers.dense({units: 32, activation: 'relu', inputShape: [3]}));
@@ -402,7 +402,7 @@ document.addEventListener('DOMContentLoaded', async function() {
 
 
         if(dbData.length > 0) {
-            console.log(`👟 TensorFlow: Training with ${dbData.length} database records...`);
+            console.log(`[TensorFlow] Training with ${dbData.length} database records...`);
 
             const inputs = dbData.map(d => [d.day_index, d.hour_index, d.month_index]);
             const labels = dbData.map(() => [1]);
@@ -418,12 +418,12 @@ document.addEventListener('DOMContentLoaded', async function() {
 
                 callbacks: {
                     onEpochEnd: (epoch, logs) => {
-                        if (epoch % 10 === 0) console.log(`📉 Epoch ${epoch}: Loss = ${logs.loss.toFixed(4)}`);
+                        if (epoch % 10 === 0) console.log(`[Training] Epoch ${epoch}: Loss = ${logs.loss.toFixed(4)}`);
                     }
                 }
 
             });
-            console.log("✅ AI Engine: Training Complete.");
+            console.log("[AI Engine] Training Complete.");
 
         }
         return model;
@@ -458,30 +458,32 @@ document.addEventListener('DOMContentLoaded', async function() {
                 insightBox.innerHTML = `
 
                     <div class="space-y-2">
-                        <p class="font-bold text-yellow-400">🚨 Conflict Detected (Mayor's Office)</p>
+                        <p class="font-bold text-yellow-400 flex items-center gap-2"><i data-lucide="alert-triangle" class="w-4 h-4"></i> Conflict Detected (Mayor's Office)</p>
                         <p class="text-white text-sm">
                             A priority city event is scheduled for today.
                             AI suggests shifting <b>${topUser}'s</b> booking to <b>${altHour}:00</b>.
                         </p>
                         <div class="mt-2 p-2 bg-white/10 rounded border border-indigo-500/30">
-                            <span class="text-indigo-200 font-semibold">✨ AI Predicted Demand: ${(prob * 100).toFixed(1)}%</span>
+                            <span class="text-indigo-200 font-semibold flex items-center gap-2"><i data-lucide="sparkles" class="w-4 h-4"></i> AI Predicted Demand: ${(prob * 100).toFixed(1)}%</span>
                         </div>
                     </div>
                 `;
+                lucide.createIcons();
             } else {
                 // AVAILABILITY LOGIC
                 insightBox.innerHTML = `
                     <div class="space-y-2">
-                        <p class="font-bold text-emerald-400">✅ Facility Available</p>
+                        <p class="font-bold text-emerald-400 flex items-center gap-2"><i data-lucide="check-circle" class="w-4 h-4"></i> Facility Available</p>
                         <p class="text-white text-sm">
                             No City Events detected for this schedule.
                             Users may proceed with bookings for today.
                         </p>
                         <div class="mt-2 p-2 bg-emerald-500/10 rounded border border-emerald-500/30">
-                            <span class="text-emerald-200 font-semibold">✨ AI Status: Optimal Availability</span>
+                            <span class="text-emerald-200 font-semibold flex items-center gap-2"><i data-lucide="sparkles" class="w-4 h-4"></i> AI Status: Optimal Availability</span>
                         </div>
                     </div>
                 `;
+                lucide.createIcons();
             }
         }
     };
@@ -494,11 +496,11 @@ document.addEventListener('DOMContentLoaded', async function() {
 function renderForecastChart(data) {
     const ctx = document.getElementById('aiForecastChart').getContext('2d');
     
-    // Create a much brighter gradient
+    // Create gradient for white background
     const gradient = ctx.createLinearGradient(0, 0, 0, 400);
-    gradient.addColorStop(0, 'rgba(34, 211, 238, 0.4)');   // Cyan top
-    gradient.addColorStop(0.5, 'rgba(139, 92, 246, 0.1)'); // Violet middle
-    gradient.addColorStop(1, 'rgba(15, 23, 42, 0)');      // Dark bottom
+    gradient.addColorStop(0, 'rgba(79, 70, 229, 0.3)');   // Indigo top
+    gradient.addColorStop(0.5, 'rgba(79, 70, 229, 0.1)'); // Indigo middle
+    gradient.addColorStop(1, 'rgba(79, 70, 229, 0)');     // Transparent bottom
 
     new Chart(ctx, {
         type: 'line',
@@ -507,33 +509,33 @@ function renderForecastChart(data) {
             datasets: [{
                 label: 'Facility Activity',
                 data: data,
-                borderColor: '#22d3ee',         // Bright Electric Cyan
-                borderWidth: 4,
-                pointBackgroundColor: '#fff',
-                pointBorderColor: '#22d3ee',
-                pointHoverRadius: 8,
-                pointHoverBackgroundColor: '#22d3ee',
+                borderColor: '#4f46e5',         // Indigo
+                borderWidth: 3,
+                pointBackgroundColor: '#4f46e5',
+                pointBorderColor: '#fff',
+                pointBorderWidth: 2,
+                pointRadius: 4,
+                pointHoverRadius: 6,
+                pointHoverBackgroundColor: '#4f46e5',
                 backgroundColor: gradient,
                 fill: true,
-                tension: 0.45,                  // Curvy and modern
-                borderCapStyle: 'round',
-                shadowColor: 'rgba(34, 211, 238, 0.5)',
-                shadowBlur: 10
+                tension: 0.45,
+                borderCapStyle: 'round'
             }]
         },
         options: {
             responsive: true,
             maintainAspectRatio: false,
             animation: {
-                duration: 2500,                 // Slower, more elegant entry
+                duration: 2500,
                 easing: 'easeInOutQuart'
             },
             plugins: { 
                 legend: { display: false },
                 tooltip: {
-                    backgroundColor: '#fff',     // White tooltips for contrast
-                    titleColor: '#0f172a',
-                    bodyColor: '#0f172a',
+                    backgroundColor: '#1e1b4b',
+                    titleColor: '#fff',
+                    bodyColor: '#fff',
                     padding: 12,
                     displayColors: false,
                     cornerRadius: 8
@@ -541,10 +543,15 @@ function renderForecastChart(data) {
             },
             scales: { 
                 x: { 
-                    grid: { display: false },
-                    ticks: { color: '#cbd5e1', font: { weight: 'bold' } } 
+                    grid: { color: 'rgba(0, 0, 0, 0.05)' },
+                    ticks: { color: '#64748b', font: { weight: '500' } } 
                 }, 
-                y: { display: false, beginAtZero: true } 
+                y: { 
+                    display: true, 
+                    beginAtZero: true,
+                    grid: { color: 'rgba(0, 0, 0, 0.05)' },
+                    ticks: { color: '#64748b' }
+                } 
             }
         }
     });

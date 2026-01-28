@@ -209,16 +209,17 @@ class AnalyticsController extends Controller
             ->selectRaw('
         facilities.facility_id,
         facilities.name,
+        lgu_cities.city_name,
         facilities.capacity,
         COUNT(bookings.id) as total_bookings,
-        -- ADD THESE LINES BACK:
         SUM(CASE WHEN bookings.status IN ("paid", "confirmed", "completed") THEN 1 ELSE 0 END) as confirmed_bookings,
         SUM(CASE WHEN bookings.status = "cancelled" THEN 1 ELSE 0 END) as cancelled_bookings,
         SUM(bookings.total_amount) as total_revenue
     ')
+            ->leftJoin('lgu_cities', 'facilities.lgu_city_id', '=', 'lgu_cities.id')
             ->leftJoin('bookings', 'facilities.facility_id', '=', 'bookings.facility_id')
             ->where('facilities.is_available', 1)
-            ->groupBy('facilities.facility_id', 'facilities.name', 'facilities.capacity')
+            ->groupBy('facilities.facility_id', 'facilities.name', 'lgu_cities.city_name', 'facilities.capacity')
             ->get();
 
         // 4. Calculate utilization rate logic

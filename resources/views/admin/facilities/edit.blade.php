@@ -81,23 +81,16 @@
                     @enderror
                 </div>
 
-                {{-- Facility Type --}}
+                {{-- Available --}}
                 <div>
-                    <label for="type" class="block text-small font-semibold text-lgu-headline mb-gr-xs">
-                        Facility Type <span class="text-red-500">*</span>
+                    <label for="is_available" class="block text-small font-semibold text-lgu-headline mb-gr-xs">
+                        Availability
                     </label>
-                    <select id="type" name="type" required
-                        class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-lgu-highlight focus:border-transparent @error('type') border-red-500 @enderror">
-                        <option value="">Select Type</option>
-                        @foreach($facilityTypes as $key => $label)
-                            <option value="{{ $key }}" {{ old('type', $facility->type) == $key ? 'selected' : '' }}>
-                                {{ $label }}
-                            </option>
-                        @endforeach
+                    <select id="is_available" name="is_available"
+                        class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-lgu-highlight focus:border-transparent">
+                        <option value="1" {{ old('is_available', $facility->is_available) == 1 ? 'selected' : '' }}>Available</option>
+                        <option value="0" {{ old('is_available', $facility->is_available) == 0 ? 'selected' : '' }}>Not Available</option>
                     </select>
-                    @error('type')
-                        <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
-                    @enderror
                 </div>
 
                 {{-- Capacity --}}
@@ -112,24 +105,7 @@
                     @enderror
                 </div>
 
-                {{-- Status --}}
-                <div>
-                    <label for="status" class="block text-small font-semibold text-lgu-headline mb-gr-xs">
-                        Status <span class="text-red-500">*</span>
-                    </label>
-                    <select id="status" name="status" required
-                        class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-lgu-highlight focus:border-transparent @error('status') border-red-500 @enderror">
-                        @foreach($statusOptions as $key => $label)
-                            <option value="{{ $key }}" {{ old('status', $facility->status) == $key ? 'selected' : '' }}>
-                                {{ $label }}
-                            </option>
-                        @endforeach
-                    </select>
-                    @error('status')
-                        <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
-                    @enderror
-                </div>
-
+                
                 {{-- Description --}}
                 <div class="md:col-span-2">
                     <label for="description" class="block text-small font-semibold text-lgu-headline mb-gr-xs">
@@ -164,19 +140,7 @@
                     @enderror
                 </div>
 
-                {{-- Google Maps URL --}}
-                <div>
-                    <label for="google_maps_url" class="block text-small font-semibold text-lgu-headline mb-gr-xs">
-                        Google Maps URL
-                    </label>
-                    <input type="url" id="google_maps_url" name="google_maps_url" value="{{ old('google_maps_url', $facility->google_maps_url) }}"
-                        placeholder="https://maps.google.com/..."
-                        class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-lgu-highlight focus:border-transparent @error('google_maps_url') border-red-500 @enderror">
-                    @error('google_maps_url')
-                        <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
-                    @enderror
-                </div>
-            </div>
+                            </div>
         </div>
 
         {{-- Pricing Information --}}
@@ -187,117 +151,60 @@
             </h2>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-gr-md">
-                {{-- Base Rate --}}
-                <div>
-                    <label for="base_rate" class="block text-small font-semibold text-lgu-headline mb-gr-xs">
-                        Base Rate (3 hours) <span class="text-red-500">*</span>
-                    </label>
-                    <div class="relative">
-                        <span class="absolute left-3 top-1/2 -translate-y-1/2 text-lgu-paragraph font-semibold">₱</span>
-                        <input type="number" id="base_rate" name="base_rate" value="{{ old('base_rate', $facility->base_rate) }}" min="0" step="0.01" required
-                            class="w-full pl-8 pr-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-lgu-highlight focus:border-transparent @error('base_rate') border-red-500 @enderror">
-                    </div>
-                    @error('base_rate')
-                        <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
-                    @enderror
-                </div>
-
-                {{-- Extension Rate --}}
-                <div>
-                    <label for="extension_rate" class="block text-small font-semibold text-lgu-headline mb-gr-xs">
-                        Extension Rate (per 2 hours) <span class="text-red-500">*</span>
-                    </label>
-                    <div class="relative">
-                        <span class="absolute left-3 top-1/2 -translate-y-1/2 text-lgu-paragraph font-semibold">₱</span>
-                        <input type="number" id="extension_rate" name="extension_rate" value="{{ old('extension_rate', $facility->extension_rate) }}" min="0" step="0.01" required
-                            class="w-full pl-8 pr-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-lgu-highlight focus:border-transparent @error('extension_rate') border-red-500 @enderror">
-                    </div>
-                    @error('extension_rate')
-                        <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
-                    @enderror
-                </div>
-
                 {{-- Per Person Rate --}}
                 <div>
                     <label for="per_person_rate" class="block text-small font-semibold text-lgu-headline mb-gr-xs">
-                        Per Person Rate (Optional)
+                        Per Person Rate <span class="text-red-500">*</span>
                     </label>
                     <div class="relative">
                         <span class="absolute left-3 top-1/2 -translate-y-1/2 text-lgu-paragraph font-semibold">₱</span>
-                        <input type="number" id="per_person_rate" name="per_person_rate" value="{{ old('per_person_rate', $facility->per_person_rate) }}" min="0" step="0.01"
+                        <input type="number" id="per_person_rate" name="per_person_rate" value="{{ old('per_person_rate', $facility->per_person_rate) }}" min="0" step="0.01" required
                             class="w-full pl-8 pr-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-lgu-highlight focus:border-transparent @error('per_person_rate') border-red-500 @enderror">
                     </div>
                     @error('per_person_rate')
                         <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
                     @enderror
                 </div>
-
-                {{-- Minimum Hours --}}
-                <div>
-                    <label for="minimum_hours" class="block text-small font-semibold text-lgu-headline mb-gr-xs">
-                        Minimum Hours <span class="text-red-500">*</span>
-                    </label>
-                    <input type="number" id="minimum_hours" name="minimum_hours" value="{{ old('minimum_hours', $facility->minimum_hours) }}" min="1" max="24" required
-                        class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-lgu-highlight focus:border-transparent @error('minimum_hours') border-red-500 @enderror">
-                    @error('minimum_hours')
-                        <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
-                    @enderror
-                </div>
             </div>
         </div>
 
-        {{-- Amenities --}}
+        
+        {{-- Photos Management --}}
         <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-gr-lg mb-gr-md">
             <h2 class="text-h3 font-bold text-lgu-headline mb-gr-md flex items-center">
-                <i data-lucide="sparkles" class="w-6 h-6 mr-gr-sm"></i>
-                Amenities
-            </h2>
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-gr-sm">
-                @foreach($amenitiesList as $key => $label)
-                    <label class="flex items-center p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors duration-200">
-                        <input type="checkbox" name="amenities[]" value="{{ $key }}" 
-                            {{ in_array($key, old('amenities', $facility->amenities ?? [])) ? 'checked' : '' }}
-                            class="rounded border-gray-300 text-lgu-button focus:ring-lgu-highlight">
-                        <span class="ml-2 text-small text-lgu-paragraph">{{ $label }}</span>
-                    </label>
-                @endforeach
-            </div>
-        </div>
-
-        {{-- Rules & Photo --}}
-        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-gr-lg mb-gr-md">
-            <h2 class="text-h3 font-bold text-lgu-headline mb-gr-md flex items-center">
-                <i data-lucide="file-text" class="w-6 h-6 mr-gr-sm"></i>
-                Additional Information
+                <i data-lucide="images" class="w-6 h-6 mr-gr-sm"></i>
+                Facility Photos
             </h2>
 
             <div class="space-y-gr-md">
-                {{-- Rules --}}
+                
+                {{-- Primary Photo --}}
                 <div>
-                    <label for="rules" class="block text-small font-semibold text-lgu-headline mb-gr-xs">
-                        Facility Rules
-                    </label>
-                    <textarea id="rules" name="rules" rows="4"
-                        class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-lgu-highlight focus:border-transparent @error('rules') border-red-500 @enderror">{{ old('rules', $facility->rules) }}</textarea>
-                    @error('rules')
-                        <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
-                    @enderror
+                    <label class="block text-small font-semibold text-lgu-headline mb-gr-xs">Primary Photo</label>
+                    @if($facility->image_path)
+                        <div class="flex items-start gap-3" id="primary-photo-container">
+                            <div class="relative inline-block">
+                                <img src="{{ Storage::url($facility->image_path) }}" alt="{{ $facility->name }}" 
+                                    class="w-48 h-32 object-cover rounded-lg border border-gray-200 cursor-pointer hover:opacity-90 transition"
+                                    onclick="showFullImage('{{ Storage::url($facility->image_path) }}', '{{ $facility->name }}')">
+                                <span class="absolute top-2 left-2 bg-lgu-green text-white text-xs px-2 py-1 rounded">Primary</span>
+                            </div>
+                            <button type="button" 
+                                onclick="deletePrimaryImage({{ $facility->facility_id }})"
+                                class="flex items-center gap-1 px-3 py-2 bg-red-500 hover:bg-red-600 text-white text-sm rounded-lg transition">
+                                <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                Remove
+                            </button>
+                        </div>
+                    @else
+                        <p class="text-gray-500 text-sm">No primary photo uploaded</p>
+                    @endif
                 </div>
 
-                {{-- Current Photo --}}
-                @if($facility->image_path)
-                    <div>
-                        <label class="block text-small font-semibold text-lgu-headline mb-gr-xs">Current Photo</label>
-                        <img src="{{ Storage::url($facility->image_path) }}" alt="{{ $facility->name }}" 
-                            class="w-48 h-32 object-cover rounded-lg border border-gray-200">
-                    </div>
-                @endif
-
-                {{-- New Facility Photo --}}
+                {{-- Replace Primary Photo --}}
                 <div>
                     <label for="image_path" class="block text-small font-semibold text-lgu-headline mb-gr-xs">
-                        {{ $facility->image_path ? 'Replace Photo' : 'Upload Photo' }}
+                        {{ $facility->image_path ? 'Replace Primary Photo' : 'Upload Primary Photo' }}
                     </label>
                     <input type="file" id="image_path" name="image_path" accept="image/jpeg,image/png,image/jpg"
                         class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-lgu-highlight focus:border-transparent @error('image_path') border-red-500 @enderror">
@@ -305,6 +212,41 @@
                     @error('image_path')
                         <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
                     @enderror
+                </div>
+
+                {{-- Additional Photos --}}
+                <div class="border-t pt-gr-md">
+                    <label class="block text-small font-semibold text-lgu-headline mb-gr-xs">Additional Photos</label>
+                    
+                    @if($facilityImages->count() > 0)
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+                            @foreach($facilityImages as $image)
+                                <div class="relative group" id="image-{{ $image->id }}">
+                                    <img src="{{ Storage::url($image->image_path) }}" alt="Facility image" 
+                                        class="w-full h-24 object-cover rounded-lg border border-gray-200 cursor-pointer hover:opacity-90 transition"
+                                        onclick="showFullImage('{{ Storage::url($image->image_path) }}', 'Facility Image')">
+                                    <button type="button" 
+                                        onclick="deleteImage({{ $facility->facility_id }}, {{ $image->id }})"
+                                        class="absolute top-1 right-1 bg-red-500 hover:bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                                        title="Remove image">
+                                        <i data-lucide="x" class="w-4 h-4"></i>
+                                    </button>
+                                </div>
+                            @endforeach
+                        </div>
+                    @else
+                        <p class="text-gray-500 text-sm mb-4">No additional photos uploaded</p>
+                    @endif
+
+                    {{-- Upload Additional Photos --}}
+                    <div>
+                        <label for="additional_images" class="block text-small font-semibold text-lgu-headline mb-gr-xs">
+                            Add More Photos
+                        </label>
+                        <input type="file" id="additional_images" name="additional_images[]" accept="image/jpeg,image/png,image/jpg" multiple
+                            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-lgu-highlight focus:border-transparent">
+                        <p class="mt-1 text-xs text-gray-500">You can select multiple images. Accepted formats: JPG, JPEG, PNG. Max size: 2MB each</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -327,6 +269,131 @@
 // Initialize Lucide icons
 if (typeof lucide !== 'undefined') {
     lucide.createIcons();
+}
+
+// Show full image in SweetAlert2 modal
+function showFullImage(imageUrl, title) {
+    Swal.fire({
+        title: title,
+        imageUrl: imageUrl,
+        imageAlt: title,
+        showCloseButton: true,
+        showConfirmButton: false,
+        width: 'auto',
+        customClass: {
+            image: 'max-h-[80vh] object-contain rounded-lg'
+        }
+    });
+}
+
+// Delete facility image
+function deleteImage(facilityId, imageId) {
+    Swal.fire({
+        title: 'Remove Image?',
+        text: 'This image will be permanently deleted.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#dc2626',
+        cancelButtonColor: '#6b7280',
+        confirmButtonText: 'Yes, remove it',
+        cancelButtonText: 'Cancel'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            fetch(`/admin/facilities/${facilityId}/images/${imageId}`, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'Accept': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Remove the image element from DOM
+                    const imageElement = document.getElementById(`image-${imageId}`);
+                    if (imageElement) {
+                        imageElement.remove();
+                    }
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Deleted!',
+                        text: 'Image has been removed.',
+                        timer: 1500,
+                        showConfirmButton: false
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: data.message || 'Failed to delete image.'
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Failed to delete image. Please try again.'
+                });
+            });
+        }
+    });
+}
+
+// Delete primary image
+function deletePrimaryImage(facilityId) {
+    Swal.fire({
+        title: 'Remove Primary Photo?',
+        text: 'This photo will be permanently deleted.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#dc2626',
+        cancelButtonColor: '#6b7280',
+        confirmButtonText: 'Yes, remove it',
+        cancelButtonText: 'Cancel'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            fetch(`/admin/facilities/${facilityId}/primary-image`, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'Accept': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Replace photo container with "no photo" message
+                    const container = document.getElementById('primary-photo-container');
+                    if (container) {
+                        container.outerHTML = '<p class="text-gray-500 text-sm">No primary photo uploaded</p>';
+                    }
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Deleted!',
+                        text: 'Primary photo has been removed.',
+                        timer: 1500,
+                        showConfirmButton: false
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: data.message || 'Failed to delete photo.'
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Failed to delete photo. Please try again.'
+                });
+            });
+        }
+    });
 }
 </script>
 @endpush

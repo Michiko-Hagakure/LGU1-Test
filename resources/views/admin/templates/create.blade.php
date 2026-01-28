@@ -167,7 +167,7 @@ function copyVariable(varName) {
         // Show temporary success message
         const btn = event.target;
         const originalText = btn.textContent;
-        btn.textContent = '✓ Copied!';
+        btn.textContent = 'Copied!';
         btn.classList.add('bg-green-500', 'text-white');
         setTimeout(() => {
             btn.textContent = originalText;

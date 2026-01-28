@@ -1,5 +1,9 @@
 @extends('layouts.admin')
 
+@section('title', 'Audit Trail')
+@section('page-title', 'Audit Trail')
+@section('page-subtitle', 'Track system activities and user actions')
+
 @section('page-content')
 <div class="p-6">
     <!-- Header -->
