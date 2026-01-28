@@ -46,7 +46,7 @@
     {{-- Tabs for Active/Archived --}}
     <div class="bg-white rounded-xl shadow-sm border border-gray-200 mb-gr-lg">
         <div style="display: flex;">
-            <a href="{{ URL::signedRoute('admin.equipment.index', request()->except('show_deleted')) }}" 
+            <a href="{{ URL::signedRoute('admin.equipment.index', request()->except(['show_deleted', 'signature', 'expires'])) }}" 
                 style="flex: 1; display: flex; align-items: center; justify-content: center; padding: 1rem 1.5rem; font-weight: 600; transition: all 0.2s; border-bottom: 4px solid {{ !$showDeleted ? '#00473e' : 'transparent' }}; background-color: {{ !$showDeleted ? '#00473e' : '#f9fafb' }}; color: {{ !$showDeleted ? 'white' : '#4b5563' }};">
                 <i data-lucide="package" style="width: 20px; height: 20px; margin-right: 0.5rem;"></i>
                 <span>Active Equipment</span>
@@ -54,7 +54,7 @@
                     {{ $activeEquipmentCount ?? 0 }}
                 </span>
             </a>
-            <a href="{{ URL::signedRoute('admin.equipment.index', array_merge(request()->except('show_deleted'), ['show_deleted' => '1'])) }}" 
+            <a href="{{ URL::signedRoute('admin.equipment.index', array_merge(request()->except(['show_deleted', 'signature', 'expires']), ['show_deleted' => '1'])) }}" 
                 style="flex: 1; display: flex; align-items: center; justify-content: center; padding: 1rem 1.5rem; font-weight: 600; transition: all 0.2s; border-bottom: 4px solid {{ $showDeleted ? '#f59e0b' : 'transparent' }}; background-color: {{ $showDeleted ? '#f59e0b' : '#f9fafb' }}; color: {{ $showDeleted ? 'white' : '#4b5563' }};">
                 <i data-lucide="archive" style="width: 20px; height: 20px; margin-right: 0.5rem;"></i>
                 <span>Archived Equipment</span>
