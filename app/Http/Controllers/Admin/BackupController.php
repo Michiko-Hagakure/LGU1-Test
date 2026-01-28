@@ -50,9 +50,15 @@ class BackupController extends Controller
     public function create(Request $request)
     {
         try {
-            // Use shell_exec with cmd.exe to run artisan in proper Windows environment
+            // Use shell_exec to run artisan backup command
             $artisanPath = base_path('artisan');
-            $command = 'cd /d "' . base_path() . '" && php "' . $artisanPath . '" backup:run --only-db 2>&1';
+            
+            // Use cross-platform command syntax
+            if (PHP_OS_FAMILY === 'Windows') {
+                $command = 'cd /d "' . base_path() . '" && php "' . $artisanPath . '" backup:run --only-db 2>&1';
+            } else {
+                $command = 'cd "' . base_path() . '" && php "' . $artisanPath . '" backup:run --only-db 2>&1';
+            }
             
             $output = shell_exec($command);
             
