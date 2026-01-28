@@ -208,7 +208,6 @@ class CommunityMaintenanceController extends Controller
             ->withHeaders([
                 'Content-Type' => 'application/json',
                 'Accept' => 'application/json',
-                'Origin' => config('app.url', 'https://qcitizen-facilities.local-government-unit-1-ph.com'),
             ])
             ->post($url, $payload);
 
@@ -238,7 +237,6 @@ class CommunityMaintenanceController extends Controller
         $response = Http::timeout($timeout)
             ->withHeaders([
                 'Accept' => 'application/json',
-                'Origin' => config('app.url', 'https://qcitizen-facilities.local-government-unit-1-ph.com'),
             ])
             ->get($url, ['resident_name' => $residentName]);
 
