@@ -206,8 +206,9 @@ class CommunityMaintenanceController extends Controller
 
         $url = rtrim($baseUrl, '/') . '/api/integration/RequestFacilityMaintenance.php';
 
-        // Use native curl since Laravel HTTP client fails but curl works
+        // Use shell_exec curl since PHP curl fails but CLI curl works
         $jsonPayload = json_encode($payload);
+        $escapedPayload = escapeshellarg($jsonPayload);
         
         Log::info('Community CIM request starting', [
             'url' => $url,
@@ -215,49 +216,26 @@ class CommunityMaintenanceController extends Controller
             'payload_preview' => substr($jsonPayload, 0, 200),
         ]);
 
-        $ch = curl_init($url);
-        curl_setopt_array($ch, [
-            CURLOPT_POST => true,
-            CURLOPT_POSTFIELDS => $jsonPayload,
-            CURLOPT_HTTPHEADER => [
-                'Content-Type: application/json',
-                'User-Agent: curl/7.68.0',
-            ],
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_TIMEOUT => $timeout,
-            CURLOPT_SSL_VERIFYPEER => false,
-            CURLOPT_VERBOSE => false,
-        ]);
-
-        $responseBody = curl_exec($ch);
-        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        $curlError = curl_error($ch);
-        $curlErrno = curl_errno($ch);
-        $curlInfo = curl_getinfo($ch);
-        curl_close($ch);
+        $curlCommand = "curl -s -X POST {$url} -H 'Content-Type: application/json' -d {$escapedPayload} 2>&1";
+        $responseBody = shell_exec($curlCommand);
         
         Log::info('Community CIM response received', [
-            'http_code' => $httpCode,
-            'curl_errno' => $curlErrno,
-            'curl_error' => $curlError,
-            'effective_url' => $curlInfo['url'] ?? null,
-            'response_preview' => substr($responseBody, 0, 500),
+            'response_preview' => substr($responseBody ?? '', 0, 500),
         ]);
-
-        if ($curlError) {
-            Log::error('Community CIM curl error', ['error' => $curlError]);
-            return ['success' => false, 'message' => 'Connection error: ' . $curlError];
+        
+        if (empty($responseBody)) {
+            Log::error('Community CIM curl error', ['error' => 'Empty response']);
+            return ['success' => false, 'message' => 'Connection error: Empty response'];
         }
 
         $responseData = json_decode($responseBody, true) ?? [];
 
-        if ($httpCode >= 200 && $httpCode < 300 && ($responseData['success'] ?? false)) {
+        if ($responseData['success'] ?? false) {
             return $responseData;
         }
 
         Log::warning('Community CIM request failed', [
             'payload_mode' => $payloadMode,
-            'status' => $httpCode,
             'body' => $responseBody,
             'payload' => [
                 'resident_name' => $payload['resident_name'] ?? null,
@@ -272,7 +250,7 @@ class CommunityMaintenanceController extends Controller
 
         return [
             'success' => false,
-            'message' => $responseData['message'] ?? 'Request failed with status: ' . $httpCode,
+            'message' => $responseData['message'] ?? 'Request failed',
         ];
     }
 
