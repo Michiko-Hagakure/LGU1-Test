@@ -1969,6 +1969,16 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/calendar', [\App\Http\Controllers\Admin\CalendarController::class, 'index'])->name('calendar');
     Route::get('/calendar/events', [\App\Http\Controllers\Admin\CalendarController::class, 'getEvents'])->name('calendar.events');
 
+    // City Events Management
+    Route::get('/city-events', [\App\Http\Controllers\Admin\CityEventController::class, 'index'])->name('city-events.index');
+    Route::get('/city-events/create', [\App\Http\Controllers\Admin\CityEventController::class, 'create'])->name('city-events.create');
+    Route::post('/city-events', [\App\Http\Controllers\Admin\CityEventController::class, 'store'])->name('city-events.store');
+    Route::post('/city-events/preview-conflicts', [\App\Http\Controllers\Admin\CityEventController::class, 'previewConflicts'])->name('city-events.preview-conflicts');
+    Route::get('/city-events/{cityEvent}', [\App\Http\Controllers\Admin\CityEventController::class, 'show'])->name('city-events.show');
+    Route::get('/city-events/{cityEvent}/edit', [\App\Http\Controllers\Admin\CityEventController::class, 'edit'])->name('city-events.edit');
+    Route::put('/city-events/{cityEvent}', [\App\Http\Controllers\Admin\CityEventController::class, 'update'])->name('city-events.update');
+    Route::delete('/city-events/{cityEvent}', [\App\Http\Controllers\Admin\CityEventController::class, 'destroy'])->name('city-events.destroy');
+
     // Profile Settings
     Route::get('/profile', [ProfileSettingsController::class, 'index'])->name('profile');
     Route::post('/profile/update', [ProfileSettingsController::class, 'updateProfile'])->name('profile.update');

@@ -201,15 +201,23 @@
             </div>
         </div>
 
+        <input type="hidden" name="payload_mode" id="payload_mode" value="standard">
+
         {{-- Submit Button --}}
-        <div class="flex justify-end gap-4">
-            <a href="{{ URL::signedRoute('admin.community-maintenance.index') }}" class="px-6 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors font-medium">
-                View My Reports
-            </a>
-            <button type="submit" id="submitBtn" class="px-8 py-3 bg-lgu-highlight text-white rounded-lg hover:bg-lgu-stroke transition-colors font-medium flex items-center gap-2">
-                <i data-lucide="send" class="w-5 h-5"></i>
-                Submit Maintenance Request
-            </button>
+        <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <label class="inline-flex items-center gap-2 text-sm text-gray-600">
+                <input type="checkbox" id="payloadModeToggle" class="rounded border-gray-300 text-lgu-highlight focus:ring-lgu-highlight">
+                Use test payload (omit facility ID/name; shorten location)
+            </label>
+            <div class="flex justify-end gap-4">
+                <a href="{{ URL::signedRoute('admin.community-maintenance.index') }}" class="px-6 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors font-medium">
+                    View My Reports
+                </a>
+                <button type="submit" id="submitBtn" class="px-8 py-3 bg-lgu-highlight text-white rounded-lg hover:bg-lgu-stroke transition-colors font-medium flex items-center gap-2">
+                    <i data-lucide="send" class="w-5 h-5"></i>
+                    Submit Maintenance Request
+                </button>
+            </div>
         </div>
     </form>
 </div>
@@ -283,6 +291,18 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Initialize priority indicator
     updatePriorityIndicator(prioritySelect.value);
+
+    const payloadModeToggle = document.getElementById('payloadModeToggle');
+    const payloadModeInput = document.getElementById('payload_mode');
+
+    if (payloadModeToggle && payloadModeInput) {
+        const syncPayloadMode = () => {
+            payloadModeInput.value = payloadModeToggle.checked ? 'test' : 'standard';
+        };
+
+        payloadModeToggle.addEventListener('change', syncPayloadMode);
+        syncPayloadMode();
+    }
 
     // Form submission
     const form = document.getElementById('maintenanceRequestForm');

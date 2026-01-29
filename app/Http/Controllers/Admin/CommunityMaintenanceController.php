@@ -49,6 +49,8 @@ class CommunityMaintenanceController extends Controller
         ]);
 
         try {
+            $payloadMode = $request->input('payload_mode', 'standard');
+
             // Get facility name for unit_number context
             $facility = DB::connection('facilities_db')
                 ->table('facilities')
@@ -70,8 +72,16 @@ class CommunityMaintenanceController extends Controller
                 'priority' => $validated['priority'] ?? 'medium',
             ];
 
+            if ($payloadMode === 'test') {
+                unset($payload['facility_id'], $payload['facility_name']);
+
+                if (!empty($payload['unit_number'])) {
+                    $payload['unit_number'] = substr($payload['unit_number'], 0, 80);
+                }
+            }
+
             // Send request to Community Infrastructure Maintenance API
-            $response = $this->sendToCommunityCIM($payload);
+            $response = $this->sendToCommunityCIM($payload, $payloadMode);
 
             if ($response['success']) {
                 // Log successful submission
@@ -199,7 +209,7 @@ class CommunityMaintenanceController extends Controller
     /**
      * Send request to Community Infrastructure Maintenance API
      */
-    private function sendToCommunityCIM(array $payload): array
+    private function sendToCommunityCIM(array $payload, string $payloadMode = 'standard'): array
     {
         $baseUrl = config('services.community_cim.base_url');
         $timeout = config('services.community_cim.timeout', 30);
@@ -218,6 +228,7 @@ class CommunityMaintenanceController extends Controller
         }
 
         Log::warning('Community CIM request failed', [
+            'payload_mode' => $payloadMode,
             'status' => $response->status(),
             'body' => $response->body(),
             'payload' => [
