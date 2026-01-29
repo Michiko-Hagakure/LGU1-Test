@@ -60,12 +60,15 @@ class CommunityMaintenanceController extends Controller
             $facilityName = $facility ? $facility->name : 'Unknown Facility';
 
             // Prepare the request payload (only fields specified in API documentation)
+            // Use facility name only for unit_number (CIM API has issues with long addresses)
+            $unitNumber = $facilityName;
+            
             $payload = [
                 'resident_name' => $validated['resident_name'],
                 'contact_info' => $validated['contact_info'],
                 'subject' => $validated['subject'],
                 'description' => $validated['description'],
-                'unit_number' => $validated['unit_number'] ?? $facilityName,
+                'unit_number' => $unitNumber,
                 'report_type' => $validated['report_type'] ?? 'maintenance',
                 'priority' => $validated['priority'] ?? 'medium',
             ];
