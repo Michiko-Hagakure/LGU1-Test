@@ -60,8 +60,8 @@ class CommunityMaintenanceController extends Controller
             $facilityName = $facility ? $facility->name : 'Unknown Facility';
 
             // Prepare the request payload (only fields specified in API documentation)
-            // Use facility name only for unit_number (CIM API has issues with long addresses)
-            $unitNumber = $facilityName;
+            // Use facility name only for unit_number, remove special characters (CIM API has issues)
+            $unitNumber = preg_replace('/[^a-zA-Z0-9\s]/', '', $facilityName);
             
             // Append unique ID to resident name to allow multiple reports per person
             $uniqueResidentName = $validated['resident_name'] . ' #' . time();
