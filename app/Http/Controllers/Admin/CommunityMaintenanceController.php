@@ -206,23 +206,39 @@ class CommunityMaintenanceController extends Controller
 
         $url = rtrim($baseUrl, '/') . '/api/integration/RequestFacilityMaintenance.php';
 
-        $response = Http::timeout($timeout)
-            ->withHeaders([
-                'Content-Type' => 'application/json',
-                'Accept' => 'application/json',
-            ])
-            ->withoutVerifying()
-            ->withBody(json_encode($payload), 'application/json')
-            ->post($url);
+        // Use native curl since Laravel HTTP client fails but curl works
+        $ch = curl_init($url);
+        curl_setopt_array($ch, [
+            CURLOPT_POST => true,
+            CURLOPT_POSTFIELDS => json_encode($payload),
+            CURLOPT_HTTPHEADER => [
+                'Content-Type: application/json',
+            ],
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_TIMEOUT => $timeout,
+            CURLOPT_SSL_VERIFYPEER => false,
+        ]);
 
-        if ($response->successful()) {
-            return $response->json();
+        $responseBody = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $curlError = curl_error($ch);
+        curl_close($ch);
+
+        if ($curlError) {
+            Log::error('Community CIM curl error', ['error' => $curlError]);
+            return ['success' => false, 'message' => 'Connection error: ' . $curlError];
+        }
+
+        $responseData = json_decode($responseBody, true) ?? [];
+
+        if ($httpCode >= 200 && $httpCode < 300 && ($responseData['success'] ?? false)) {
+            return $responseData;
         }
 
         Log::warning('Community CIM request failed', [
             'payload_mode' => $payloadMode,
-            'status' => $response->status(),
-            'body' => $response->body(),
+            'status' => $httpCode,
+            'body' => $responseBody,
             'payload' => [
                 'resident_name' => $payload['resident_name'] ?? null,
                 'subject' => $payload['subject'] ?? null,
@@ -234,12 +250,9 @@ class CommunityMaintenanceController extends Controller
             ],
         ]);
 
-        // Handle error response
-        $errorData = $response->json();
-        
         return [
             'success' => false,
-            'message' => $errorData['message'] ?? 'Request failed with status: ' . $response->status(),
+            'message' => $responseData['message'] ?? 'Request failed with status: ' . $httpCode,
         ];
     }
 
