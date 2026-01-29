@@ -207,22 +207,41 @@ class CommunityMaintenanceController extends Controller
         $url = rtrim($baseUrl, '/') . '/api/integration/RequestFacilityMaintenance.php';
 
         // Use native curl since Laravel HTTP client fails but curl works
+        $jsonPayload = json_encode($payload);
+        
+        Log::info('Community CIM request starting', [
+            'url' => $url,
+            'payload_length' => strlen($jsonPayload),
+            'payload_preview' => substr($jsonPayload, 0, 200),
+        ]);
+
         $ch = curl_init($url);
         curl_setopt_array($ch, [
             CURLOPT_POST => true,
-            CURLOPT_POSTFIELDS => json_encode($payload),
+            CURLOPT_POSTFIELDS => $jsonPayload,
             CURLOPT_HTTPHEADER => [
                 'Content-Type: application/json',
             ],
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_TIMEOUT => $timeout,
             CURLOPT_SSL_VERIFYPEER => false,
+            CURLOPT_VERBOSE => false,
         ]);
 
         $responseBody = curl_exec($ch);
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         $curlError = curl_error($ch);
+        $curlErrno = curl_errno($ch);
+        $curlInfo = curl_getinfo($ch);
         curl_close($ch);
+        
+        Log::info('Community CIM response received', [
+            'http_code' => $httpCode,
+            'curl_errno' => $curlErrno,
+            'curl_error' => $curlError,
+            'effective_url' => $curlInfo['url'] ?? null,
+            'response_preview' => substr($responseBody, 0, 500),
+        ]);
 
         if ($curlError) {
             Log::error('Community CIM curl error', ['error' => $curlError]);
