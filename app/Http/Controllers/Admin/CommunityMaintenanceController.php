@@ -59,6 +59,8 @@ class CommunityMaintenanceController extends Controller
 
             // Prepare the request payload
             $payload = [
+                'facility_id' => $validated['facility_id'],
+                'facility_name' => $facilityName,
                 'resident_name' => $validated['resident_name'],
                 'contact_info' => $validated['contact_info'],
                 'subject' => $validated['subject'],
@@ -214,6 +216,22 @@ class CommunityMaintenanceController extends Controller
         if ($response->successful()) {
             return $response->json();
         }
+
+        Log::warning('Community CIM request failed', [
+            'status' => $response->status(),
+            'body' => $response->body(),
+            'payload' => [
+                'facility_id' => $payload['facility_id'] ?? null,
+                'facility_name' => $payload['facility_name'] ?? null,
+                'resident_name' => $payload['resident_name'] ?? null,
+                'subject' => $payload['subject'] ?? null,
+                'report_type' => $payload['report_type'] ?? null,
+                'priority' => $payload['priority'] ?? null,
+                'unit_number' => $payload['unit_number'] ?? null,
+                'contact_info' => empty($payload['contact_info']) ? null : '[redacted]',
+                'description' => empty($payload['description']) ? null : '[redacted]',
+            ],
+        ]);
 
         // Handle error response
         $errorData = $response->json();
