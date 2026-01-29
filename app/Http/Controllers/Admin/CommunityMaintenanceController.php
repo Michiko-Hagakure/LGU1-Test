@@ -212,7 +212,8 @@ class CommunityMaintenanceController extends Controller
                 'Accept' => 'application/json',
             ])
             ->withoutVerifying()
-            ->post($url, $payload);
+            ->withBody(json_encode($payload), 'application/json')
+            ->post($url);
 
         if ($response->successful()) {
             return $response->json();
