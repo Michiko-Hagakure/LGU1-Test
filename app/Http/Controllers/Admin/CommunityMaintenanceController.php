@@ -210,8 +210,8 @@ class CommunityMaintenanceController extends Controller
             ->withHeaders([
                 'Content-Type' => 'application/json',
                 'Accept' => 'application/json',
-                'Origin' => 'https://qcitizen-facilities.local-government-unit-1-ph.com',
             ])
+            ->withoutVerifying()
             ->post($url, $payload);
 
         if ($response->successful()) {
