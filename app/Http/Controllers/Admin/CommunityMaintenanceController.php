@@ -59,10 +59,8 @@ class CommunityMaintenanceController extends Controller
 
             $facilityName = $facility ? $facility->name : 'Unknown Facility';
 
-            // Prepare the request payload
+            // Prepare the request payload (only fields specified in API documentation)
             $payload = [
-                'facility_id' => $validated['facility_id'],
-                'facility_name' => $facilityName,
                 'resident_name' => $validated['resident_name'],
                 'contact_info' => $validated['contact_info'],
                 'subject' => $validated['subject'],
@@ -71,14 +69,6 @@ class CommunityMaintenanceController extends Controller
                 'report_type' => $validated['report_type'] ?? 'maintenance',
                 'priority' => $validated['priority'] ?? 'medium',
             ];
-
-            if ($payloadMode === 'test') {
-                unset($payload['facility_id'], $payload['facility_name']);
-
-                if (!empty($payload['unit_number'])) {
-                    $payload['unit_number'] = substr($payload['unit_number'], 0, 80);
-                }
-            }
 
             // Send request to Community Infrastructure Maintenance API
             $response = $this->sendToCommunityCIM($payload, $payloadMode);
@@ -232,8 +222,6 @@ class CommunityMaintenanceController extends Controller
             'status' => $response->status(),
             'body' => $response->body(),
             'payload' => [
-                'facility_id' => $payload['facility_id'] ?? null,
-                'facility_name' => $payload['facility_name'] ?? null,
                 'resident_name' => $payload['resident_name'] ?? null,
                 'subject' => $payload['subject'] ?? null,
                 'report_type' => $payload['report_type'] ?? null,
