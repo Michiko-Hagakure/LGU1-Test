@@ -218,6 +218,7 @@ class CommunityMaintenanceController extends Controller
         Log::info('Community CIM request starting', [
             'url' => $url,
             'payload_length' => strlen($jsonPayload),
+            'payload_json' => $jsonPayload,
         ]);
 
         $ch = curl_init($url);
