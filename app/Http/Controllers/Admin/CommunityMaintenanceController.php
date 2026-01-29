@@ -206,26 +206,37 @@ class CommunityMaintenanceController extends Controller
 
         $url = rtrim($baseUrl, '/') . '/api/integration/RequestFacilityMaintenance.php';
 
-        // Use shell_exec curl since PHP curl fails but CLI curl works
+        // Use PHP curl - confirmed working via diagnostic
         $jsonPayload = json_encode($payload);
-        $escapedPayload = escapeshellarg($jsonPayload);
         
         Log::info('Community CIM request starting', [
             'url' => $url,
             'payload_length' => strlen($jsonPayload),
-            'payload_preview' => substr($jsonPayload, 0, 200),
         ]);
 
-        $curlCommand = "curl -s -X POST {$url} -H 'Content-Type: application/json' -d {$escapedPayload} 2>&1";
-        $responseBody = shell_exec($curlCommand);
-        
-        Log::info('Community CIM response received', [
-            'response_preview' => substr($responseBody ?? '', 0, 500),
+        $ch = curl_init($url);
+        curl_setopt_array($ch, [
+            CURLOPT_POST => true,
+            CURLOPT_POSTFIELDS => $jsonPayload,
+            CURLOPT_HTTPHEADER => ['Content-Type: application/json'],
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_TIMEOUT => $timeout,
+            CURLOPT_SSL_VERIFYPEER => false,
         ]);
         
-        if (empty($responseBody)) {
-            Log::error('Community CIM curl error', ['error' => 'Empty response']);
-            return ['success' => false, 'message' => 'Connection error: Empty response'];
+        $responseBody = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $curlError = curl_error($ch);
+        curl_close($ch);
+        
+        Log::info('Community CIM response received', [
+            'http_code' => $httpCode,
+            'response' => $responseBody,
+        ]);
+        
+        if ($curlError) {
+            Log::error('Community CIM curl error', ['error' => $curlError]);
+            return ['success' => false, 'message' => 'Connection error: ' . $curlError];
         }
 
         $responseData = json_decode($responseBody, true) ?? [];
