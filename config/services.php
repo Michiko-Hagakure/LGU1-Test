@@ -50,6 +50,11 @@ return [
         'timeout' => env('COMMUNITY_CIM_TIMEOUT', 30),
     ],
 
+    'urban_planning' => [
+        'base_url' => env('URBAN_PLANNING_URL', 'https://planning.local-government-unit-1-ph.com'),
+        'timeout' => env('URBAN_PLANNING_TIMEOUT', 30),
+    ],
+
     'google' => [
         'client_id' => env('GOOGLE_CLIENT_ID'),
         'client_secret' => env('GOOGLE_CLIENT_SECRET'),

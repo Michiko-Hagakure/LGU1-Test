@@ -2001,6 +2001,11 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/community-maintenance/reports', [\App\Http\Controllers\Admin\CommunityMaintenanceController::class, 'index'])->name('community-maintenance.index');
     Route::post('/community-maintenance/refresh', [\App\Http\Controllers\Admin\CommunityMaintenanceController::class, 'refreshStatuses'])->name('community-maintenance.refresh');
 
+    // Facility Site Selection Integration (Urban Planning)
+    Route::get('/facility-site-selection', [\App\Http\Controllers\Admin\FacilitySiteSelectionController::class, 'index'])->name('facility-site-selection.index');
+    Route::post('/facility-site-selection/search', [\App\Http\Controllers\Admin\FacilitySiteSelectionController::class, 'search'])->name('facility-site-selection.search');
+    Route::post('/facility-site-selection/check-suitability', [\App\Http\Controllers\Admin\FacilitySiteSelectionController::class, 'checkSuitability'])->name('facility-site-selection.check-suitability');
+
 });
 
 // Default Dashboard Route (redirects based on role)
