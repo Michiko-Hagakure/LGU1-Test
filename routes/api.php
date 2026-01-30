@@ -56,3 +56,26 @@ Route::prefix('facility-reservation')->group(function () {
     Route::post('/payment-complete', [\App\Http\Controllers\Api\FacilityReservationApiController::class, 'paymentComplete']);
 });
 
+/*
+|--------------------------------------------------------------------------
+| Housing and Resettlement Management API
+|--------------------------------------------------------------------------
+| API endpoints for Housing and Resettlement Management system to request
+| facilities for beneficiary orientations.
+|
+| Base URL: https://local-government-unit-1-ph.com/api/housing-resettlement
+*/
+Route::prefix('housing-resettlement')->group(function () {
+    // GET - List available facilities
+    Route::get('/facilities', [\App\Http\Controllers\Api\HousingResettlementApiController::class, 'listFacilities']);
+    
+    // GET - Check facility availability for a date/time
+    Route::get('/check-availability', [\App\Http\Controllers\Api\HousingResettlementApiController::class, 'checkAvailability']);
+    
+    // POST - Submit facility request
+    Route::post('/request', [\App\Http\Controllers\Api\HousingResettlementApiController::class, 'submitRequest']);
+    
+    // GET - Check booking status
+    Route::get('/status/{reference}', [\App\Http\Controllers\Api\HousingResettlementApiController::class, 'checkStatus']);
+});
+
