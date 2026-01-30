@@ -79,3 +79,61 @@ Route::prefix('housing-resettlement')->group(function () {
     Route::get('/status/{reference}', [\App\Http\Controllers\Api\HousingResettlementApiController::class, 'checkStatus']);
 });
 
+/*
+|--------------------------------------------------------------------------
+| Energy Efficiency and Conservation Management API
+|--------------------------------------------------------------------------
+| API endpoint for Energy Efficiency system to submit fund requests
+| for facility-related expenses (seminars, orientations, etc.)
+|
+| Base URL: https://local-government-unit-1-ph.com/api/energy-efficiency
+*/
+Route::prefix('energy-efficiency')->group(function () {
+    // POST - Receive fund request from Energy Efficiency system
+    Route::post('/receive-funds', function (Request $request) {
+        $newRequest = \App\Models\FundRequest::create([
+            'requester_name' => $request->requester_name,
+            'user_id' => $request->user_id,
+            'amount' => $request->amount,
+            'purpose' => $request->purpose,
+            'logistics' => $request->logistics,
+            'seminar_info' => $request->seminar_info ?? null,
+            'seminar_image' => $request->seminar_image ?? null,
+            'status' => 'pending',
+        ]);
+
+        if ($newRequest) {
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Fund request submitted successfully',
+                'id' => $newRequest->id,
+            ]);
+        }
+
+        return response()->json(['status' => 'error', 'message' => 'Failed to create fund request'], 500);
+    });
+
+    // GET - Check fund request status
+    Route::get('/status/{id}', function ($id) {
+        $request = \App\Models\FundRequest::find($id);
+
+        if (!$request) {
+            return response()->json(['status' => 'error', 'message' => 'Request not found'], 404);
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'data' => [
+                'id' => $request->id,
+                'requester_name' => $request->requester_name,
+                'amount' => $request->amount,
+                'purpose' => $request->purpose,
+                'approval_status' => $request->status,
+                'feedback' => $request->feedback,
+                'created_at' => $request->created_at,
+                'updated_at' => $request->updated_at,
+            ],
+        ]);
+    });
+});
+
