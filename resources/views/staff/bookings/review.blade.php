@@ -62,6 +62,7 @@
         </div>
 
         <!-- Applicant Information -->
+        @if($user)
         <div class="bg-white rounded-xl shadow-sm border border-lgu-stroke p-gr-lg">
             <h2 class="text-h3 font-bold text-lgu-headline mb-gr-md flex items-center">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-user mr-2">
@@ -78,7 +79,7 @@
                 </div>
                 <div>
                     <label class="text-caption font-semibold text-gray-500 uppercase">Email</label>
-                    <p class="text-body font-semibold text-gray-900 mt-1">{{ $user->email }}</p>
+                    <p class="text-body font-semibold text-gray-900 mt-1">{{ $user->email ?? 'N/A' }}</p>
                 </div>
                 <div>
                     <label class="text-caption font-semibold text-gray-500 uppercase">Mobile Number</label>
@@ -116,6 +117,18 @@
                 </div>
             </div>
         </div>
+        @else
+        <div class="bg-white rounded-xl shadow-sm border border-lgu-stroke p-gr-lg">
+            <h2 class="text-h3 font-bold text-lgu-headline mb-gr-md flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-user mr-2">
+                    <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/>
+                    <circle cx="12" cy="7" r="4"/>
+                </svg>
+                Applicant Information
+            </h2>
+            <p class="text-body text-gray-500">Applicant information not available.</p>
+        </div>
+        @endif
 
         <!-- Equipment Requested -->
         @if(count($equipment) > 0)
