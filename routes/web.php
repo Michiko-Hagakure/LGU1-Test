@@ -2031,21 +2031,12 @@ Route::middleware(['auth'])->group(function () {
 | Energy Efficiency Fund Requests Management
 |--------------------------------------------------------------------------
 */
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth', 'signed'])->prefix('admin')->name('admin.')->group(function () {
     // View all fund requests from Energy Efficiency
-    Route::get('/admin/fund-requests', function () {
-        $requests = \App\Models\FundRequest::orderBy('id', 'desc')->get();
-        return view('view-funds', ['requests' => $requests]);
-    })->name('admin.fund-requests');
+    Route::get('/fund-requests', [\App\Http\Controllers\Admin\FundRequestController::class, 'index'])
+        ->name('fund-requests.index');
 
     // Update fund request status (approve/reject)
-    Route::post('/admin/fund-requests/{id}/status', function ($id) {
-        $fundRequest = \App\Models\FundRequest::findOrFail($id);
-        $fundRequest->status = request('status');
-        $fundRequest->feedback = request('feedback');
-        $fundRequest->save();
-
-        return redirect()->route('admin.fund-requests')
-            ->with('success', 'Fund request ' . strtolower(request('status')) . ' successfully.');
-    })->name('update.fund.status');
+    Route::post('/fund-requests/{id}/status', [\App\Http\Controllers\Admin\FundRequestController::class, 'updateStatus'])
+        ->name('fund-requests.update-status');
 });
