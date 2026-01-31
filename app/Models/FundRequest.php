@@ -19,6 +19,7 @@ class FundRequest extends Model {
         'response_data',
         'seminar_info',
         'seminar_image',
+        'seminar_id',
     ];
 
     protected $casts = [

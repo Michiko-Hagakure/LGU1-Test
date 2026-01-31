@@ -55,6 +55,11 @@ return [
         'timeout' => env('URBAN_PLANNING_TIMEOUT', 30),
     ],
 
+    'energy_efficiency' => [
+        'base_url' => env('ENERGY_EFFICIENCY_URL', 'https://energy.local-government-unit-1-ph.com'),
+        'timeout' => env('ENERGY_EFFICIENCY_TIMEOUT', 30),
+    ],
+
     'google' => [
         'client_id' => env('GOOGLE_CLIENT_ID'),
         'client_secret' => env('GOOGLE_CLIENT_SECRET'),
