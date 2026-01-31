@@ -446,17 +446,18 @@ class InfrastructureProjectController extends Controller
                     ]);
                     
                     if ($statusData['success']) {
-                        // Prioritize project_status for execution tracking (done, in_progress, etc.)
-                        $apiStatus = $statusData['data']['project_status'] 
-                            ?? $statusData['data']['status'] 
+                        // Use status field (old API) - shows approved/rejected
+                        // Fall back to overall_status, then project_status for execution tracking
+                        $apiStatus = $statusData['data']['status'] 
                             ?? $statusData['data']['overall_status'] 
+                            ?? $statusData['data']['project_status'] 
                             ?? null;
                         
                         Log::info('Sync status mapping', [
                             'project_id' => $project->external_project_id,
-                            'project_status' => $statusData['data']['project_status'] ?? 'NOT SET',
                             'status' => $statusData['data']['status'] ?? 'NOT SET',
                             'overall_status' => $statusData['data']['overall_status'] ?? 'NOT SET',
+                            'project_status' => $statusData['data']['project_status'] ?? 'NOT SET',
                             'chosen' => $apiStatus,
                         ]);
                         
@@ -633,8 +634,8 @@ class InfrastructureProjectController extends Controller
     private function updateLocalStatus($externalProjectId, array $statusData): void
     {
         try {
-            // Get the API status - prefer project_status for execution tracking
-            $apiStatus = $statusData['project_status'] ?? $statusData['status'] ?? $statusData['overall_status'] ?? null;
+            // Get the API status - use status field (old API) first
+            $apiStatus = $statusData['status'] ?? $statusData['overall_status'] ?? $statusData['project_status'] ?? null;
             
             // Don't update if no valid status returned
             if (!$apiStatus) {
