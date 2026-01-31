@@ -393,9 +393,12 @@ class InfrastructureProjectController extends Controller
 
             $project = $statusData['data'];
             
+            // Use the actual ID from API response, not the PR number we searched with
+            $actualProjectId = $project['id'] ?? $projectId;
+            
             // Insert the project locally
             DB::connection('facilities_db')->table('infrastructure_project_requests')->insert([
-                'external_project_id' => $projectId,
+                'external_project_id' => $actualProjectId,
                 'requesting_office' => $project['requesting_office'] ?? $project['department'] ?? 'Unknown',
                 'contact_person' => $project['contact_person'] ?? $project['requester'] ?? session('name'),
                 'project_title' => $project['project_title'] ?? $project['title'] ?? 'Project #' . $projectId,
