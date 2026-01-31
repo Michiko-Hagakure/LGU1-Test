@@ -611,7 +611,7 @@ class InfrastructureProjectController extends Controller
     {
         try {
             $updateData = [
-                'status' => $this->mapApiStatus($statusData['status'] ?? $statusData['overall_status'] ?? 'submitted'),
+                'status' => $this->mapApiStatus($statusData['project_status'] ?? $statusData['status'] ?? $statusData['overall_status'] ?? 'submitted'),
                 'updated_at' => now(),
             ];
 
@@ -635,19 +635,24 @@ class InfrastructureProjectController extends Controller
     {
         $statusMap = [
             'pending' => 'submitted',
+            'pending_review' => 'submitted',
             'received' => 'received',
             'under_review' => 'under_review',
             'engineer_review' => 'under_review',
             'treasurer_review' => 'under_review',
             'for_review' => 'under_review',
             'approved' => 'approved',
+            'approved_for_bidding' => 'approved',
             'rejected' => 'rejected',
+            'contractor_assigned' => 'in_progress',
+            'project_started' => 'in_progress',
             'in_progress' => 'in_progress',
+            'under_construction' => 'in_progress',
+            'for_implementation' => 'in_progress',
+            'documents_prepared' => 'approved',
+            'project_completed' => 'completed',
             'completed' => 'completed',
             'done' => 'completed',
-            'documents_prepared' => 'approved',
-            'for_implementation' => 'in_progress',
-            'under_construction' => 'in_progress',
             'finished' => 'completed',
         ];
 

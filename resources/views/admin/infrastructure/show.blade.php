@@ -185,6 +185,162 @@
         </div>
         @endif
     </div>
+
+    {{-- Project Status Timeline --}}
+    @if(!empty($apiStatus['status_timeline']))
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
+        <h2 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+            <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+            </svg>
+            Project Progress
+        </h2>
+        
+        <div class="mb-4">
+            <div class="flex justify-between items-center mb-2">
+                <span class="text-sm font-medium text-gray-700">{{ $apiStatus['status_timeline']['current_status'] ?? 'In Progress' }}</span>
+                <span class="text-sm font-bold text-blue-600">{{ $apiStatus['status_timeline']['progress_percentage'] ?? 0 }}%</span>
+            </div>
+            <div class="w-full bg-gray-200 rounded-full h-3">
+                <div class="bg-gradient-to-r from-blue-500 to-green-500 h-3 rounded-full transition-all duration-500" style="width: {{ $apiStatus['status_timeline']['progress_percentage'] ?? 0 }}%"></div>
+            </div>
+        </div>
+
+        @if(!empty($apiStatus['status_timeline']['status_description']))
+        <p class="text-gray-600 text-sm mb-2">{{ $apiStatus['status_timeline']['status_description'] }}</p>
+        @endif
+
+        @if(!empty($apiStatus['status_timeline']['next_milestone']))
+        <p class="text-sm text-gray-500">
+            <span class="font-medium">Next Milestone:</span> {{ $apiStatus['status_timeline']['next_milestone'] }}
+        </p>
+        @endif
+    </div>
+    @endif
+
+    {{-- Workflow Stages --}}
+    @if(!empty($apiStatus['workflow_stages']))
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
+        <h2 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+            <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
+            </svg>
+            Workflow Stages
+        </h2>
+        
+        <div class="relative">
+            @foreach($apiStatus['workflow_stages'] as $index => $stage)
+            <div class="flex items-start gap-4 {{ $loop->last ? '' : 'pb-6' }}">
+                {{-- Timeline line --}}
+                @if(!$loop->last)
+                <div class="absolute left-4 mt-8 w-0.5 h-6 {{ $stage['completed'] ? 'bg-green-300' : 'bg-gray-200' }}"></div>
+                @endif
+                
+                {{-- Stage indicator --}}
+                <div class="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center {{ $stage['completed'] ? 'bg-green-100' : 'bg-gray-100' }}">
+                    @if($stage['completed'])
+                    <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                    </svg>
+                    @else
+                    <div class="w-2 h-2 rounded-full bg-gray-400"></div>
+                    @endif
+                </div>
+                
+                {{-- Stage content --}}
+                <div class="flex-1 min-w-0">
+                    <p class="font-medium {{ $stage['completed'] ? 'text-green-700' : 'text-gray-700' }}">
+                        {{ $stage['label'] ?? ucwords(str_replace('_', ' ', $stage['stage'])) }}
+                    </p>
+                    @if(!empty($stage['description']))
+                    <p class="text-sm text-gray-500">{{ $stage['description'] }}</p>
+                    @endif
+                    @if($stage['completed'] && !empty($stage['completed_at']))
+                    <p class="text-xs text-gray-400 mt-1">
+                        Completed: {{ \Carbon\Carbon::parse($stage['completed_at'])->format('M d, Y h:i A') }}
+                    </p>
+                    @endif
+                </div>
+            </div>
+            @endforeach
+        </div>
+    </div>
+    @endif
+
+    {{-- Bid & Contractor Information --}}
+    @if(!empty($apiStatus['bid_information']))
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
+        <h2 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+            <svg class="w-5 h-5 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+            </svg>
+            Bid & Contractor Information
+        </h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {{-- Bid Details --}}
+            <div class="space-y-3">
+                <h3 class="font-medium text-gray-800">Bid Details</h3>
+                <dl class="space-y-2">
+                    @if(!empty($apiStatus['bid_information']['bid_title']))
+                    <div>
+                        <dt class="text-sm text-gray-500">Bid Title</dt>
+                        <dd class="font-medium text-gray-900">{{ $apiStatus['bid_information']['bid_title'] }}</dd>
+                    </div>
+                    @endif
+                    @if(!empty($apiStatus['bid_information']['bid_status']))
+                    <div>
+                        <dt class="text-sm text-gray-500">Bid Status</dt>
+                        <dd>
+                            @php
+                                $bidStatusColors = [
+                                    'open' => 'bg-blue-100 text-blue-800',
+                                    'closed' => 'bg-gray-100 text-gray-800',
+                                    'accepted' => 'bg-green-100 text-green-800',
+                                    'rejected' => 'bg-red-100 text-red-800',
+                                ];
+                            @endphp
+                            <span class="inline-flex px-2 py-1 text-xs font-medium rounded-full {{ $bidStatusColors[$apiStatus['bid_information']['bid_status']] ?? 'bg-gray-100 text-gray-800' }}">
+                                {{ ucfirst($apiStatus['bid_information']['bid_status']) }}
+                            </span>
+                        </dd>
+                    </div>
+                    @endif
+                    @if(!empty($apiStatus['bid_information']['submission_deadline']))
+                    <div>
+                        <dt class="text-sm text-gray-500">Submission Deadline</dt>
+                        <dd class="font-medium text-gray-900">{{ \Carbon\Carbon::parse($apiStatus['bid_information']['submission_deadline'])->format('M d, Y h:i A') }}</dd>
+                    </div>
+                    @endif
+                </dl>
+            </div>
+
+            {{-- Contractor Details --}}
+            @if(!empty($apiStatus['bid_information']['contractor']))
+            <div class="space-y-3">
+                <h3 class="font-medium text-gray-800">Assigned Contractor</h3>
+                <div class="p-4 bg-green-50 rounded-lg border border-green-200">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center">
+                            <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <p class="font-semibold text-green-800">{{ $apiStatus['bid_information']['contractor']['name'] }}</p>
+                            @if(!empty($apiStatus['bid_information']['contractor']['assigned_at']))
+                            <p class="text-sm text-green-600">
+                                Assigned: {{ \Carbon\Carbon::parse($apiStatus['bid_information']['contractor']['assigned_at'])->format('M d, Y') }}
+                            </p>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @endif
+        </div>
+    </div>
+    @endif
     @endif
 
     {{-- Project Details --}}
