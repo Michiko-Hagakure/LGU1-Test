@@ -70,6 +70,7 @@
                         <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Category</th>
                         <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Priority</th>
                         <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Budget</th>
+                        <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Bid Status</th>
                         <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Status</th>
                         <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Submitted</th>
                         <th class="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">Actions</th>
@@ -102,6 +103,24 @@
                             ₱{{ number_format($request->estimated_budget, 2) }}
                             @else
                             <span class="text-gray-400">—</span>
+                            @endif
+                        </td>
+                        <td class="px-6 py-4">
+                            @php
+                                $bidStatusColors = [
+                                    'open' => 'bg-blue-100 text-blue-800',
+                                    'pending' => 'bg-yellow-100 text-yellow-800',
+                                    'accepted' => 'bg-green-100 text-green-800',
+                                    'rejected' => 'bg-red-100 text-red-800',
+                                    'receipts_submitted' => 'bg-purple-100 text-purple-800',
+                                ];
+                            @endphp
+                            @if($request->bid_status)
+                            <span class="inline-flex px-2 py-1 text-xs font-medium rounded-full {{ $bidStatusColors[$request->bid_status] ?? 'bg-gray-100 text-gray-800' }}">
+                                {{ ucwords(str_replace('_', ' ', $request->bid_status)) }}
+                            </span>
+                            @else
+                            <span class="text-gray-400 text-sm">No bid</span>
                             @endif
                         </td>
                         <td class="px-6 py-4">

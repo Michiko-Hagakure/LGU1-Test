@@ -464,11 +464,15 @@ class InfrastructureProjectController extends Controller
                         if ($apiStatus) {
                             $newStatus = $this->mapApiStatus($apiStatus);
                             
+                            // Get bid status from API response
+                            $bidStatus = $statusData['data']['bid_information']['bid_status'] ?? null;
+                            
                             DB::connection('facilities_db')
                                 ->table('infrastructure_project_requests')
                                 ->where('external_project_id', $project->external_project_id)
                                 ->update([
                                     'status' => $newStatus,
+                                    'bid_status' => $bidStatus,
                                     'updated_at' => now(),
                                 ]);
                             
