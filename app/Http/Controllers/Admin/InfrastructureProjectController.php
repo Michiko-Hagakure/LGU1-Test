@@ -606,19 +606,56 @@ class InfrastructureProjectController extends Controller
 
     /**
      * Update local record with status from API
+     * Only updates if API provides a valid status - never downgrades
      */
     private function updateLocalStatus($externalProjectId, array $statusData): void
     {
         try {
-            $updateData = [
-                'status' => $this->mapApiStatus($statusData['project_status'] ?? $statusData['status'] ?? $statusData['overall_status'] ?? 'submitted'),
-                'updated_at' => now(),
-            ];
+            // Get the API status - prefer project_status for execution tracking
+            $apiStatus = $statusData['project_status'] ?? $statusData['status'] ?? $statusData['overall_status'] ?? null;
+            
+            // Don't update if no valid status returned
+            if (!$apiStatus) {
+                return;
+            }
 
-            DB::connection('facilities_db')
+            $newStatus = $this->mapApiStatus($apiStatus);
+            
+            // Get current local status
+            $currentRecord = DB::connection('facilities_db')
                 ->table('infrastructure_project_requests')
                 ->where('external_project_id', $externalProjectId)
-                ->update($updateData);
+                ->first();
+
+            if (!$currentRecord) {
+                return;
+            }
+
+            // Define status priority (higher = more progress)
+            $statusPriority = [
+                'submitted' => 1,
+                'received' => 2,
+                'under_review' => 3,
+                'approved' => 4,
+                'in_progress' => 5,
+                'completed' => 6,
+                'rejected' => 0,
+            ];
+
+            $currentPriority = $statusPriority[$currentRecord->status] ?? 0;
+            $newPriority = $statusPriority[$newStatus] ?? 0;
+
+            // Only update if new status is same or higher priority (don't downgrade)
+            // Exception: rejected can override anything
+            if ($newStatus === 'rejected' || $newPriority >= $currentPriority) {
+                DB::connection('facilities_db')
+                    ->table('infrastructure_project_requests')
+                    ->where('external_project_id', $externalProjectId)
+                    ->update([
+                        'status' => $newStatus,
+                        'updated_at' => now(),
+                    ]);
+            }
 
         } catch (\Exception $e) {
             Log::warning('Failed to update local project status', [
