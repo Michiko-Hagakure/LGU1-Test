@@ -447,19 +447,32 @@ class InfrastructureProjectController extends Controller
                         $apiStatus = $statusData['data']['project_status'] 
                             ?? $statusData['data']['status'] 
                             ?? $statusData['data']['overall_status'] 
-                            ?? 'submitted';
+                            ?? null;
                         
-                        $newStatus = $this->mapApiStatus($apiStatus);
+                        Log::info('Sync status mapping', [
+                            'project_id' => $project->external_project_id,
+                            'project_status' => $statusData['data']['project_status'] ?? 'NOT SET',
+                            'status' => $statusData['data']['status'] ?? 'NOT SET',
+                            'overall_status' => $statusData['data']['overall_status'] ?? 'NOT SET',
+                            'chosen' => $apiStatus,
+                        ]);
                         
-                        DB::connection('facilities_db')
-                            ->table('infrastructure_project_requests')
-                            ->where('external_project_id', $project->external_project_id)
-                            ->update([
-                                'status' => $newStatus,
-                                'updated_at' => now(),
-                            ]);
-                        
-                        $synced++;
+                        if ($apiStatus) {
+                            $newStatus = $this->mapApiStatus($apiStatus);
+                            
+                            DB::connection('facilities_db')
+                                ->table('infrastructure_project_requests')
+                                ->where('external_project_id', $project->external_project_id)
+                                ->update([
+                                    'status' => $newStatus,
+                                    'updated_at' => now(),
+                                ]);
+                            
+                            $synced++;
+                        } else {
+                            $failed++;
+                            $errors[] = "Project #{$project->external_project_id}: No status in API response";
+                        }
                     } else {
                         $failed++;
                         $errors[] = "Project #{$project->external_project_id}: " . ($statusData['message'] ?? 'Unknown error');
