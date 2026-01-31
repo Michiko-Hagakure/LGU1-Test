@@ -434,6 +434,7 @@ class InfrastructureProjectController extends Controller
 
             $synced = 0;
             $failed = 0;
+            $deleted = [];
             $errors = [];
 
             foreach ($projects as $project) {
@@ -477,8 +478,20 @@ class InfrastructureProjectController extends Controller
                             $errors[] = "Project #{$project->external_project_id}: No status in API response";
                         }
                     } else {
-                        $failed++;
-                        $errors[] = "Project #{$project->external_project_id}: " . ($statusData['message'] ?? 'Unknown error');
+                        // Check if project was deleted from Infrastructure PM
+                        $message = $statusData['message'] ?? 'Unknown error';
+                        if (stripos($message, 'not found') !== false) {
+                            // Delete local record since it no longer exists in Infrastructure PM
+                            DB::connection('facilities_db')
+                                ->table('infrastructure_project_requests')
+                                ->where('external_project_id', $project->external_project_id)
+                                ->delete();
+                            
+                            $deleted[] = $project->external_project_id;
+                        } else {
+                            $failed++;
+                            $errors[] = "Project #{$project->external_project_id}: " . $message;
+                        }
                     }
                 } catch (\Exception $e) {
                     $failed++;
@@ -487,11 +500,14 @@ class InfrastructureProjectController extends Controller
             }
 
             $message = "Synced {$synced} project(s).";
+            if (count($deleted) > 0) {
+                $message .= " Removed " . count($deleted) . " deleted project(s): #" . implode(', #', $deleted);
+            }
             if ($failed > 0) {
                 $message .= " {$failed} failed: " . implode('; ', array_slice($errors, 0, 3));
             }
 
-            return back()->with($synced > 0 ? 'success' : 'error', $message);
+            return back()->with(($synced > 0 || count($deleted) > 0) ? 'success' : 'error', $message);
 
         } catch (\Exception $e) {
             return back()->with('error', 'Failed to sync statuses: ' . $e->getMessage());
