@@ -4,9 +4,16 @@
 @section('page-subtitle', 'Manage fund requests from Energy Efficiency and Conservation Management')
 
 @push('styles')
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 <style>
     .logistics-modal {
         transition: all 0.3s ease;
+    }
+    .swal2-popup {
+        font-family: inherit;
+    }
+    .swal2-html-container {
+        text-align: left !important;
     }
     .status-badge {
         font-size: 0.7rem;
@@ -225,27 +232,221 @@
     @csrf
     <input type="hidden" name="status" id="formStatus">
     <input type="hidden" name="feedback" id="formFeedback">
+    <input type="hidden" name="assigned_facility" id="formAssignedFacility">
+    <input type="hidden" name="scheduled_date" id="formScheduledDate">
+    <input type="hidden" name="scheduled_time" id="formScheduledTime">
+    <input type="hidden" name="approved_amount" id="formApprovedAmount">
+    <input type="hidden" name="admin_notes" id="formAdminNotes">
 </form>
 
 @push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-    function updateStatus(id, status) {
-        const feedbackInput = document.getElementById('feedback_' + id);
-        const feedback = feedbackInput ? feedbackInput.value : '';
-        
-        if(status === 'Rejected' && feedback.trim() === '') {
-            alert("Please provide a reason for rejection in the feedback box.");
-            return;
-        }
+    // Store request data for modal
+    const requestsData = @json($requests->keyBy('id'));
 
-        if(confirm('Are you sure you want to ' + status.toLowerCase() + ' this request?')) {
-            const form = document.getElementById('statusForm');
-            form.action = '{{ url("/admin/fund-requests") }}/' + id + '/status?signature={{ request()->get("signature") }}';
-            document.getElementById('formStatus').value = status;
-            document.getElementById('formFeedback').value = feedback;
-            form.submit();
+    function updateStatus(id, status) {
+        const request = requestsData[id];
+        
+        if (status === 'Approved') {
+            showApprovalModal(id, request);
+        } else {
+            showRejectionModal(id, request);
         }
     }
+
+    function showApprovalModal(id, request) {
+        Swal.fire({
+            title: '<span class="text-green-600">Approve Fund Request</span>',
+            html: `
+                <div class="text-left space-y-4">
+                    <div class="bg-gray-50 p-3 rounded-lg border border-gray-200">
+                        <p class="text-sm text-gray-500">Requester</p>
+                        <p class="font-semibold text-gray-800">${request.requester_name}</p>
+                        <p class="text-sm text-gray-500 mt-2">Requested Amount</p>
+                        <p class="font-bold text-lg text-green-600">₱${parseFloat(request.amount).toLocaleString('en-PH', {minimumFractionDigits: 2})}</p>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">Approved Amount <span class="text-red-500">*</span></label>
+                        <input type="number" id="swal_approved_amount" value="${request.amount}" step="0.01" min="0"
+                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">Assigned Facility/Venue</label>
+                        <input type="text" id="swal_facility" placeholder="e.g., LGU Conference Hall, Training Room A"
+                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">Scheduled Date</label>
+                            <input type="date" id="swal_date" 
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">Scheduled Time</label>
+                            <input type="time" id="swal_time" 
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">Admin Notes / Feedback</label>
+                        <textarea id="swal_notes" rows="3" placeholder="Additional notes or instructions for the requester..."
+                                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 resize-none"></textarea>
+                    </div>
+                </div>
+            `,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#16a34a',
+            cancelButtonColor: '#6b7280',
+            confirmButtonText: '<i class="lucide lucide-check"></i> Approve Request',
+            cancelButtonText: 'Cancel',
+            width: '500px',
+            customClass: {
+                popup: 'rounded-2xl',
+                confirmButton: 'rounded-lg px-6',
+                cancelButton: 'rounded-lg px-6'
+            },
+            preConfirm: () => {
+                const approvedAmount = document.getElementById('swal_approved_amount').value;
+                if (!approvedAmount || parseFloat(approvedAmount) <= 0) {
+                    Swal.showValidationMessage('Please enter a valid approved amount');
+                    return false;
+                }
+                return {
+                    approved_amount: approvedAmount,
+                    facility: document.getElementById('swal_facility').value,
+                    date: document.getElementById('swal_date').value,
+                    time: document.getElementById('swal_time').value,
+                    notes: document.getElementById('swal_notes').value
+                };
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                submitApproval(id, result.value);
+            }
+        });
+    }
+
+    function showRejectionModal(id, request) {
+        Swal.fire({
+            title: '<span class="text-red-600">Reject Fund Request</span>',
+            html: `
+                <div class="text-left space-y-4">
+                    <div class="bg-gray-50 p-3 rounded-lg border border-gray-200">
+                        <p class="text-sm text-gray-500">Requester</p>
+                        <p class="font-semibold text-gray-800">${request.requester_name}</p>
+                        <p class="text-sm text-gray-500 mt-2">Requested Amount</p>
+                        <p class="font-bold text-lg text-gray-600">₱${parseFloat(request.amount).toLocaleString('en-PH', {minimumFractionDigits: 2})}</p>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">Reason for Rejection <span class="text-red-500">*</span></label>
+                        <textarea id="swal_rejection_reason" rows="4" placeholder="Please provide a reason for rejecting this request..."
+                                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 resize-none"></textarea>
+                    </div>
+                </div>
+            `,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#dc2626',
+            cancelButtonColor: '#6b7280',
+            confirmButtonText: '<i class="lucide lucide-x"></i> Reject Request',
+            cancelButtonText: 'Cancel',
+            width: '450px',
+            customClass: {
+                popup: 'rounded-2xl',
+                confirmButton: 'rounded-lg px-6',
+                cancelButton: 'rounded-lg px-6'
+            },
+            preConfirm: () => {
+                const reason = document.getElementById('swal_rejection_reason').value.trim();
+                if (!reason) {
+                    Swal.showValidationMessage('Please provide a reason for rejection');
+                    return false;
+                }
+                return { reason: reason };
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                submitRejection(id, result.value.reason);
+            }
+        });
+    }
+
+    function submitApproval(id, data) {
+        const form = document.getElementById('statusForm');
+        form.action = '{{ url("/admin/fund-requests") }}/' + id + '/status?signature={{ request()->get("signature") }}';
+        document.getElementById('formStatus').value = 'Approved';
+        document.getElementById('formFeedback').value = data.notes;
+        document.getElementById('formAssignedFacility').value = data.facility;
+        document.getElementById('formScheduledDate').value = data.date;
+        document.getElementById('formScheduledTime').value = data.time;
+        document.getElementById('formApprovedAmount').value = data.approved_amount;
+        document.getElementById('formAdminNotes').value = data.notes;
+        
+        // Show loading
+        Swal.fire({
+            title: 'Processing...',
+            text: 'Approving fund request',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+        
+        form.submit();
+    }
+
+    function submitRejection(id, reason) {
+        const form = document.getElementById('statusForm');
+        form.action = '{{ url("/admin/fund-requests") }}/' + id + '/status?signature={{ request()->get("signature") }}';
+        document.getElementById('formStatus').value = 'Rejected';
+        document.getElementById('formFeedback').value = reason;
+        
+        // Show loading
+        Swal.fire({
+            title: 'Processing...',
+            text: 'Rejecting fund request',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+        
+        form.submit();
+    }
+
+    // Show success/error messages with SweetAlert2
+    @if(session('success'))
+    Swal.fire({
+        icon: 'success',
+        title: 'Success!',
+        text: '{{ session("success") }}',
+        confirmButtonColor: '#16a34a',
+        customClass: {
+            popup: 'rounded-2xl',
+            confirmButton: 'rounded-lg px-6'
+        }
+    });
+    @endif
+
+    @if(session('error'))
+    Swal.fire({
+        icon: 'error',
+        title: 'Error!',
+        text: '{{ session("error") }}',
+        confirmButtonColor: '#dc2626',
+        customClass: {
+            popup: 'rounded-2xl',
+            confirmButton: 'rounded-lg px-6'
+        }
+    });
+    @endif
 </script>
 @endpush
 @endsection

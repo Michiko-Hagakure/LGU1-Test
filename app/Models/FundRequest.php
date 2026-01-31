@@ -16,6 +16,7 @@ class FundRequest extends Model {
         'logistics',
         'status',
         'feedback',
+        'response_data',
         'seminar_info',
         'seminar_image',
     ];
