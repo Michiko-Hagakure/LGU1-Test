@@ -402,7 +402,7 @@
 
     function submitApproval(id, data) {
         const form = document.getElementById('statusForm');
-        form.action = '{{ url("/admin/fund-requests") }}/' + id + '/status?signature={{ request()->get("signature") }}';
+        form.action = '{{ url("/admin/fund-requests") }}/' + id + '/status';
         document.getElementById('formStatus').value = 'Approved';
         document.getElementById('formFeedback').value = data.notes;
         document.getElementById('formAssignedFacility').value = data.facility;
@@ -427,7 +427,7 @@
 
     function submitRejection(id, reason) {
         const form = document.getElementById('statusForm');
-        form.action = '{{ url("/admin/fund-requests") }}/' + id + '/status?signature={{ request()->get("signature") }}';
+        form.action = '{{ url("/admin/fund-requests") }}/' + id + '/status';
         document.getElementById('formStatus').value = 'Rejected';
         document.getElementById('formFeedback').value = reason;
         

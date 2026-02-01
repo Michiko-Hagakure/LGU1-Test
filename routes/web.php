@@ -2032,12 +2032,14 @@ Route::middleware(['auth'])->group(function () {
 | Energy Efficiency Fund Requests Management
 |--------------------------------------------------------------------------
 */
+// View all fund requests from Energy Efficiency (signed URL required)
 Route::middleware(['auth', 'signed'])->prefix('admin')->name('admin.')->group(function () {
-    // View all fund requests from Energy Efficiency
     Route::get('/fund-requests', [\App\Http\Controllers\Admin\FundRequestController::class, 'index'])
         ->name('fund-requests.index');
+});
 
-    // Update fund request status (approve/reject)
+// Update fund request status (auth + CSRF protection, no signed URL needed)
+Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
     Route::post('/fund-requests/{id}/status', [\App\Http\Controllers\Admin\FundRequestController::class, 'updateStatus'])
         ->name('fund-requests.update-status');
 });
