@@ -84,15 +84,15 @@
             </a>
         </li>
         <li>
-            <a href="{{ route('admin.pricing.index') }}" class="sidebar-link flex items-center px-gr-sm py-gr-xs text-small font-medium rounded-lg transition-colors duration-200 {{ request()->routeIs('admin.pricing.*') ? 'active' : '' }}">
-                <i data-lucide="tag" class="w-5 h-5 mr-gr-xs flex-shrink-0"></i>
-                <span>Pricing</span>
-            </a>
-        </li>
-        <li>
             <a href="{{ route('admin.reviews.index') }}" class="sidebar-link flex items-center px-gr-sm py-gr-xs text-small font-medium rounded-lg transition-colors duration-200 {{ request()->routeIs('admin.reviews.*') ? 'active' : '' }}">
                 <i data-lucide="star" class="w-5 h-5 mr-gr-xs flex-shrink-0"></i>
                 <span>Reviews Moderation</span>
+            </a>
+        </li>
+        <li>
+            <a href="{{ route('admin.city-events.index') }}" class="sidebar-link flex items-center px-gr-sm py-gr-xs text-small font-medium rounded-lg transition-colors duration-200 {{ request()->routeIs('admin.city-events.*') ? 'active' : '' }}">
+                <i data-lucide="calendar-days" class="w-5 h-5 mr-gr-xs flex-shrink-0"></i>
+                <span>City Events</span>
             </a>
         </li>
     </ul>
@@ -140,12 +140,6 @@
 <div class="px-gr-md mb-gr-lg">
     <h4 class="text-gray-400 text-caption font-semibold uppercase tracking-wider mb-gr-xs">Content Management</h4>
     <ul class="space-y-gr-xs">
-        <li>
-            <a href="{{ route('admin.events.index') }}" class="sidebar-link flex items-center px-gr-sm py-gr-xs text-small font-medium rounded-lg transition-colors duration-200 {{ request()->routeIs('admin.events.*') ? 'active' : '' }}">
-                <i data-lucide="calendar" class="w-5 h-5 mr-gr-xs flex-shrink-0"></i>
-                <span>Events</span>
-            </a>
-        </li>
         <li>
             <a href="{{ route('admin.news.index') }}" class="sidebar-link flex items-center px-gr-sm py-gr-xs text-small font-medium rounded-lg transition-colors duration-200 {{ request()->routeIs('admin.news.*') ? 'active' : '' }}">
                 <i data-lucide="newspaper" class="w-5 h-5 mr-gr-xs flex-shrink-0"></i>

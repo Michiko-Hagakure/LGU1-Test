@@ -481,4 +481,112 @@ class FacilityReservationApiController extends Controller
             'subtotal' => $subtotal,
         ];
     }
+
+    /**
+     * Handle payment completion notification from external systems (e.g., pure PHP portal)
+     */
+    public function paymentComplete(Request $request)
+    {
+        try {
+            $validated = $request->validate([
+                'booking_reference' => 'required|string|max:20',
+                'paymongo_checkout_id' => 'required|string|max:100',
+                'source_system' => 'nullable|string|max:100',
+            ]);
+
+            // Extract booking ID from reference (BK000001 -> 1)
+            $bookingId = (int) preg_replace('/[^0-9]/', '', $validated['booking_reference']);
+
+            $booking = DB::connection('facilities_db')
+                ->table('bookings')
+                ->where('id', $bookingId)
+                ->first();
+
+            if (!$booking) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Booking not found.',
+                ], 404);
+            }
+
+            // Get payment slip
+            $paymentSlip = DB::connection('facilities_db')
+                ->table('payment_slips')
+                ->where('booking_id', $bookingId)
+                ->first();
+
+            if (!$paymentSlip) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Payment slip not found.',
+                ], 404);
+            }
+
+            // Verify payment with Paymongo
+            $paymongoService = new \App\Services\PaymongoService();
+            $isSuccessful = $paymongoService->isPaymentSuccessful($validated['paymongo_checkout_id']);
+
+            if (!$isSuccessful) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Payment not verified.',
+                ], 400);
+            }
+
+            // Get payment details
+            $paymentDetails = $paymongoService->getPaymentDetails($validated['paymongo_checkout_id']);
+
+            // Update payment slip
+            DB::connection('facilities_db')
+                ->table('payment_slips')
+                ->where('id', $paymentSlip->id)
+                ->update([
+                    'status' => 'paid',
+                    'payment_method' => $paymentDetails['payment_method'] ?? 'paymongo',
+                    'payment_channel' => 'paymongo',
+                    'transaction_reference' => $paymentDetails['reference_number'] ?? $validated['paymongo_checkout_id'],
+                    'gateway_reference_number' => $paymentDetails['payment_id'] ?? $validated['paymongo_checkout_id'],
+                    'paymongo_checkout_id' => $validated['paymongo_checkout_id'],
+                    'paid_at' => now(),
+                    'updated_at' => now(),
+                ]);
+
+            // Update booking status to confirmed
+            DB::connection('facilities_db')
+                ->table('bookings')
+                ->where('id', $bookingId)
+                ->update([
+                    'status' => 'confirmed',
+                    'updated_at' => now(),
+                ]);
+
+            Log::info('Payment completed via API', [
+                'booking_reference' => $validated['booking_reference'],
+                'source_system' => $validated['source_system'] ?? 'unknown',
+            ]);
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Payment confirmed successfully.',
+                'data' => [
+                    'booking_reference' => $validated['booking_reference'],
+                    'booking_status' => 'confirmed',
+                    'payment_status' => 'paid',
+                ]
+            ]);
+
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Validation failed.',
+                'errors' => $e->errors(),
+            ], 422);
+        } catch (\Exception $e) {
+            Log::error('Payment complete API error: ' . $e->getMessage());
+            return response()->json([
+                'status' => 'error',
+                'message' => 'An error occurred processing payment.',
+            ], 500);
+        }
+    }
 }

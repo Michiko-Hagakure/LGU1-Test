@@ -255,6 +255,23 @@
     const favoritedIds = @json($favoritedIds);
     const facilitiesData = @json($facilitiesWithCoords);
 
+    // Show full image in SweetAlert2 modal
+    function showFullImage(imageUrl, facilityName) {
+        Swal.fire({
+            title: facilityName,
+            imageUrl: imageUrl,
+            imageAlt: facilityName,
+            showCloseButton: true,
+            showConfirmButton: false,
+            width: 'auto',
+            padding: '1rem',
+            background: '#fff',
+            customClass: {
+                image: 'rounded-lg max-h-[80vh] object-contain'
+            }
+        });
+    }
+
     // Haversine formula to calculate distance between two points
     function calculateDistance(lat1, lon1, lat2, lon2) {
         const R = 6371; // Earth's radius in kilometers
@@ -740,11 +757,18 @@
                 <div class="facility-card bg-white shadow-sm rounded-xl overflow-hidden hover:shadow-md transition-all duration-300 transform hover:-translate-y-1 opacity-0 animate-fade-in" style="animation-delay: {{ $loop->index * 0.1 }}s">
                     <!-- Facility Image -->
                     <div class="relative h-48 bg-gray-200">
+                        @if($facility->image_path)
+                        <img src="{{ asset('storage/' . $facility->image_path) }}" 
+                             alt="{{ $facility->name }}" 
+                             class="w-full h-full object-cover cursor-pointer hover:opacity-90 transition-opacity"
+                             onclick="showFullImage('{{ asset('storage/' . $facility->image_path) }}', '{{ $facility->name }}')">
+                        @else
                         <div class="w-full h-full flex items-center justify-center bg-primary-100">
                             <svg class="w-16 h-16 text-primary-400" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm3 1h6v4H7V5zm6 6H7v2h6v-2z" clip-rule="evenodd"/>
                             </svg>
                         </div>
+                        @endif
                         
                         <!-- Favorite Button -->
                         <button onclick="toggleFavorite({{ $facility->facility_id ?? $facility->getKey() }})" 

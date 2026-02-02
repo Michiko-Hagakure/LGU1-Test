@@ -65,7 +65,7 @@
         @csrf
         <input type="hidden" name="booking_id" value="{{ $booking->id }}">
 
-        <div class="px-6 py-5 border-b border-gray-200 bg-gradient-to-r from-lgu-green to-emerald-600">
+        <div class="px-6 py-5 border-b border-gray-200 bg-lgu-headline">
             <h2 class="text-xl font-bold text-white flex items-center">
                 <i data-lucide="star" class="w-6 h-6 mr-3"></i>
                 Rate Your Experience

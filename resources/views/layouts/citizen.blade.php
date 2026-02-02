@@ -21,8 +21,6 @@
                 </svg>
             </button>
             <div id="citizen-settings-dropdown" class="hidden absolute right-0 mt-3 w-48 bg-white rounded-md shadow-lg py-1 z-50">
-                <a href="#" class="block px-4 py-2 text-sm text-lgu-paragraph hover:bg-lgu-bg">Help & Support</a>
-                <div class="border-t border-gray-200 my-1"></div>
                 <form method="POST" action="{{ route('logout') }}" class="block" id="citizenLogoutForm">
                     @csrf
                     <button type="button" onclick="confirmCitizenLogout()" class="w-full text-left px-4 py-2 text-sm text-lgu-tertiary hover:bg-lgu-bg">Logout</button>
@@ -47,6 +45,28 @@
                 'role' => 'citizen'
             ];
             
+            // Fetch avatar from database (safe - check columns first)
+            $citizenAvatar = null;
+            if (session('user_id')) {
+                $avatarColumns = [];
+                if (\Illuminate\Support\Facades\Schema::connection('auth_db')->hasColumn('users', 'avatar_path')) {
+                    $avatarColumns[] = 'avatar_path';
+                }
+                if (\Illuminate\Support\Facades\Schema::connection('auth_db')->hasColumn('users', 'profile_photo_path')) {
+                    $avatarColumns[] = 'profile_photo_path';
+                }
+                
+                if (!empty($avatarColumns)) {
+                    $userRecord = \Illuminate\Support\Facades\DB::connection('auth_db')
+                        ->table('users')
+                        ->where('id', session('user_id'))
+                        ->first($avatarColumns);
+                    if ($userRecord) {
+                        $citizenAvatar = $userRecord->avatar_path ?? $userRecord->profile_photo_path ?? null;
+                    }
+                }
+            }
+            
             // Generate initials
             $nameParts = explode(' ', $citizen->name);
             $firstName = $nameParts[0] ?? 'C';
@@ -62,8 +82,14 @@
             <button onclick="toggleProfileExpanded()" class="w-full p-gr-md flex items-center justify-between hover:bg-lgu-stroke/30 transition-all duration-300 group">
                 <div class="flex items-center gap-gr-sm">
                     <!-- Small Avatar -->
-                    <div class="w-10 h-10 bg-lgu-highlight rounded-full flex items-center justify-center shadow-md border-2 border-lgu-button transition-transform duration-300 group-hover:scale-110">
-                        <span class="text-lgu-button-text font-bold text-body">{{ $citizenInitials }}</span>
+                    <div class="w-10 h-10 rounded-full overflow-hidden shadow-md border-2 border-lgu-button transition-transform duration-300 group-hover:scale-110">
+                        @if($citizenAvatar)
+                            <img src="{{ asset('storage/' . $citizenAvatar) }}" alt="Avatar" class="w-full h-full object-cover">
+                        @else
+                            <div class="w-full h-full bg-lgu-highlight flex items-center justify-center">
+                                <span class="text-lgu-button-text font-bold text-body">{{ $citizenInitials }}</span>
+                            </div>
+                        @endif
                     </div>
                     
                     <!-- Name and Email Label -->
@@ -84,8 +110,14 @@
         <div id="profile-expanded-details" class="hidden transition-all duration-500 ease-in-out">
             <button onclick="toggleProfileExpanded()" class="w-full px-6 pb-6 pt-4 text-center hover:bg-lgu-stroke/20 transition-all duration-300 rounded-lg">
                 <!-- Large Centered Citizen Avatar -->
-                <div class="w-24 h-24 bg-lgu-highlight rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg border-4 border-lgu-button">
-                    <span class="text-lgu-button-text font-bold text-3xl">{{ $citizenInitials }}</span>
+                <div class="w-24 h-24 rounded-full overflow-hidden mx-auto mb-4 shadow-lg border-4 border-lgu-button">
+                    @if($citizenAvatar)
+                        <img src="{{ asset('storage/' . $citizenAvatar) }}" alt="Avatar" class="w-full h-full object-cover">
+                    @else
+                        <div class="w-full h-full bg-lgu-highlight flex items-center justify-center">
+                            <span class="text-lgu-button-text font-bold text-3xl">{{ $citizenInitials }}</span>
+                        </div>
+                    @endif
                 </div>
                 
                 <!-- Full Profile Information -->

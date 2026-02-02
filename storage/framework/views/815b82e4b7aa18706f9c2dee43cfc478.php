@@ -104,17 +104,9 @@
     <h4 class="text-gray-400 text-caption font-semibold uppercase tracking-wider mb-gr-xs">Communications</h4>
     <ul class="space-y-gr-xs">
         <li>
-            <a href="#" onclick="showComingSoon('Send Notifications'); return false;" class="sidebar-link flex items-center px-gr-sm py-gr-xs text-small font-medium rounded-lg transition-colors duration-200 opacity-60">
+            <a href="<?php echo e(route('staff.notifications.index')); ?>" class="sidebar-link flex items-center px-gr-sm py-gr-xs text-small font-medium rounded-lg transition-colors duration-200 <?php echo e(request()->routeIs('staff.notifications.*') ? 'active' : ''); ?>">
                 <i data-lucide="send" class="w-5 h-5 mr-gr-xs flex-shrink-0"></i>
                 <span>Send Notification</span>
-                <span class="ml-auto text-xs bg-gray-500 text-white px-2 py-0.5 rounded-full">Soon</span>
-            </a>
-        </li>
-        <li>
-            <a href="#" onclick="showComingSoon('Message Templates'); return false;" class="sidebar-link flex items-center px-gr-sm py-gr-xs text-small font-medium rounded-lg transition-colors duration-200 opacity-60">
-                <i data-lucide="mail" class="w-5 h-5 mr-gr-xs flex-shrink-0"></i>
-                <span>Templates</span>
-                <span class="ml-auto text-xs bg-gray-500 text-white px-2 py-0.5 rounded-full">Soon</span>
             </a>
         </li>
     </ul>

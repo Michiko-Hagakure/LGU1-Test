@@ -20,8 +20,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Merriweather:wght@700&display=swap" rel="stylesheet">
     
-    <!-- Vite Assets (Alpine.js) -->
-    <?php echo app('Illuminate\Foundation\Vite')(['resources/js/app.js']); ?>
+    <!-- Vite Assets (CSS + Alpine.js) -->
+    <?php echo app('Illuminate\Foundation\Vite')(['resources/css/app.css', 'resources/js/app.js']); ?>
     
     <style>
         :root {
@@ -92,12 +92,27 @@
         }
         .form-control {
             transition: all 0.3s ease;
-            border: 2px solid #e9ecef;
+            border: 2px solid #e9ecef !important;
+            background-color: white !important;
         }
         .form-control:focus {
-            border-color: var(--highlight);
+            border-color: var(--highlight) !important;
             box-shadow: 0 0 0 0.2rem var(--highlight)33, 0 0 20px rgba(250, 174, 43, 0.1);
             transform: translateY(-2px);
+            background-color: white !important;
+        }
+        /* Validation styles for auth forms */
+        form.was-validated .form-control:invalid {
+            border-color: #ef4444 !important;
+            background-color: #fef2f2 !important;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23ef4444'%3e%3ccircle cx='12' cy='12' r='10'/%3e%3cpath fill='white' d='M12 14a1 1 0 0 1-1-1V8a1 1 0 1 1 2 0v5a1 1 0 0 1-1 1zm0 4a1 1 0 1 1 0-2 1 1 0 0 1 0 2z'/%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 20px 20px;
+            padding-right: 40px;
+        }
+        form.was-validated .form-control:valid {
+            border-color: #22c55e !important;
         }
         .input-group-text {
             background: var(--bg-color);
@@ -105,16 +120,22 @@
             border: none;
         }
         .btn-primary {
-            background: linear-gradient(135deg, var(--button) 0%, var(--highlight) 100%);
-            color: var(--button-text);
-            border: none;
-            font-weight: 700;
+            background: linear-gradient(135deg, var(--button) 0%, var(--highlight) 100%) !important;
+            color: var(--button-text) !important;
+            border: none !important;
+            font-weight: 700 !important;
             letter-spacing: 0.5px;
-            box-shadow: 0 4px 15px rgba(250, 174, 43, 0.3);
+            box-shadow: 0 4px 15px rgba(250, 174, 43, 0.3) !important;
             transition: all 0.3s ease;
             font-family: 'Merriweather', serif;
             position: relative;
             overflow: hidden;
+            border-radius: 0.375rem !important;
+            padding: 0.75rem 1.5rem !important;
+            text-align: center !important;
+            display: flex !important;
+            justify-content: center !important;
+            align-items: center !important;
         }
         .btn-primary::before {
             content: '';

@@ -124,52 +124,11 @@ class FacilityController extends Controller
         // Get cities for dropdown
         $cities = DB::connection('facilities_db')
             ->table('lgu_cities')
-            ->where('is_active', 1)
+            ->where('status', 'active')
             ->orderBy('city_name')
             ->get();
 
-        // Facility types
-        $facilityTypes = [
-            'gymnasium' => 'Gymnasium',
-            'convention_center' => 'Convention Center',
-            'function_hall' => 'Function Hall',
-            'sports_complex' => 'Sports Complex',
-            'covered_court' => 'Covered Court',
-            'auditorium' => 'Auditorium',
-            'meeting_room' => 'Meeting Room',
-            'other' => 'Other'
-        ];
-
-        // Status options
-        $statusOptions = [
-            'active' => 'Active',
-            'inactive' => 'Inactive',
-            'under_maintenance' => 'Under Maintenance',
-            'coming_soon' => 'Coming Soon'
-        ];
-
-        // Amenities list
-        $amenitiesList = [
-            'air_conditioning' => 'Air Conditioning',
-            'sound_system' => 'Sound System',
-            'projector' => 'Projector & Screen',
-            'wifi' => 'WiFi Internet',
-            'parking' => 'Parking Space',
-            'kitchen' => 'Kitchen Facilities',
-            'restrooms' => 'Restrooms',
-            'stage' => 'Stage/Platform',
-            'tables_chairs' => 'Tables & Chairs',
-            'security' => 'Security Service',
-            'generator' => 'Backup Generator',
-            'elevator' => 'Elevator Access'
-        ];
-
-        return view('admin.facilities.create', compact(
-            'cities',
-            'facilityTypes',
-            'statusOptions',
-            'amenitiesList'
-        ));
+        return view('admin.facilities.create', compact('cities'));
     }
 
     /**
@@ -178,22 +137,13 @@ class FacilityController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'city_id' => 'required|exists:facilities_db.lgu_cities,city_id',
+            'city_id' => 'required|integer',
             'name' => 'required|string|max:255',
-            'type' => 'required|in:gymnasium,convention_center,function_hall,sports_complex,covered_court,auditorium,meeting_room,other',
             'description' => 'nullable|string',
             'capacity' => 'required|integer|min:1',
-            'address' => 'required|string',
-            'google_maps_url' => 'nullable|url',
-            'base_rate' => 'required|numeric|min:0',
-            'per_person_rate' => 'nullable|numeric|min:0',
-            'minimum_hours' => 'required|integer|min:1|max:24',
-            'extension_rate' => 'required|numeric|min:0',
-            'amenities' => 'nullable|array',
-            'status' => 'required|in:active,inactive,under_maintenance,coming_soon',
-            'is_available' => 'nullable|boolean',
-            'operating_hours' => 'nullable|array',
-            'rules' => 'nullable|string',
+            'address' => 'required|string|max:255',
+            'per_person_rate' => 'required|numeric|min:0',
+            'is_available' => 'nullable|in:0,1',
             'image_path' => 'nullable|image|mimes:jpeg,png,jpg|max:2048'
         ]);
 
@@ -212,22 +162,13 @@ class FacilityController extends Controller
 
             // Insert facility
             $facilityId = DB::connection('facilities_db')->table('facilities')->insertGetId([
-                'city_id' => $request->city_id,
+                'lgu_city_id' => $request->city_id,
                 'name' => $request->name,
-                'type' => $request->type,
                 'description' => $request->description,
                 'capacity' => $request->capacity,
                 'address' => $request->address,
-                'google_maps_url' => $request->google_maps_url,
-                'base_rate' => $request->base_rate,
-                'per_person_rate' => $request->per_person_rate ?? 0,
-                'minimum_hours' => $request->minimum_hours,
-                'extension_rate' => $request->extension_rate,
-                'amenities' => json_encode($request->amenities ?? []),
-                'status' => $request->status,
-                'is_available' => $request->is_available ?? ($request->status === 'active' ? 1 : 0),
-                'operating_hours' => json_encode($request->operating_hours ?? []),
-                'rules' => $request->rules,
+                'per_person_rate' => $request->per_person_rate,
+                'is_available' => $request->is_available ?? 1,
                 'image_path' => $imagePath,
                 'created_at' => now(),
                 'updated_at' => now()
@@ -263,7 +204,7 @@ class FacilityController extends Controller
     {
         $facility = DB::connection('facilities_db')
             ->table('facilities')
-            ->leftJoin('lgu_cities', 'facilities.city_id', '=', 'lgu_cities.city_id')
+            ->leftJoin('lgu_cities', 'facilities.lgu_city_id', '=', 'lgu_cities.id')
             ->select('facilities.*', 'lgu_cities.city_name')
             ->where('facilities.facility_id', $id)
             ->first();
@@ -273,59 +214,24 @@ class FacilityController extends Controller
                 ->with('error', 'Facility not found.');
         }
 
-        // Decode JSON fields
-        $facility->amenities = json_decode($facility->amenities ?? '[]', true);
-        $facility->operating_hours = json_decode($facility->operating_hours ?? '[]', true);
-
         // Get cities for dropdown
         $cities = DB::connection('facilities_db')
             ->table('lgu_cities')
-            ->where('is_active', 1)
+            ->where('status', 'active')
             ->orderBy('city_name')
             ->get();
 
-        // Facility types
-        $facilityTypes = [
-            'gymnasium' => 'Gymnasium',
-            'convention_center' => 'Convention Center',
-            'function_hall' => 'Function Hall',
-            'sports_complex' => 'Sports Complex',
-            'covered_court' => 'Covered Court',
-            'auditorium' => 'Auditorium',
-            'meeting_room' => 'Meeting Room',
-            'other' => 'Other'
-        ];
-
-        // Status options
-        $statusOptions = [
-            'active' => 'Active',
-            'inactive' => 'Inactive',
-            'under_maintenance' => 'Under Maintenance',
-            'coming_soon' => 'Coming Soon'
-        ];
-
-        // Amenities list
-        $amenitiesList = [
-            'air_conditioning' => 'Air Conditioning',
-            'sound_system' => 'Sound System',
-            'projector' => 'Projector & Screen',
-            'wifi' => 'WiFi Internet',
-            'parking' => 'Parking Space',
-            'kitchen' => 'Kitchen Facilities',
-            'restrooms' => 'Restrooms',
-            'stage' => 'Stage/Platform',
-            'tables_chairs' => 'Tables & Chairs',
-            'security' => 'Security Service',
-            'generator' => 'Backup Generator',
-            'elevator' => 'Elevator Access'
-        ];
+        // Get facility images
+        $facilityImages = DB::connection('facilities_db')
+            ->table('facility_images')
+            ->where('facility_id', $id)
+            ->orderBy('sort_order')
+            ->get();
 
         return view('admin.facilities.edit', compact(
             'facility',
             'cities',
-            'facilityTypes',
-            'statusOptions',
-            'amenitiesList'
+            'facilityImages'
         ));
     }
 
@@ -335,23 +241,15 @@ class FacilityController extends Controller
     public function update(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
-            'city_id' => 'required|exists:facilities_db.lgu_cities,city_id',
+            'city_id' => 'required|integer',
             'name' => 'required|string|max:255',
-            'type' => 'required|in:gymnasium,convention_center,function_hall,sports_complex,covered_court,auditorium,meeting_room,other',
             'description' => 'nullable|string',
             'capacity' => 'required|integer|min:1',
-            'address' => 'required|string',
-            'google_maps_url' => 'nullable|url',
-            'base_rate' => 'required|numeric|min:0',
-            'per_person_rate' => 'nullable|numeric|min:0',
-            'minimum_hours' => 'required|integer|min:1|max:24',
-            'extension_rate' => 'required|numeric|min:0',
-            'amenities' => 'nullable|array',
-            'status' => 'required|in:active,inactive,under_maintenance,coming_soon',
-            'is_available' => 'nullable|boolean',
-            'operating_hours' => 'nullable|array',
-            'rules' => 'nullable|string',
-            'image_path' => 'nullable|image|mimes:jpeg,png,jpg|max:2048'
+            'address' => 'required|string|max:255',
+            'per_person_rate' => 'required|numeric|min:0',
+            'is_available' => 'nullable|in:0,1',
+            'image_path' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'additional_images.*' => 'nullable|image|mimes:jpeg,png,jpg|max:2048'
         ]);
 
         if ($validator->fails()) {
@@ -372,7 +270,7 @@ class FacilityController extends Controller
                     ->with('error', 'Facility not found.');
             }
 
-            // Handle image upload
+            // Handle primary image upload
             $imagePath = $facility->image_path;
             if ($request->hasFile('image_path')) {
                 // Delete old image
@@ -382,26 +280,37 @@ class FacilityController extends Controller
                 $imagePath = $request->file('image_path')->store('facilities', 'public');
             }
 
+            // Handle additional images upload
+            if ($request->hasFile('additional_images')) {
+                $currentMaxOrder = DB::connection('facilities_db')
+                    ->table('facility_images')
+                    ->where('facility_id', $id)
+                    ->max('sort_order') ?? 0;
+
+                foreach ($request->file('additional_images') as $index => $image) {
+                    $additionalImagePath = $image->store('facilities', 'public');
+                    DB::connection('facilities_db')->table('facility_images')->insert([
+                        'facility_id' => $id,
+                        'image_path' => $additionalImagePath,
+                        'sort_order' => $currentMaxOrder + $index + 1,
+                        'is_primary' => false,
+                        'created_at' => now(),
+                        'updated_at' => now()
+                    ]);
+                }
+            }
+
             // Update facility
             DB::connection('facilities_db')->table('facilities')
                 ->where('facility_id', $id)
                 ->update([
-                    'city_id' => $request->city_id,
+                    'lgu_city_id' => $request->city_id,
                     'name' => $request->name,
-                    'type' => $request->type,
                     'description' => $request->description,
                     'capacity' => $request->capacity,
                     'address' => $request->address,
-                    'google_maps_url' => $request->google_maps_url,
-                    'base_rate' => $request->base_rate,
-                    'per_person_rate' => $request->per_person_rate ?? 0,
-                    'minimum_hours' => $request->minimum_hours,
-                    'extension_rate' => $request->extension_rate,
-                    'amenities' => json_encode($request->amenities ?? []),
-                    'status' => $request->status,
-                    'is_available' => $request->is_available ?? ($request->status === 'active' ? 1 : 0),
-                    'operating_hours' => json_encode($request->operating_hours ?? []),
-                    'rules' => $request->rules,
+                    'per_person_rate' => $request->per_person_rate,
+                    'is_available' => $request->is_available ?? 1,
                     'image_path' => $imagePath,
                     'updated_at' => now()
                 ]);
@@ -509,6 +418,73 @@ class FacilityController extends Controller
             \Log::error('Failed to restore facility: ' . $e->getMessage());
             return redirect()->back()
                 ->with('error', 'Failed to restore facility. Please try again.');
+        }
+    }
+
+    /**
+     * Delete the primary facility image.
+     */
+    public function deletePrimaryImage(Request $request, $facilityId)
+    {
+        try {
+            $facility = DB::connection('facilities_db')
+                ->table('facilities')
+                ->where('facility_id', $facilityId)
+                ->first();
+
+            if (!$facility) {
+                return response()->json(['success' => false, 'message' => 'Facility not found.'], 404);
+            }
+
+            if ($facility->image_path) {
+                // Delete from storage
+                Storage::disk('public')->delete($facility->image_path);
+
+                // Update database
+                DB::connection('facilities_db')
+                    ->table('facilities')
+                    ->where('facility_id', $facilityId)
+                    ->update(['image_path' => null, 'updated_at' => now()]);
+            }
+
+            return response()->json(['success' => true, 'message' => 'Primary image deleted successfully.']);
+
+        } catch (\Exception $e) {
+            \Log::error('Failed to delete primary facility image: ' . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'Failed to delete image.'], 500);
+        }
+    }
+
+    /**
+     * Delete a facility image.
+     */
+    public function deleteImage(Request $request, $facilityId, $imageId)
+    {
+        try {
+            $image = DB::connection('facilities_db')
+                ->table('facility_images')
+                ->where('id', $imageId)
+                ->where('facility_id', $facilityId)
+                ->first();
+
+            if (!$image) {
+                return response()->json(['success' => false, 'message' => 'Image not found.'], 404);
+            }
+
+            // Delete from storage
+            Storage::disk('public')->delete($image->image_path);
+
+            // Delete from database
+            DB::connection('facilities_db')
+                ->table('facility_images')
+                ->where('id', $imageId)
+                ->delete();
+
+            return response()->json(['success' => true, 'message' => 'Image deleted successfully.']);
+
+        } catch (\Exception $e) {
+            \Log::error('Failed to delete facility image: ' . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'Failed to delete image.'], 500);
         }
     }
 }

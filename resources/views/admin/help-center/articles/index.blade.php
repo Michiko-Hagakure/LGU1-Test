@@ -1,6 +1,8 @@
 @extends('layouts.admin')
 
 @section('title', 'Help Articles')
+@section('page-title', 'Help Articles')
+@section('page-subtitle', 'Manage detailed help articles and guides')
 
 @section('page-content')
 <div class="mb-6 flex justify-between items-center">

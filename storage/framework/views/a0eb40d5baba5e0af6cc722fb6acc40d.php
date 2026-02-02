@@ -1,5 +1,9 @@
 
 
+<?php $__env->startSection('title', 'Audit Trail'); ?>
+<?php $__env->startSection('page-title', 'Audit Trail'); ?>
+<?php $__env->startSection('page-subtitle', 'Track system activities and user actions'); ?>
+
 <?php $__env->startSection('page-content'); ?>
 <div class="p-6">
     <!-- Header -->

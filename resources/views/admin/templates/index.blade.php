@@ -1,5 +1,9 @@
 @extends('layouts.admin')
 
+@section('title', 'Message Templates')
+@section('page-title', 'Message Templates')
+@section('page-subtitle', 'Manage email, SMS, and in-app message templates')
+
 @section('page-content')
 <div class="p-6">
     <!-- Header -->

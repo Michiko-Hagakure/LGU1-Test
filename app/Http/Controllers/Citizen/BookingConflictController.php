@@ -46,7 +46,7 @@ class BookingConflictController extends Controller
 
         // Attach booking and facility details
         foreach ($conflicts as $conflict) {
-            $booking = $conflict->booking();
+            $booking = $conflict->booking;
             if ($booking) {
                 $facility = DB::connection('facilities_db')
                     ->table('facilities')
@@ -69,7 +69,7 @@ class BookingConflictController extends Controller
         $conflict = BookingConflict::with('cityEvent')->findOrFail($id);
 
         // Verify this conflict belongs to the authenticated user
-        $booking = $conflict->booking();
+        $booking = $conflict->booking;
         if ($booking->user_id !== session('user_id')) {
             abort(403, 'Unauthorized access to this conflict.');
         }
@@ -107,7 +107,7 @@ class BookingConflictController extends Controller
         $conflict = BookingConflict::findOrFail($id);
 
         // Verify ownership
-        $booking = $conflict->booking();
+        $booking = $conflict->booking;
         if ($booking->user_id !== session('user_id')) {
             abort(403, 'Unauthorized access to this conflict.');
         }

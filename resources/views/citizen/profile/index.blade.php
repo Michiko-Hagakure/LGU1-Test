@@ -5,6 +5,31 @@
 @section('page-subtitle', 'Manage your account information and settings')
 
 @section('page-content')
+@php
+    // Safe name handling - support both full_name and first_name/last_name schemas
+    $firstName = $user->first_name ?? null;
+    $lastName = $user->last_name ?? null;
+    $middleName = $user->middle_name ?? null;
+    $fullName = $user->full_name ?? $user->name ?? null;
+    
+    if (!$firstName && $fullName) {
+        $nameParts = explode(' ', trim($fullName));
+        $firstName = $nameParts[0] ?? '';
+        $lastName = count($nameParts) > 1 ? end($nameParts) : '';
+    }
+    
+    $displayName = trim(($firstName ?? '') . ' ' . ($middleName ? substr($middleName, 0, 1) . '. ' : '') . ($lastName ?? ''));
+    if (empty($displayName)) {
+        $displayName = $fullName ?? $user->username ?? 'User';
+    }
+    
+    $initials = strtoupper(substr($firstName ?? $displayName, 0, 1) . substr($lastName ?? '', 0, 1));
+    if (strlen($initials) < 2) {
+        $initials = strtoupper(substr($displayName, 0, 2));
+    }
+    
+    $avatarPath = $user->avatar_path ?? ($user->profile_photo_path ?? null);
+@endphp
 <div class="space-y-6">
     <!-- Profile Header Card -->
     <div class="bg-lgu-headline rounded-xl shadow-lg p-8 text-white">
@@ -12,30 +37,40 @@
             <!-- Avatar -->
             <div class="relative group">
                 <div class="w-32 h-32 rounded-full overflow-hidden border-4 border-white shadow-xl">
-                    @if($user->avatar_path)
-                        <img id="avatarPreview" src="{{ asset('storage/' . $user->avatar_path) }}" alt="Avatar" class="w-full h-full object-cover">
+                    @if($avatarPath)
+                        <img id="avatarPreview" src="{{ asset('storage/' . $avatarPath) }}" alt="Avatar" class="w-full h-full object-cover">
                     @else
                         <div id="avatarPreview" class="w-full h-full bg-lgu-highlight flex items-center justify-center text-4xl font-bold">
-                            {{ strtoupper(substr($user->first_name, 0, 1) . substr($user->last_name, 0, 1)) }}
+                            {{ $initials }}
                         </div>
                     @endif
                 </div>
                 <button onclick="document.getElementById('avatarInput').click()" 
-                        class="absolute bottom-0 right-0 w-10 h-10 bg-lgu-highlight text-white rounded-full flex items-center justify-center shadow-lg hover:bg-yellow-500 transition-all cursor-pointer group-hover:scale-110">
+                        class="absolute bottom-0 right-0 w-10 h-10 bg-lgu-highlight text-white rounded-full flex items-center justify-center shadow-lg hover:bg-yellow-500 transition-all cursor-pointer group-hover:scale-110"
+                        title="Change photo">
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/>
                     </svg>
                 </button>
+                @if($avatarPath)
+                <button onclick="removeAvatar()" 
+                        class="absolute bottom-0 left-0 w-10 h-10 bg-red-500 text-white rounded-full flex items-center justify-center shadow-lg hover:bg-red-600 transition-all cursor-pointer group-hover:scale-110"
+                        title="Remove photo">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
+                    </svg>
+                </button>
+                @endif
                 <input type="file" id="avatarInput" accept="image/*" class="hidden" onchange="uploadAvatar(this)">
             </div>
 
             <!-- User Info -->
             <div class="flex-1 text-center md:text-left">
                 <h1 class="text-3xl md:text-4xl font-bold mb-2">
-                    {{ $user->first_name }} {{ $user->middle_name ? substr($user->middle_name, 0, 1) . '.' : '' }} {{ $user->last_name }}
+                    {{ $displayName }}
                 </h1>
                 <div class="flex flex-wrap items-center justify-center md:justify-start gap-3 mb-3">
-                    @if($user->city_name)
+                    @if($user->city_name ?? null)
                         <span class="px-4 py-1.5 bg-white/20 backdrop-blur-sm rounded-full text-sm font-semibold flex items-center gap-2">
                             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/>
@@ -130,13 +165,13 @@
                         <div class="space-y-4">
                             <div>
                                 <label class="block text-sm font-bold text-gray-900 mb-2">Full Name</label>
-                                <input type="text" value="{{ $user->full_name }}" disabled
+                                <input type="text" value="{{ $displayName }}" disabled
                                        class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg bg-gray-100 cursor-not-allowed">
                             </div>
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 <div>
                                     <label class="block text-sm font-bold text-gray-900 mb-2">Birthdate</label>
-                                    <input type="date" value="{{ $user->birthdate }}" disabled
+                                    <input type="date" value="{{ $user->birthdate ?? '' }}" disabled
                                            class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg bg-gray-100 cursor-not-allowed">
                                 </div>
                                 <div>
@@ -146,7 +181,7 @@
                                 </div>
                                 <div>
                                     <label class="block text-sm font-bold text-gray-900 mb-2">Mobile Number</label>
-                                    <input type="text" name="mobile_number" value="{{ $user->mobile_number }}" disabled
+                                    <input type="text" name="mobile_number" value="{{ $user->mobile_number ?? $user->phone_number ?? '' }}" disabled
                                            class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-lgu-button focus:border-transparent transition-all disabled:bg-gray-100 disabled:cursor-not-allowed">
                                 </div>
                             </div>
@@ -271,40 +306,6 @@
                 </form>
             </div>
 
-            <!-- Change Password Card -->
-            <div class="bg-white shadow-lg rounded-xl p-6">
-                <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-lgu-button">
-                        <rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-                    </svg>
-                    Change Password
-                </h2>
-
-                <form id="passwordForm" class="space-y-4">
-                    @csrf
-                    <div>
-                        <label class="block text-sm font-bold text-gray-900 mb-2">Current Password</label>
-                        <input type="password" name="current_password" required
-                               class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-lgu-button focus:border-transparent transition-all">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-bold text-gray-900 mb-2">New Password</label>
-                        <input type="password" name="new_password" required
-                               class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-lgu-button focus:border-transparent transition-all">
-                        <p class="mt-1 text-xs text-gray-600">Must be at least 8 characters long</p>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-bold text-gray-900 mb-2">Confirm New Password</label>
-                        <input type="password" name="new_password_confirmation" required
-                               class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-lgu-button focus:border-transparent transition-all">
-                    </div>
-
-                    <button type="submit" 
-                            class="w-full px-6 py-3 bg-lgu-headline text-white font-bold rounded-lg hover:bg-opacity-90 transition-all cursor-pointer">
-                        Update Password
-                    </button>
-                </form>
-            </div>
         </div>
 
         <!-- Right Column - Stats & Activity -->
@@ -447,50 +448,6 @@ document.getElementById('profileForm').addEventListener('submit', function(e) {
     });
 });
 
-// Password change
-document.getElementById('passwordForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    
-    const formData = new FormData(this);
-    
-    fetch('{{ route('citizen.profile.password') }}', {
-        method: 'POST',
-        body: formData,
-        headers: {
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            Swal.fire({
-                icon: 'success',
-                title: 'Password Changed!',
-                text: data.message,
-                confirmButtonColor: '#0f5b3a'
-            }).then(() => {
-                this.reset();
-            });
-        } else {
-            Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: data.message,
-                confirmButtonColor: '#0f5b3a'
-            });
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        Swal.fire({
-            icon: 'error',
-            title: 'Network Error',
-            text: 'An unexpected error occurred.',
-            confirmButtonColor: '#0f5b3a'
-        });
-    });
-});
-
 // Avatar upload
 function uploadAvatar(input) {
     if (!input.files || !input.files[0]) return;
@@ -553,6 +510,58 @@ function uploadAvatar(input) {
             text: 'An unexpected error occurred.',
             confirmButtonColor: '#0f5b3a'
         });
+    });
+}
+
+// Remove avatar
+function removeAvatar() {
+    Swal.fire({
+        title: 'Remove Profile Photo?',
+        text: 'Are you sure you want to remove your profile photo?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#dc2626',
+        cancelButtonColor: '#6b7280',
+        confirmButtonText: 'Yes, remove it'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            fetch('{{ route('citizen.profile.avatar.remove') }}', {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    'Accept': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Photo Removed!',
+                        text: data.message,
+                        confirmButtonColor: '#0f5b3a'
+                    }).then(() => {
+                        window.location.reload();
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Removal Failed',
+                        text: data.message,
+                        confirmButtonColor: '#0f5b3a'
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Removal Failed',
+                    text: 'An unexpected error occurred.',
+                    confirmButtonColor: '#0f5b3a'
+                });
+            });
+        }
     });
 }
 </script>

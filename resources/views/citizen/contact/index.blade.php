@@ -1,6 +1,8 @@
 @extends('layouts.citizen')
 
 @section('title', 'Contact Us')
+@section('page-title', 'Contact Us')
+@section('page-subtitle', 'Have a question or issue? We\'re here to help!')
 
 @section('page-content')
 <!-- Header -->

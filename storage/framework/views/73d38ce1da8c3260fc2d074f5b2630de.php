@@ -4,11 +4,27 @@
 
 <?php $__env->startSection('content'); ?>
 <div id="loginContainer">
-    <div class="text-center mb-4">
-        <img src="<?php echo e(asset('assets/images/logo.png')); ?>" alt="LGU1 Logo" class="login-logo">
-        <h2 style="color: var(--headline); font-family: 'Merriweather', serif; font-weight: 700;">Sign In</h2>
-        <p class="text-muted"><i class="bi bi-shield-check-fill"></i> Secure Login</p>
+    <!-- Lockout Timer Overlay -->
+    <div id="lockoutOverlay" style="display: none;">
+        <div class="text-center py-4">
+            <i class="bi bi-shield-lock-fill" style="font-size: 3rem; color: #ef4444;"></i>
+            <h4 style="color: var(--headline); margin-top: 1rem;">Account Temporarily Locked</h4>
+            <p class="text-muted">Too many failed login attempts. Please wait before trying again.</p>
+            <div class="lockout-timer mt-3" style="background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%); border-radius: 12px; padding: 1.5rem; border: 2px solid #fecaca;">
+                <p class="mb-2" style="color: #991b1b; font-weight: 600;">Time Remaining</p>
+                <div id="lockoutCountdown" style="font-size: 2.5rem; font-weight: 700; color: #dc2626; font-family: 'Courier New', monospace;">
+                    03:00
+                </div>
+            </div>
+        </div>
     </div>
+
+    <div id="loginContent">
+        <div class="text-center mb-4">
+            <img src="<?php echo e(asset('assets/images/logo.png')); ?>" alt="LGU1 Logo" class="login-logo">
+            <h2 style="color: var(--headline); font-family: 'Merriweather', serif; font-weight: 700;">Sign In</h2>
+            <p class="text-muted"><i class="bi bi-shield-check-fill"></i> Secure Login</p>
+        </div>
 
     <!-- Session Timeout Message -->
     <?php if(request()->get('timeout') == '1'): ?>
@@ -30,7 +46,7 @@
     <?php endif; ?>
 
     <!-- Step 1: Email/Password Form -->
-    <form id="loginForm" style="display: block;">
+    <form id="loginForm" style="display: block;" novalidate>
         <div class="mb-3">
             <label for="email" class="form-label"><i class="bi bi-envelope"></i> Email</label>
             <div class="input-group">
@@ -72,22 +88,29 @@
             <p class="text-muted">Enter the 6-digit code sent to your email</p>
         </div>
         
-        <form id="otpVerifyForm">
-            <div class="mb-4">
-                <label for="otp" class="form-label"><i class="bi bi-key"></i> Verification Code</label>
-                <div class="input-group">
-                    <span class="input-group-text"><i class="bi bi-shield-lock"></i></span>
-                    <input type="text" 
-                           class="form-control text-center" 
-                           id="otp" 
-                           name="otp" 
-                           placeholder="000000"
-                           maxlength="6"
-                           pattern="[0-9]{6}"
-                           style="font-size: 1.5rem; letter-spacing: 0.5rem;"
-                           required>
+        <form id="otpVerifyForm" novalidate>
+            <div class="mb-3">
+                <label class="form-label"><i class="bi bi-key"></i> Verification Code</label>
+                <div class="otp-input-container">
+                    <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" inputmode="numeric" data-index="0" autocomplete="off">
+                    <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" inputmode="numeric" data-index="1" autocomplete="off">
+                    <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" inputmode="numeric" data-index="2" autocomplete="off">
+                    <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" inputmode="numeric" data-index="3" autocomplete="off">
+                    <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" inputmode="numeric" data-index="4" autocomplete="off">
+                    <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" inputmode="numeric" data-index="5" autocomplete="off">
                 </div>
-                <small class="text-muted">Code expires in 1 minute</small>
+                <input type="hidden" id="otp" name="otp">
+            </div>
+            
+            <!-- OTP Expiry Timer -->
+            <div class="text-center mb-3">
+                <div id="otpTimerContainer">
+                    <span class="text-muted">Code expires in </span>
+                    <span id="otpTimer" style="font-weight: 700; color: var(--highlight);">01:00</span>
+                </div>
+                <div id="otpExpiredMessage" style="display: none; color: #ef4444; font-weight: 600;">
+                    <i class="bi bi-exclamation-circle"></i> Code expired! Please request a new one.
+                </div>
             </div>
 
             <button type="submit" class="btn btn-primary w-100" id="verifyBtn">
@@ -112,7 +135,7 @@
             <p class="text-muted">Enter your 6-digit PIN</p>
         </div>
         
-        <form id="twoFAVerifyForm">
+        <form id="twoFAVerifyForm" novalidate>
             <div class="mb-4">
                 <label for="pin" class="form-label"><i class="bi bi-lock"></i> 6-Digit PIN</label>
                 <div class="input-group">
@@ -143,6 +166,7 @@
     <div class="text-center mt-2">
         <a href="<?php echo e(route('password.request')); ?>" class="register-link"><i class="bi bi-key"></i> Forgot Password?</a>
     </div>
+    </div><!-- End loginContent -->
 </div>
 
 <!-- Loader Overlay -->
@@ -199,6 +223,41 @@
     @keyframes spin {
         0% { transform: rotate(0deg); }
         100% { transform: rotate(360deg); }
+    }
+    
+    /* OTP Input Boxes */
+    .otp-input-container {
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+    }
+    
+    .otp-input {
+        width: 48px;
+        height: 56px;
+        text-align: center;
+        font-size: 1.5rem;
+        font-weight: 700;
+        border: 2px solid #e9ecef;
+        border-radius: 8px;
+        transition: all 0.2s ease;
+        background: white;
+    }
+    
+    .otp-input:focus {
+        border-color: var(--highlight);
+        box-shadow: 0 0 0 3px rgba(250, 174, 43, 0.2);
+        outline: none;
+    }
+    
+    .otp-input.filled {
+        border-color: var(--highlight);
+        background: #fffbeb;
+    }
+    
+    .otp-input.error {
+        border-color: #ef4444;
+        background: #fef2f2;
     }
 </style>
 <?php $__env->stopPush(); ?>
@@ -260,11 +319,28 @@ document.addEventListener('DOMContentLoaded', function() {
         // Token refreshed, ready for next attempt
     }
     
+    // OTP Timer variables
+    let otpTimerInterval = null;
+    let otpSecondsLeft = 60;
+    
     // Function to show OTP form and start aggressive token refresh
     function showOTPForm() {
         loginForm.style.display = 'none';
         otpForm.style.display = 'block';
-        document.getElementById('otp').focus();
+        
+        // Focus first OTP input
+        const firstOtpInput = document.querySelector('.otp-input[data-index="0"]');
+        if (firstOtpInput) firstOtpInput.focus();
+        
+        // Clear all OTP inputs
+        document.querySelectorAll('.otp-input').forEach(input => {
+            input.value = '';
+            input.classList.remove('filled', 'error');
+        });
+        document.getElementById('otp').value = '';
+        
+        // Start OTP timer
+        startOtpTimer();
         
         // Refresh token immediately when OTP form shows
         refreshCSRFToken();
@@ -272,6 +348,191 @@ document.addEventListener('DOMContentLoaded', function() {
         // More aggressive refresh while on OTP screen (every 15 seconds)
         clearInterval(tokenRefreshInterval);
         tokenRefreshInterval = setInterval(refreshCSRFToken, 15000);
+    }
+    
+    // OTP Timer functions
+    function startOtpTimer() {
+        // Reset timer
+        otpSecondsLeft = 60;
+        updateOtpTimerDisplay();
+        
+        // Show timer, hide expired message
+        document.getElementById('otpTimerContainer').style.display = 'block';
+        document.getElementById('otpExpiredMessage').style.display = 'none';
+        document.getElementById('verifyBtn').disabled = false;
+        
+        // Clear any existing interval
+        if (otpTimerInterval) clearInterval(otpTimerInterval);
+        
+        otpTimerInterval = setInterval(function() {
+            otpSecondsLeft--;
+            updateOtpTimerDisplay();
+            
+            if (otpSecondsLeft <= 0) {
+                clearInterval(otpTimerInterval);
+                onOtpExpired();
+            }
+        }, 1000);
+    }
+    
+    function updateOtpTimerDisplay() {
+        const timerElement = document.getElementById('otpTimer');
+        const minutes = Math.floor(otpSecondsLeft / 60);
+        const seconds = otpSecondsLeft % 60;
+        timerElement.textContent = String(minutes).padStart(2, '0') + ':' + String(seconds).padStart(2, '0');
+        
+        // Change color when low on time
+        if (otpSecondsLeft <= 10) {
+            timerElement.style.color = '#ef4444';
+        } else {
+            timerElement.style.color = 'var(--highlight)';
+        }
+    }
+    
+    function onOtpExpired() {
+        document.getElementById('otpTimerContainer').style.display = 'none';
+        document.getElementById('otpExpiredMessage').style.display = 'block';
+        document.getElementById('verifyBtn').disabled = true;
+    }
+    
+    // OTP Input handling
+    const otpInputs = document.querySelectorAll('.otp-input');
+    
+    otpInputs.forEach((input, index) => {
+        // Handle input
+        input.addEventListener('input', function(e) {
+            const value = e.target.value;
+            
+            // Only allow numbers
+            if (!/^\d*$/.test(value)) {
+                e.target.value = '';
+                return;
+            }
+            
+            // Mark as filled
+            if (value) {
+                e.target.classList.add('filled');
+            } else {
+                e.target.classList.remove('filled');
+            }
+            
+            // Move to next input if value entered
+            if (value && index < 5) {
+                otpInputs[index + 1].focus();
+            }
+            
+            // Update hidden OTP field
+            updateHiddenOtp();
+            
+            // Auto-verify when all 6 digits entered
+            if (value && index === 5) {
+                const fullOtp = getFullOtp();
+                if (fullOtp.length === 6) {
+                    // Small delay for UX
+                    setTimeout(() => {
+                        otpVerifyForm.dispatchEvent(new Event('submit'));
+                    }, 200);
+                }
+            }
+        });
+        
+        // Handle backspace
+        input.addEventListener('keydown', function(e) {
+            if (e.key === 'Backspace' && !e.target.value && index > 0) {
+                otpInputs[index - 1].focus();
+            }
+        });
+        
+        // Handle paste
+        input.addEventListener('paste', function(e) {
+            e.preventDefault();
+            const pastedData = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, 6);
+            
+            if (pastedData) {
+                pastedData.split('').forEach((char, i) => {
+                    if (otpInputs[i]) {
+                        otpInputs[i].value = char;
+                        otpInputs[i].classList.add('filled');
+                    }
+                });
+                
+                // Focus last filled or next empty
+                const lastIndex = Math.min(pastedData.length, 5);
+                otpInputs[lastIndex].focus();
+                
+                updateHiddenOtp();
+                
+                // Auto-verify if 6 digits pasted
+                if (pastedData.length === 6) {
+                    setTimeout(() => {
+                        otpVerifyForm.dispatchEvent(new Event('submit'));
+                    }, 200);
+                }
+            }
+        });
+    });
+    
+    function getFullOtp() {
+        return Array.from(otpInputs).map(input => input.value).join('');
+    }
+    
+    function updateHiddenOtp() {
+        document.getElementById('otp').value = getFullOtp();
+    }
+    
+    // Lockout overlay with countdown timer
+    let lockoutInterval = null;
+    
+    function showLockoutOverlay(remainingSeconds) {
+        const lockoutOverlay = document.getElementById('lockoutOverlay');
+        const loginContent = document.getElementById('loginContent');
+        const lockoutCountdown = document.getElementById('lockoutCountdown');
+        
+        // Hide login content and show lockout overlay
+        loginContent.style.display = 'none';
+        lockoutOverlay.style.display = 'block';
+        
+        // Clear any existing interval
+        if (lockoutInterval) {
+            clearInterval(lockoutInterval);
+        }
+        
+        // Start countdown
+        let secondsLeft = remainingSeconds;
+        updateCountdownDisplay(secondsLeft);
+        
+        lockoutInterval = setInterval(function() {
+            secondsLeft--;
+            updateCountdownDisplay(secondsLeft);
+            
+            if (secondsLeft <= 0) {
+                clearInterval(lockoutInterval);
+                hideLockoutOverlay();
+            }
+        }, 1000);
+    }
+    
+    function updateCountdownDisplay(seconds) {
+        const lockoutCountdown = document.getElementById('lockoutCountdown');
+        const minutes = Math.floor(seconds / 60);
+        const secs = seconds % 60;
+        lockoutCountdown.textContent = String(minutes).padStart(2, '0') + ':' + String(secs).padStart(2, '0');
+    }
+    
+    function hideLockoutOverlay() {
+        const lockoutOverlay = document.getElementById('lockoutOverlay');
+        const loginContent = document.getElementById('loginContent');
+        
+        lockoutOverlay.style.display = 'none';
+        loginContent.style.display = 'block';
+        
+        // Show success message
+        Swal.fire({
+            icon: 'success',
+            title: 'You Can Try Again',
+            text: 'The lockout period has ended. You may now attempt to log in.',
+            confirmButtonColor: '#faae2b'
+        });
     }
     
     // Password toggle
@@ -291,6 +552,14 @@ document.addEventListener('DOMContentLoaded', function() {
     // Step 1: Login with Email/Password
     loginForm.addEventListener('submit', function(e) {
         e.preventDefault();
+        
+        // Add validation styling
+        loginForm.classList.add('was-validated');
+        
+        // Check if form is valid before proceeding
+        if (!loginForm.checkValidity()) {
+            return;
+        }
         
         const email = document.getElementById('email').value;
         const password = document.getElementById('password').value;
@@ -334,6 +603,9 @@ document.addEventListener('DOMContentLoaded', function() {
             if (data.success) {
                 // Switch directly to OTP form (no popup)
                 showOTPForm();
+            } else if (data.locked) {
+                // Show lockout overlay with countdown timer
+                showLockoutOverlay(data.remaining_seconds);
             } else {
                 Swal.fire({
                     icon: 'error',
@@ -478,9 +750,16 @@ document.addEventListener('DOMContentLoaded', function() {
                     timer: 3000
                 });
                 
-                // Clear OTP input and focus
+                // Clear all OTP inputs and focus first one
+                document.querySelectorAll('.otp-input').forEach(input => {
+                    input.value = '';
+                    input.classList.remove('filled', 'error');
+                });
                 document.getElementById('otp').value = '';
-                document.getElementById('otp').focus();
+                document.querySelector('.otp-input[data-index="0"]').focus();
+                
+                // Restart OTP timer
+                startOtpTimer();
             } else {
                 Swal.fire({
                     icon: 'error',

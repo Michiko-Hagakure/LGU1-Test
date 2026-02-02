@@ -35,17 +35,14 @@
                 @enderror
             </div>
 
-            {{-- Email --}}
+            {{-- Email (Read-only) --}}
             <div>
                 <label for="email" class="block text-sm font-semibold mb-gr-xs text-lgu-headline">
-                    Email Address <span class="text-red-500">*</span>
+                    Email Address
                 </label>
-                <input type="email" name="email" id="email" value="{{ old('email', $staff->email) }}" required
-                       class="w-full px-gr-sm py-gr-xs rounded-lg border-2 border-lgu-stroke focus:border-lgu-green focus:ring-0
-                       @error('email') border-red-500 @enderror">
-                @error('email')
-                    <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
-                @enderror
+                <input type="email" id="email" value="{{ $staff->email }}" readonly disabled
+                       class="w-full px-gr-sm py-gr-xs rounded-lg border-2 border-gray-200 bg-gray-100 text-gray-500 cursor-not-allowed">
+                <p class="mt-1 text-xs text-gray-500">Email address cannot be changed</p>
             </div>
 
             {{-- Phone --}}

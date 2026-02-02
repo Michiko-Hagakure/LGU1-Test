@@ -1,6 +1,8 @@
 
 
 <?php $__env->startSection('title', 'My Inquiries'); ?>
+<?php $__env->startSection('page-title', 'My Inquiries'); ?>
+<?php $__env->startSection('page-subtitle', 'Track your support tickets and inquiries'); ?>
 
 <?php $__env->startSection('page-content'); ?>
 <!-- Header -->
