@@ -94,36 +94,6 @@
         </div>
     </div>
 
-    {{-- API Endpoint Info --}}
-    <div class="p-gr-md bg-gray-50 border border-gray-200 rounded-xl">
-        <div class="flex items-start gap-gr-sm">
-            <i data-lucide="code-2" class="w-5 h-5 text-gray-600 flex-shrink-0 mt-0.5"></i>
-            <div class="flex-1">
-                <p class="text-gray-800 font-semibold">API Endpoint for Testing</p>
-                <div class="mt-2 bg-gray-800 text-gray-100 rounded-lg p-3 font-mono text-small overflow-x-auto">
-                    <p class="text-green-400">POST</p>
-                    <p>https://local-government-unit-1-ph.com/api/housing-resettlement/request</p>
-                </div>
-                <details class="mt-2">
-                    <summary class="cursor-pointer text-small text-gray-600 hover:text-gray-800">View sample request body</summary>
-                    <pre class="mt-2 bg-gray-800 text-gray-100 rounded-lg p-3 font-mono text-xs overflow-x-auto">{
-    "facility_id": 1,
-    "event_name": "Beneficiary Orientation Batch 5",
-    "event_description": "Housing beneficiary orientation",
-    "requested_date": "2026-02-15",
-    "start_time": "09:00",
-    "end_time": "12:00",
-    "expected_attendees": 50,
-    "contact_person": "Juan Dela Cruz",
-    "contact_email": "juan@housing.gov.ph",
-    "contact_phone": "09171234567",
-    "department": "Housing and Resettlement",
-    "special_requests": "Projector needed"
-}</pre>
-                </details>
-            </div>
-        </div>
-    </div>
 
     {{-- Requests Table --}}
     <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
