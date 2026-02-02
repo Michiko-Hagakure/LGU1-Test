@@ -2,7 +2,7 @@
 /**
  * Housing & Resettlement API Test Script
  * 
- * Access: https://local-government-unit-1-ph.com/test-housing-api.php
+ * Access: https://facilities.local-government-unit-1-ph.com/test-housing-api.php
  * 
  * WARNING: Delete this file after testing!
  */
@@ -14,11 +14,26 @@ if (!isset($_GET['key']) || $_GET['key'] !== $securityKey) {
     die('Access denied. Add ?key=' . $securityKey . ' to the URL');
 }
 
-$apiUrl = 'https://facilities.local-government-unit-1-ph.com/api/housing-resettlement/request';
+$baseUrl = 'https://facilities.local-government-unit-1-ph.com/api/housing-resettlement';
 
-// Test data
+// First, get list of available facilities
+function getFacilities($baseUrl) {
+    $ch = curl_init($baseUrl . '/facilities');
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    $response = curl_exec($ch);
+    curl_close($ch);
+    return json_decode($response, true);
+}
+
+$facilitiesResponse = getFacilities($baseUrl);
+$facilities = $facilitiesResponse['data']['facilities'] ?? [];
+$firstFacility = $facilities[0] ?? null;
+$facilityId = $firstFacility['facility_id'] ?? 1;
+
+// Test data with valid facility_id
 $testData = [
-    'facility_id' => 1,
+    'facility_id' => $facilityId,
     'event_name' => 'Beneficiary Orientation - Test Batch',
     'event_description' => 'Test request from Housing and Resettlement Management',
     'requested_date' => date('Y-m-d', strtotime('+14 days')),
@@ -44,6 +59,7 @@ echo "button:hover{background:#0f766e;}</style></head><body>";
 echo "<h1>🏠 Housing & Resettlement API Test</h1>";
 
 if (isset($_POST['submit'])) {
+    $apiUrl = $baseUrl . '/request';
     echo "<div class='info'><strong>Sending POST request to:</strong><br>" . $apiUrl . "</div>";
     echo "<div class='info'><strong>Request Data:</strong><pre>" . json_encode($testData, JSON_PRETTY_PRINT) . "</pre></div>";
     
