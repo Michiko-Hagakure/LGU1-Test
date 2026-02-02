@@ -564,12 +564,12 @@ class PaymentController extends Controller
                 'updated_at' => Carbon::now(),
             ]);
 
-        // Update booking status to confirmed (skip treasurer verification)
+        // Update booking status to paid (admin must still confirm manually)
         DB::connection('facilities_db')
             ->table('bookings')
             ->where('id', $paymentSlip->booking_id)
             ->update([
-                'status' => 'confirmed',
+                'status' => 'paid',
                 'updated_at' => Carbon::now(),
             ]);
 
@@ -596,7 +596,7 @@ class PaymentController extends Controller
         }
 
         return redirect()->route('citizen.payment-slips.show', $id)
-            ->with('success', 'Payment successful! Your reservation is now confirmed.');
+            ->with('success', 'Payment successful! Your reservation is awaiting admin confirmation.');
     }
 
     /**
@@ -650,7 +650,7 @@ class PaymentController extends Controller
                     ->table('bookings')
                     ->where('id', $paymentSlip->booking_id)
                     ->update([
-                        'status' => 'confirmed',
+                        'status' => 'paid',
                         'updated_at' => Carbon::now(),
                     ]);
             }
