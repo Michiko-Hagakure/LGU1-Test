@@ -61,6 +61,7 @@ echo "<h1>🏠 Housing & Resettlement API Test</h1>";
 // Show facilities debug info
 echo "<div class='info'><strong>Step 1: Fetching Available Facilities...</strong><br>";
 echo "API: " . $baseUrl . "/facilities<br>";
+echo "<strong>Raw API Response:</strong><pre>" . json_encode($facilitiesResponse, JSON_PRETTY_PRINT) . "</pre>";
 echo "<strong>Facilities Found:</strong> " . count($facilities) . "<br>";
 if ($firstFacility) {
     echo "<strong>Using Facility:</strong> ID " . $facilityId . " - " . ($firstFacility['name'] ?? 'Unknown') . "</div>";
