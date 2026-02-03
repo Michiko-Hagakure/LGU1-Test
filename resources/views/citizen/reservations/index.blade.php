@@ -355,20 +355,41 @@ function confirmCancel(bookingId) {
     });
 @endif
 
-// AJAX Polling for real-time updates
+// AJAX Polling for real-time updates (without page refresh)
 let lastTotal = {{ $bookings->count() }};
+let updateNotificationShown = false;
+
 function refreshData() {
     fetch('{{ route("citizen.reservations.json") }}' + window.location.search)
         .then(res => res.json())
         .then(data => {
-            if (data.stats.total !== lastTotal) {
-                location.reload();
+            if (data.stats.total !== lastTotal && !updateNotificationShown) {
+                updateNotificationShown = true;
                 lastTotal = data.stats.total;
+                
+                // Show a non-intrusive notification instead of refreshing
+                Swal.fire({
+                    toast: true,
+                    position: 'top-end',
+                    icon: 'info',
+                    title: 'New updates available',
+                    text: 'Click to refresh',
+                    showConfirmButton: true,
+                    confirmButtonText: 'Refresh',
+                    confirmButtonColor: '#faae2b',
+                    timer: 10000,
+                    timerProgressBar: true
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        location.reload();
+                    }
+                    updateNotificationShown = false;
+                });
             }
         })
         .catch(err => console.log('Refresh error:', err));
 }
-setInterval(refreshData, 5000);
+setInterval(refreshData, 15000); // Check every 15 seconds instead of 5
 </script>
 @endpush
 @endsection
