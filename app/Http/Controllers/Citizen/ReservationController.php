@@ -21,6 +21,9 @@ class ReservationController extends Controller
             return redirect()->route('login')->with('error', 'Please login to continue.');
         }
 
+        // Auto-complete past confirmed bookings in real-time (no scheduler needed)
+        $this->autoCompletePastBookings($userId);
+
         $status = $request->get('status', 'all');
         $search = $request->get('search');
 
@@ -324,6 +327,9 @@ class ReservationController extends Controller
             return redirect()->route('login')->with('error', 'Please login to continue.');
         }
 
+        // Auto-complete past confirmed bookings in real-time
+        $this->autoCompletePastBookings($userId);
+
         $search = $request->get('search');
 
         $query = DB::connection('facilities_db')
@@ -361,6 +367,33 @@ class ReservationController extends Controller
         $bookings = $query->paginate(15);
 
         return view('citizen.reservations.history', compact('bookings', 'search'));
+    }
+
+    /**
+     * Auto-complete confirmed bookings where the event has already ended.
+     * This runs on page load so no scheduler/cron is needed.
+     */
+    private function autoCompletePastBookings($userId = null)
+    {
+        $query = DB::connection('facilities_db')
+            ->table('bookings')
+            ->where('status', 'confirmed')
+            ->where('end_time', '<', Carbon::now());
+
+        // If userId provided, only check that user's bookings (faster)
+        // Otherwise check all (for admin pages)
+        if ($userId) {
+            $query->where('user_id', $userId);
+        }
+
+        $updated = $query->update([
+            'status' => 'completed',
+            'updated_at' => Carbon::now()
+        ]);
+
+        if ($updated > 0) {
+            \Log::info("Auto-completed {$updated} past booking(s)");
+        }
     }
 }
 
