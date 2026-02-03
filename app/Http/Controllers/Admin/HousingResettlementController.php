@@ -91,6 +91,55 @@ class HousingResettlementController extends Controller
     }
 
     /**
+     * AJAX endpoint to get requests data
+     */
+    public function getRequestsJson()
+    {
+        $requests = DB::connection('facilities_db')
+            ->table('bookings')
+            ->join('facilities', 'bookings.facility_id', '=', 'facilities.facility_id')
+            ->where('bookings.source_system', 'Housing_Resettlement')
+            ->orderBy('bookings.created_at', 'desc')
+            ->select(
+                'bookings.id',
+                'bookings.user_name',
+                'bookings.purpose',
+                'bookings.start_time',
+                'bookings.end_time',
+                'bookings.expected_attendees',
+                'bookings.special_requests',
+                'bookings.status',
+                'bookings.created_at',
+                'bookings.updated_at',
+                'facilities.name as facility_name',
+                'facilities.capacity as facility_capacity'
+            )
+            ->get()
+            ->map(function ($request) {
+                $request->booking_reference = 'BK' . str_pad($request->id, 6, '0', STR_PAD_LEFT);
+                $parts = explode(' | ', $request->user_name ?? '');
+                $request->applicant_name = $parts[0] ?? 'N/A';
+                $request->applicant_email = $parts[1] ?? 'N/A';
+                $request->applicant_phone = $parts[2] ?? 'N/A';
+                $purposeParts = explode(' - ', $request->purpose ?? '');
+                $request->event_name = $purposeParts[0] ?? 'N/A';
+                $request->event_description = $purposeParts[1] ?? null;
+                $request->start_formatted = Carbon::parse($request->start_time)->format('M d');
+                $request->time_range = Carbon::parse($request->start_time)->format('h:iA') . '-' . Carbon::parse($request->end_time)->format('h:iA');
+                return $request;
+            });
+
+        $stats = [
+            'total' => $requests->count(),
+            'pending' => $requests->where('status', 'pending')->count(),
+            'confirmed' => $requests->where('status', 'confirmed')->count(),
+            'total_attendees' => $requests->sum('expected_attendees'),
+        ];
+
+        return response()->json(['requests' => $requests->values(), 'stats' => $stats]);
+    }
+
+    /**
      * Reject a Housing and Resettlement request
      */
     public function reject(Request $request, $id)

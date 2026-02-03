@@ -5,7 +5,6 @@
 
 @push('styles')
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
-<meta http-equiv="refresh" content="30">
 <style>
     .status-badge {
         font-size: 0.65rem;
@@ -37,7 +36,7 @@
                 </div>
                 <div>
                     <p class="text-caption text-gray-500 uppercase font-semibold">Total Requests</p>
-                    <p class="text-h2 font-bold text-gray-900">{{ $stats['total'] }}</p>
+                    <p id="stat-total" class="text-h2 font-bold text-gray-900">{{ $stats['total'] }}</p>
                 </div>
             </div>
         </div>
@@ -48,7 +47,7 @@
                 </div>
                 <div>
                     <p class="text-caption text-gray-500 uppercase font-semibold">Pending</p>
-                    <p class="text-h2 font-bold text-amber-600">{{ $stats['pending'] }}</p>
+                    <p id="stat-pending" class="text-h2 font-bold text-amber-600">{{ $stats['pending'] }}</p>
                 </div>
             </div>
         </div>
@@ -59,7 +58,7 @@
                 </div>
                 <div>
                     <p class="text-caption text-gray-500 uppercase font-semibold">Confirmed</p>
-                    <p class="text-h2 font-bold text-green-600">{{ $stats['confirmed'] }}</p>
+                    <p id="stat-confirmed" class="text-h2 font-bold text-green-600">{{ $stats['confirmed'] }}</p>
                 </div>
             </div>
         </div>
@@ -70,7 +69,7 @@
                 </div>
                 <div>
                     <p class="text-caption text-gray-500 uppercase font-semibold">Total Attendees</p>
-                    <p class="text-h2 font-bold text-purple-600">{{ number_format($stats['total_attendees']) }}</p>
+                    <p id="stat-attendees" class="text-h2 font-bold text-purple-600">{{ number_format($stats['total_attendees']) }}</p>
                 </div>
             </div>
         </div>
@@ -97,80 +96,40 @@
             </h3>
         </div>
 
-        @if($requests->isEmpty())
-        <div class="p-gr-xl text-center">
-            <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <i data-lucide="inbox" class="w-8 h-8 text-gray-400"></i>
+        <div id="table-container">
+            <div class="w-full">
+                <table class="w-full compact-table">
+                    <thead class="bg-gray-50 border-b border-gray-200">
+                        <tr>
+                            <th class="text-left text-caption font-semibold text-gray-600 uppercase">Ref</th>
+                            <th class="text-left text-caption font-semibold text-gray-600 uppercase">Event</th>
+                            <th class="text-left text-caption font-semibold text-gray-600 uppercase">Facility</th>
+                            <th class="text-left text-caption font-semibold text-gray-600 uppercase">Schedule</th>
+                            <th class="text-center text-caption font-semibold text-gray-600 uppercase">Pax</th>
+                            <th class="text-left text-caption font-semibold text-gray-600 uppercase">Contact</th>
+                            <th class="text-center text-caption font-semibold text-gray-600 uppercase">Status</th>
+                            <th class="text-center text-caption font-semibold text-gray-600 uppercase">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="requests-tbody" class="divide-y divide-gray-100">
+                        @forelse($requests as $request)
+                        <tr class="hover:bg-gray-50 transition-colors" data-id="{{ $request->id }}">
+                            <td><span class="font-mono font-bold text-teal-600 text-xs">{{ $request->booking_reference }}</span></td>
+                            <td class="truncate-cell" title="{{ $request->event_name }}"><p class="font-medium text-gray-900 truncate">{{ Str::limit($request->event_name, 20) }}</p></td>
+                            <td class="truncate-cell"><p class="font-medium text-gray-800 truncate">{{ Str::limit($request->facility_name, 15) }}</p></td>
+                            <td><p class="font-medium text-gray-800">{{ \Carbon\Carbon::parse($request->start_time)->format('M d') }}</p><p class="text-xs text-gray-500">{{ \Carbon\Carbon::parse($request->start_time)->format('h:iA') }}-{{ \Carbon\Carbon::parse($request->end_time)->format('h:iA') }}</p></td>
+                            <td class="text-center"><span class="font-bold">{{ $request->expected_attendees ?? '-' }}</span></td>
+                            <td class="truncate-cell" title="{{ $request->applicant_name }} | {{ $request->applicant_email }}"><p class="font-medium text-gray-800 truncate">{{ Str::limit($request->applicant_name, 15) }}</p><p class="text-xs text-gray-500 truncate">{{ Str::limit($request->applicant_email, 20) }}</p></td>
+                            <td class="text-center"><span class="status-badge status-{{ $request->status }}">{{ str_replace('_', ' ', $request->status) }}</span></td>
+                            <td>@if($request->status === 'pending')<div class="flex gap-1 justify-center"><form action="{{ route('admin.housing-resettlement.approve', $request->id) }}" method="POST" class="inline">@csrf<button type="submit" class="bg-green-600 text-white px-2 py-1 rounded text-xs font-semibold hover:bg-green-700 transition-colors" title="Approve"><i data-lucide="check" class="w-3 h-3"></i></button></form><button type="button" onclick="rejectRequest({{ $request->id }})" class="bg-red-500 text-white px-2 py-1 rounded text-xs font-semibold hover:bg-red-600 transition-colors" title="Reject"><i data-lucide="x" class="w-3 h-3"></i></button></div>@else<span class="text-gray-400">—</span>@endif</td>
+                        </tr>
+                        @empty
+                        <tr id="empty-row"><td colspan="8" class="text-center py-8 text-gray-500">No requests yet</td></tr>
+                        @endforelse
+                    </tbody>
+                </table>
             </div>
-            <p class="text-gray-500 font-medium">No requests yet</p>
-            <p class="text-gray-400 text-small mt-1">Requests from Housing and Resettlement will appear here when they test the API.</p>
         </div>
-        @else
-        <div class="w-full">
-            <table class="w-full compact-table">
-                <thead class="bg-gray-50 border-b border-gray-200">
-                    <tr>
-                        <th class="text-left text-caption font-semibold text-gray-600 uppercase">Ref</th>
-                        <th class="text-left text-caption font-semibold text-gray-600 uppercase">Event</th>
-                        <th class="text-left text-caption font-semibold text-gray-600 uppercase">Facility</th>
-                        <th class="text-left text-caption font-semibold text-gray-600 uppercase">Schedule</th>
-                        <th class="text-center text-caption font-semibold text-gray-600 uppercase">Pax</th>
-                        <th class="text-left text-caption font-semibold text-gray-600 uppercase">Contact</th>
-                        <th class="text-center text-caption font-semibold text-gray-600 uppercase">Status</th>
-                        <th class="text-center text-caption font-semibold text-gray-600 uppercase">Actions</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-gray-100">
-                    @foreach($requests as $request)
-                    <tr class="hover:bg-gray-50 transition-colors">
-                        <td>
-                            <span class="font-mono font-bold text-teal-600 text-xs">{{ $request->booking_reference }}</span>
-                        </td>
-                        <td class="truncate-cell" title="{{ $request->event_name }}">
-                            <p class="font-medium text-gray-900 truncate">{{ Str::limit($request->event_name, 20) }}</p>
-                        </td>
-                        <td class="truncate-cell">
-                            <p class="font-medium text-gray-800 truncate">{{ Str::limit($request->facility_name, 15) }}</p>
-                        </td>
-                        <td>
-                            <p class="font-medium text-gray-800">{{ \Carbon\Carbon::parse($request->start_time)->format('M d') }}</p>
-                            <p class="text-xs text-gray-500">{{ \Carbon\Carbon::parse($request->start_time)->format('h:iA') }}-{{ \Carbon\Carbon::parse($request->end_time)->format('h:iA') }}</p>
-                        </td>
-                        <td class="text-center">
-                            <span class="font-bold">{{ $request->expected_attendees ?? '-' }}</span>
-                        </td>
-                        <td class="truncate-cell" title="{{ $request->applicant_name }} | {{ $request->applicant_email }} | {{ $request->applicant_phone }}">
-                            <p class="font-medium text-gray-800 truncate">{{ Str::limit($request->applicant_name, 15) }}</p>
-                            <p class="text-xs text-gray-500 truncate">{{ Str::limit($request->applicant_email, 20) }}</p>
-                        </td>
-                        <td class="text-center">
-                            <span class="status-badge status-{{ $request->status }}">
-                                {{ str_replace('_', ' ', $request->status) }}
-                            </span>
-                        </td>
-                        <td>
-                            @if($request->status === 'pending')
-                            <div class="flex gap-1 justify-center">
-                                <form action="{{ route('admin.housing-resettlement.approve', $request->id) }}" method="POST" class="inline">
-                                    @csrf
-                                    <button type="submit" class="bg-green-600 text-white px-2 py-1 rounded text-xs font-semibold hover:bg-green-700 transition-colors" title="Approve">
-                                        <i data-lucide="check" class="w-3 h-3"></i>
-                                    </button>
-                                </form>
-                                <button type="button" onclick="rejectRequest({{ $request->id }})" class="bg-red-500 text-white px-2 py-1 rounded text-xs font-semibold hover:bg-red-600 transition-colors" title="Reject">
-                                    <i data-lucide="x" class="w-3 h-3"></i>
-                                </button>
-                            </div>
-                            @else
-                            <span class="text-gray-400">—</span>
-                            @endif
-                        </td>
-                    </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        </div>
-        @endif
     </div>
 </div>
 
@@ -184,6 +143,65 @@
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
+const csrfToken = '{{ csrf_token() }}';
+let lastCount = {{ $stats['total'] }};
+
+function truncate(str, len) {
+    if (!str) return '';
+    return str.length > len ? str.substring(0, len) + '...' : str;
+}
+
+function renderRow(r) {
+    const actions = r.status === 'pending' 
+        ? `<div class="flex gap-1 justify-center">
+            <form action="/admin/housing-resettlement/${r.id}/approve" method="POST" class="inline">
+                <input type="hidden" name="_token" value="${csrfToken}">
+                <button type="submit" class="bg-green-600 text-white px-2 py-1 rounded text-xs font-semibold hover:bg-green-700 transition-colors" title="Approve">
+                    <i data-lucide="check" class="w-3 h-3"></i>
+                </button>
+            </form>
+            <button type="button" onclick="rejectRequest(${r.id})" class="bg-red-500 text-white px-2 py-1 rounded text-xs font-semibold hover:bg-red-600 transition-colors" title="Reject">
+                <i data-lucide="x" class="w-3 h-3"></i>
+            </button>
+        </div>`
+        : '<span class="text-gray-400">—</span>';
+    
+    return `<tr class="hover:bg-gray-50 transition-colors" data-id="${r.id}">
+        <td><span class="font-mono font-bold text-teal-600 text-xs">${r.booking_reference}</span></td>
+        <td class="truncate-cell" title="${r.event_name || ''}"><p class="font-medium text-gray-900 truncate">${truncate(r.event_name, 20)}</p></td>
+        <td class="truncate-cell"><p class="font-medium text-gray-800 truncate">${truncate(r.facility_name, 15)}</p></td>
+        <td><p class="font-medium text-gray-800">${r.start_formatted}</p><p class="text-xs text-gray-500">${r.time_range}</p></td>
+        <td class="text-center"><span class="font-bold">${r.expected_attendees || '-'}</span></td>
+        <td class="truncate-cell" title="${r.applicant_name} | ${r.applicant_email}"><p class="font-medium text-gray-800 truncate">${truncate(r.applicant_name, 15)}</p><p class="text-xs text-gray-500 truncate">${truncate(r.applicant_email, 20)}</p></td>
+        <td class="text-center"><span class="status-badge status-${r.status}">${r.status.replace('_', ' ')}</span></td>
+        <td>${actions}</td>
+    </tr>`;
+}
+
+function refreshData() {
+    fetch('{{ route("admin.housing-resettlement.json") }}')
+        .then(res => res.json())
+        .then(data => {
+            document.getElementById('stat-total').textContent = data.stats.total;
+            document.getElementById('stat-pending').textContent = data.stats.pending;
+            document.getElementById('stat-confirmed').textContent = data.stats.confirmed;
+            document.getElementById('stat-attendees').textContent = data.stats.total_attendees.toLocaleString();
+            
+            if (data.stats.total !== lastCount) {
+                const tbody = document.getElementById('requests-tbody');
+                const emptyRow = document.getElementById('empty-row');
+                if (emptyRow) emptyRow.remove();
+                
+                tbody.innerHTML = data.requests.map(r => renderRow(r)).join('');
+                lucide.createIcons();
+                lastCount = data.stats.total;
+            }
+        })
+        .catch(err => console.log('Refresh error:', err));
+}
+
+setInterval(refreshData, 5000);
+
 function rejectRequest(id) {
     Swal.fire({
         title: 'Reject Request',

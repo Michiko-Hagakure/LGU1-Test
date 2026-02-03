@@ -2052,6 +2052,8 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
 Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/housing-resettlement', [\App\Http\Controllers\Admin\HousingResettlementController::class, 'index'])
         ->name('housing-resettlement.index');
+    Route::get('/housing-resettlement/json', [\App\Http\Controllers\Admin\HousingResettlementController::class, 'getRequestsJson'])
+        ->name('housing-resettlement.json');
     Route::post('/housing-resettlement/{id}/approve', [\App\Http\Controllers\Admin\HousingResettlementController::class, 'approve'])
         ->name('housing-resettlement.approve');
     Route::post('/housing-resettlement/{id}/reject', [\App\Http\Controllers\Admin\HousingResettlementController::class, 'reject'])
