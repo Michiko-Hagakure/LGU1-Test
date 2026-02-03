@@ -182,7 +182,7 @@ if (typeof lucide !== 'undefined') {
 let lastDataHash = '';
 
 function pollMaintenanceReports() {
-    fetch('{{ URL::signedRoute("admin.community-maintenance.json") }}')
+    fetch('{{ route("admin.community-maintenance.json") }}')
         .then(response => response.json())
         .then(data => {
             if (data.success) {
