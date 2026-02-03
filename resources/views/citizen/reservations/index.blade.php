@@ -354,6 +354,21 @@ function confirmCancel(bookingId) {
         }
     });
 @endif
+
+// AJAX Polling for real-time updates
+let lastTotal = {{ $bookings->count() }};
+function refreshData() {
+    fetch('{{ route("citizen.reservations.json") }}' + window.location.search)
+        .then(res => res.json())
+        .then(data => {
+            if (data.stats.total !== lastTotal) {
+                location.reload();
+                lastTotal = data.stats.total;
+            }
+        })
+        .catch(err => console.log('Refresh error:', err));
+}
+setInterval(refreshData, 5000);
 </script>
 @endpush
 @endsection

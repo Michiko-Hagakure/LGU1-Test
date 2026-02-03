@@ -208,6 +208,21 @@
         confirmButtonText: 'OK'
     });
 @endif
+
+// AJAX Polling for real-time updates
+let lastPending = {{ $bookings->count() }};
+function refreshData() {
+    fetch('{{ route("staff.verification-queue.json") }}' + window.location.search)
+        .then(res => res.json())
+        .then(data => {
+            if (data.stats.pending !== lastPending) {
+                location.reload();
+                lastPending = data.stats.pending;
+            }
+        })
+        .catch(err => console.log('Refresh error:', err));
+}
+setInterval(refreshData, 5000);
 </script>
 @endpush
 

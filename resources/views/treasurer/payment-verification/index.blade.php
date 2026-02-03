@@ -185,6 +185,21 @@
 if (typeof lucide !== 'undefined') {
     lucide.createIcons();
 }
+
+// AJAX Polling for real-time updates
+let lastTotal = {{ $paymentSlips->total() }};
+function refreshData() {
+    fetch('{{ route("treasurer.payment-verification.json") }}' + window.location.search)
+        .then(res => res.json())
+        .then(data => {
+            if ((data.stats.unpaid + data.stats.paid + data.stats.verified) !== lastTotal) {
+                location.reload();
+                lastTotal = data.stats.unpaid + data.stats.paid + data.stats.verified;
+            }
+        })
+        .catch(err => console.log('Refresh error:', err));
+}
+setInterval(refreshData, 5000);
 </script>
 @endpush
 

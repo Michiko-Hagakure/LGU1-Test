@@ -40,7 +40,7 @@
                 </div>
                 <div>
                     <p class="text-caption text-gray-500 uppercase font-semibold">Total Requests</p>
-                    <p class="text-h2 font-bold text-gray-900">{{ $stats['total'] }}</p>
+                    <p id="stat-total" class="text-h2 font-bold text-gray-900">{{ $stats['total'] }}</p>
                 </div>
             </div>
         </div>
@@ -51,7 +51,7 @@
                 </div>
                 <div>
                     <p class="text-caption text-gray-500 uppercase font-semibold">Pending</p>
-                    <p class="text-h2 font-bold text-amber-600">{{ $stats['pending'] }}</p>
+                    <p id="stat-pending" class="text-h2 font-bold text-amber-600">{{ $stats['pending'] }}</p>
                 </div>
             </div>
         </div>
@@ -62,7 +62,7 @@
                 </div>
                 <div>
                     <p class="text-caption text-gray-500 uppercase font-semibold">Approved</p>
-                    <p class="text-h2 font-bold text-green-600">{{ $stats['approved'] }}</p>
+                    <p id="stat-approved" class="text-h2 font-bold text-green-600">{{ $stats['approved'] }}</p>
                 </div>
             </div>
         </div>
@@ -73,7 +73,7 @@
                 </div>
                 <div>
                     <p class="text-caption text-gray-500 uppercase font-semibold">Approved Funds</p>
-                    <p class="text-h3 font-bold text-emerald-600">₱{{ number_format($stats['approved_amount'], 2) }}</p>
+                    <p id="stat-amount" class="text-h3 font-bold text-emerald-600">₱{{ number_format($stats['approved_amount'], 2) }}</p>
                 </div>
             </div>
         </div>
@@ -112,7 +112,7 @@
                         <th class="px-gr-md py-gr-sm text-center text-caption font-semibold text-gray-500 uppercase tracking-wider">Action</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-gray-100">
+                <tbody id="requests-tbody" class="divide-y divide-gray-100">
                     @foreach($requests as $req)
                     <tr class="hover:bg-gray-50 transition-colors" x-data="{ showLogistics: false }">
                         <td class="px-gr-md py-gr-md">
@@ -478,6 +478,26 @@
         }
     });
     @endif
+
+    // AJAX Polling for real-time updates
+    let lastTotal = {{ $stats['total'] }};
+    function refreshData() {
+        fetch('{{ route("admin.fund-requests.json") }}')
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById('stat-total').textContent = data.stats.total;
+                document.getElementById('stat-pending').textContent = data.stats.pending;
+                document.getElementById('stat-approved').textContent = data.stats.approved;
+                document.getElementById('stat-amount').textContent = '₱' + Number(data.stats.approved_amount).toLocaleString('en-PH', {minimumFractionDigits: 2});
+                
+                if (data.stats.total !== lastTotal) {
+                    location.reload(); // Reload to get full row rendering with Alpine.js
+                    lastTotal = data.stats.total;
+                }
+            })
+            .catch(err => console.log('Refresh error:', err));
+    }
+    setInterval(refreshData, 5000);
 </script>
 @endpush
 @endsection

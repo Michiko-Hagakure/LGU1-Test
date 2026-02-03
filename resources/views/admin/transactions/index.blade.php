@@ -310,5 +310,20 @@
         });
         window.location.href = '{{ route("admin.transactions.export.csv") }}?' + params.toString();
     }
+
+    // AJAX Polling for real-time updates
+    let lastTotal = {{ $paymentSlips->total() }};
+    function refreshData() {
+        fetch('{{ route("admin.transactions.json") }}' + window.location.search)
+            .then(res => res.json())
+            .then(data => {
+                if (data.stats.total !== lastTotal) {
+                    location.reload();
+                    lastTotal = data.stats.total;
+                }
+            })
+            .catch(err => console.log('Refresh error:', err));
+    }
+    setInterval(refreshData, 5000);
 </script>
 @endsection
