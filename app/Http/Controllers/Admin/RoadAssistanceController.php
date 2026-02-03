@@ -24,7 +24,12 @@ class RoadAssistanceController extends Controller
      */
     public function index()
     {
-        $requests = RoadAssistanceRequest::orderBy('id', 'desc')->get();
+        // Try to get incoming requests, handle gracefully if table doesn't exist
+        try {
+            $requests = RoadAssistanceRequest::orderBy('id', 'desc')->get();
+        } catch (\Exception $e) {
+            $requests = collect(); // Empty collection if table doesn't exist
+        }
         
         // Count stats
         $stats = [
@@ -135,7 +140,11 @@ class RoadAssistanceController extends Controller
      */
     public function getRequestsJson()
     {
-        $requests = RoadAssistanceRequest::orderBy('id', 'desc')->get();
+        try {
+            $requests = RoadAssistanceRequest::orderBy('id', 'desc')->get();
+        } catch (\Exception $e) {
+            $requests = collect();
+        }
         
         $stats = [
             'total' => $requests->count(),
