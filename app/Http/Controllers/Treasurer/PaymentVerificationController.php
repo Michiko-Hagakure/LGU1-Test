@@ -80,6 +80,45 @@ class PaymentVerificationController extends Controller
             'status' => $status ?? 'unpaid',
         ]);
     }
+
+    /**
+     * Return payment slips as JSON for AJAX polling
+     */
+    public function getPaymentsJson(Request $request)
+    {
+        $query = DB::connection('facilities_db')
+            ->table('payment_slips')
+            ->join('bookings', 'payment_slips.booking_id', '=', 'bookings.id')
+            ->join('facilities', 'bookings.facility_id', '=', 'facilities.facility_id')
+            ->select(
+                'payment_slips.*',
+                'bookings.applicant_name',
+                'bookings.user_id',
+                'facilities.name as facility_name'
+            );
+
+        $status = $request->get('status', 'unpaid');
+        if ($status !== 'all') {
+            $query->where('payment_slips.status', $status);
+        }
+
+        $paymentSlips = $query->orderBy('payment_slips.payment_deadline', 'asc')->limit(50)->get();
+
+        foreach ($paymentSlips as $slip) {
+            if (empty($slip->applicant_name) && $slip->user_id) {
+                $user = DB::connection('auth_db')->table('users')->where('id', $slip->user_id)->first(['full_name']);
+                $slip->applicant_name = $user ? $user->full_name : 'Unknown';
+            }
+        }
+
+        $stats = [
+            'unpaid' => DB::connection('facilities_db')->table('payment_slips')->where('status', 'unpaid')->count(),
+            'paid' => DB::connection('facilities_db')->table('payment_slips')->where('status', 'paid')->count(),
+            'verified' => DB::connection('facilities_db')->table('payment_slips')->where('status', 'verified')->count(),
+        ];
+
+        return response()->json(['data' => $paymentSlips, 'stats' => $stats]);
+    }
     
     /**
      * Show individual payment slip details.

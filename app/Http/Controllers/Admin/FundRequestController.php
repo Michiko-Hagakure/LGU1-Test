@@ -58,6 +58,25 @@ class FundRequestController extends Controller
     }
 
     /**
+     * Return fund requests as JSON for AJAX polling
+     */
+    public function getRequestsJson()
+    {
+        $requests = FundRequest::orderBy('id', 'desc')->get();
+        
+        $stats = [
+            'total' => $requests->count(),
+            'pending' => $requests->where('status', 'pending')->count(),
+            'approved' => $requests->where('status', 'Approved')->count(),
+            'rejected' => $requests->where('status', 'Rejected')->count(),
+            'total_amount' => $requests->sum('amount'),
+            'approved_amount' => $requests->where('status', 'Approved')->sum('amount'),
+        ];
+
+        return response()->json(['data' => $requests, 'stats' => $stats]);
+    }
+
+    /**
      * Update the status of a fund request
      */
     public function updateStatus(Request $request, $id)

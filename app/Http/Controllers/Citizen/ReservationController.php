@@ -84,6 +84,45 @@ class ReservationController extends Controller
     }
 
     /**
+     * Return reservations as JSON for AJAX polling
+     */
+    public function getReservationsJson(Request $request)
+    {
+        $userId = session('user_id');
+        if (!$userId) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        $query = DB::connection('facilities_db')
+            ->table('bookings')
+            ->join('facilities', 'bookings.facility_id', '=', 'facilities.facility_id')
+            ->select(
+                'bookings.*',
+                'facilities.name as facility_name'
+            )
+            ->where('bookings.user_id', $userId)
+            ->whereNotIn('bookings.status', ['completed', 'expired', 'cancelled', 'rejected'])
+            ->orderBy('bookings.start_time', 'desc')
+            ->limit(50);
+
+        $bookings = $query->get();
+
+        foreach ($bookings as $booking) {
+            $booking->booking_reference = 'BK' . str_pad($booking->id, 6, '0', STR_PAD_LEFT);
+            $booking->start_formatted = Carbon::parse($booking->start_time)->format('M d, Y');
+            $booking->time_range = Carbon::parse($booking->start_time)->format('h:iA') . '-' . Carbon::parse($booking->end_time)->format('h:iA');
+        }
+
+        $stats = [
+            'total' => DB::connection('facilities_db')->table('bookings')->where('user_id', $userId)->whereNotIn('status', ['completed', 'expired', 'cancelled', 'rejected'])->count(),
+            'pending' => DB::connection('facilities_db')->table('bookings')->where('user_id', $userId)->where('status', 'pending')->count(),
+            'confirmed' => DB::connection('facilities_db')->table('bookings')->where('user_id', $userId)->where('status', 'confirmed')->count(),
+        ];
+
+        return response()->json(['data' => $bookings, 'stats' => $stats]);
+    }
+
+    /**
      * Display details of a specific booking.
      */
     public function show($id)

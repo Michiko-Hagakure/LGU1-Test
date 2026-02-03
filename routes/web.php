@@ -1512,6 +1512,7 @@ Route::middleware(['auth', 'role:Admin'])->group(function () {
     // Phase 5: Payment Analytics & Transactions
     Route::get('/admin/analytics/payments', [\App\Http\Controllers\Admin\PaymentAnalyticsController::class, 'index'])->name('admin.analytics.payments');
     Route::get('/admin/transactions', [\App\Http\Controllers\Admin\TransactionController::class, 'index'])->name('admin.transactions.index');
+    Route::get('/admin/transactions/json', [\App\Http\Controllers\Admin\TransactionController::class, 'getTransactionsJson'])->name('admin.transactions.json');
     Route::get('/admin/transactions/{id}', [\App\Http\Controllers\Admin\TransactionController::class, 'show'])->name('admin.transactions.show');
     Route::get('/admin/transactions-export/csv', [\App\Http\Controllers\Admin\TransactionController::class, 'exportCsv'])->name('admin.transactions.export.csv');
     Route::get('/admin/transactions/{id}/email', [TransactionController::class, 'sendEmailReceipt'])->name('admin.transactions.email');
@@ -1746,6 +1747,7 @@ Route::middleware(['auth', 'role:Treasurer'])->prefix('treasurer')->name('treasu
 
     // Payment Verification Queue - Cash payments at CTO
     Route::get('/payment-verification', [\App\Http\Controllers\Treasurer\PaymentVerificationController::class, 'index'])->name('payment-verification');
+    Route::get('/payment-verification/json', [\App\Http\Controllers\Treasurer\PaymentVerificationController::class, 'getPaymentsJson'])->name('payment-verification.json');
     Route::get('/payment-slips/{id}', [\App\Http\Controllers\Treasurer\PaymentVerificationController::class, 'show'])->name('payment-slips.show');
     Route::post('/payment-slips/{id}/verify-payment', [\App\Http\Controllers\Treasurer\PaymentVerificationController::class, 'verifyPayment'])->name('payment-slips.verify');
 
@@ -1829,6 +1831,7 @@ Route::middleware(['auth', 'role:citizen', \App\Http\Middleware\CheckSessionTime
 
     // Reservations
     Route::get('/citizen/reservations', [\App\Http\Controllers\Citizen\ReservationController::class, 'index'])->name('citizen.reservations');
+    Route::get('/citizen/reservations/json', [\App\Http\Controllers\Citizen\ReservationController::class, 'getReservationsJson'])->name('citizen.reservations.json');
     Route::get('/citizen/reservations/history', [\App\Http\Controllers\Citizen\ReservationController::class, 'history'])->name('citizen.reservation.history');
     Route::get('/citizen/reservations/{id}', [\App\Http\Controllers\Citizen\ReservationController::class, 'show'])->name('citizen.reservations.show');
     Route::post('/citizen/reservations/{id}/cancel', [\App\Http\Controllers\Citizen\ReservationController::class, 'cancel'])->name('citizen.reservations.cancel');
@@ -2040,8 +2043,10 @@ Route::middleware(['auth', 'signed'])->prefix('admin')->name('admin.')->group(fu
         ->name('fund-requests.index');
 });
 
-// Update fund request status (auth + CSRF protection, no signed URL needed)
+// Fund requests AJAX and status updates
 Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/fund-requests/json', [\App\Http\Controllers\Admin\FundRequestController::class, 'getRequestsJson'])
+        ->name('fund-requests.json');
     Route::post('/fund-requests/{id}/status', [\App\Http\Controllers\Admin\FundRequestController::class, 'updateStatus'])
         ->name('fund-requests.update-status');
 });
@@ -2070,6 +2075,8 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
 Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/road-assistance', [\App\Http\Controllers\Admin\RoadAssistanceController::class, 'index'])
         ->name('road-assistance.index');
+    Route::get('/road-assistance/json', [\App\Http\Controllers\Admin\RoadAssistanceController::class, 'getRequestsJson'])
+        ->name('road-assistance.json');
     Route::post('/road-assistance/{id}/status', [\App\Http\Controllers\Admin\RoadAssistanceController::class, 'updateStatus'])
         ->name('road-assistance.update-status');
 });

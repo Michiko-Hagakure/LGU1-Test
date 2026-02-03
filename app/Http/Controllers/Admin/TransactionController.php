@@ -108,6 +108,55 @@ class TransactionController extends Controller
     }
 
     /**
+     * Return transactions as JSON for AJAX polling
+     */
+    public function getTransactionsJson(Request $request)
+    {
+        $query = DB::connection('facilities_db')->table('payment_slips')
+            ->join('bookings', 'payment_slips.booking_id', '=', 'bookings.id')
+            ->join('facilities', 'bookings.facility_id', '=', 'facilities.facility_id')
+            ->select(
+                'payment_slips.*',
+                'bookings.event_name',
+                'bookings.user_id',
+                'facilities.name as facility_name'
+            );
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('payment_slips.slip_number', 'LIKE', "%{$search}%")
+                  ->orWhere('payment_slips.or_number', 'LIKE', "%{$search}%");
+            });
+        }
+        if ($request->filled('status')) {
+            $query->where('payment_slips.status', $request->status);
+        }
+
+        $transactions = $query->orderBy('payment_slips.created_at', 'desc')->limit(50)->get();
+
+        $userIds = $transactions->pluck('user_id')->unique()->filter();
+        $users = DB::connection('auth_db')->table('users')
+            ->whereIn('id', $userIds)
+            ->select('id', 'full_name', 'email')
+            ->get()
+            ->keyBy('id');
+
+        foreach ($transactions as $transaction) {
+            $user = $users->get($transaction->user_id);
+            $transaction->citizen_name = $user ? $user->full_name : 'Unknown';
+        }
+
+        $stats = [
+            'total' => DB::connection('facilities_db')->table('payment_slips')->count(),
+            'paid' => DB::connection('facilities_db')->table('payment_slips')->where('status', 'paid')->count(),
+            'pending' => DB::connection('facilities_db')->table('payment_slips')->where('status', 'pending')->count(),
+        ];
+
+        return response()->json(['data' => $transactions, 'stats' => $stats]);
+    }
+
+    /**
      * Display transaction details
      */
     public function show($id)

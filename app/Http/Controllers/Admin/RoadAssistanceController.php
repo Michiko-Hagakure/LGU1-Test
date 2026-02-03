@@ -40,6 +40,23 @@ class RoadAssistanceController extends Controller
     }
 
     /**
+     * Return road assistance requests as JSON for AJAX polling
+     */
+    public function getRequestsJson()
+    {
+        $requests = RoadAssistanceRequest::orderBy('id', 'desc')->get();
+        
+        $stats = [
+            'total' => $requests->count(),
+            'pending' => $requests->where('status', 'pending')->count(),
+            'approved' => $requests->where('status', 'Approved')->count(),
+            'rejected' => $requests->where('status', 'Rejected')->count(),
+        ];
+
+        return response()->json(['data' => $requests, 'stats' => $stats]);
+    }
+
+    /**
      * Update the status of a road assistance request
      */
     public function updateStatus(Request $request, $id)
