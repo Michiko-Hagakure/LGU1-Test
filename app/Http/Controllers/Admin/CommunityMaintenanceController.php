@@ -130,6 +130,77 @@ class CommunityMaintenanceController extends Controller
     }
 
     /**
+     * Get maintenance requests as JSON for AJAX polling
+     */
+    public function getRequestsJson()
+    {
+        try {
+            // First, sync statuses from Community API
+            $this->syncStatusesFromApi();
+            
+            $requests = DB::connection('facilities_db')
+                ->table('community_maintenance_requests')
+                ->orderBy('created_at', 'desc')
+                ->limit(50)
+                ->get();
+
+            $stats = [
+                'pending' => DB::connection('facilities_db')
+                    ->table('community_maintenance_requests')
+                    ->where('status', 'submitted')
+                    ->count(),
+                'in_progress' => DB::connection('facilities_db')
+                    ->table('community_maintenance_requests')
+                    ->whereIn('status', ['reviewed', 'in_progress'])
+                    ->count(),
+                'resolved' => DB::connection('facilities_db')
+                    ->table('community_maintenance_requests')
+                    ->whereIn('status', ['resolved', 'closed'])
+                    ->count(),
+            ];
+
+            return response()->json([
+                'success' => true,
+                'data' => $requests,
+                'stats' => $stats,
+                'timestamp' => now()->toDateTimeString(),
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Sync statuses from Community API silently
+     */
+    private function syncStatusesFromApi(): void
+    {
+        try {
+            $residentNames = DB::connection('facilities_db')
+                ->table('community_maintenance_requests')
+                ->whereNotIn('status', ['resolved', 'closed'])
+                ->distinct()
+                ->pluck('resident_name');
+
+            foreach ($residentNames as $residentName) {
+                try {
+                    $statusData = $this->fetchReportStatus($residentName);
+                    if ($statusData['success'] && !empty($statusData['data'])) {
+                        $this->updateLocalStatuses($statusData['data']);
+                    }
+                } catch (\Exception $e) {
+                    // Continue with next resident
+                }
+            }
+        } catch (\Exception $e) {
+            Log::warning('Failed to sync statuses from API', ['error' => $e->getMessage()]);
+        }
+    }
+
+    /**
      * Check status of reports from the Community Infrastructure API
      */
     public function checkStatus($residentName)

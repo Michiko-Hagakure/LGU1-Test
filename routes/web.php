@@ -2005,7 +2005,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/community-maintenance/request', [\App\Http\Controllers\Admin\CommunityMaintenanceController::class, 'create'])->name('community-maintenance.create');
     Route::post('/community-maintenance/request', [\App\Http\Controllers\Admin\CommunityMaintenanceController::class, 'store'])->name('community-maintenance.store');
     Route::get('/community-maintenance/reports', [\App\Http\Controllers\Admin\CommunityMaintenanceController::class, 'index'])->name('community-maintenance.index');
-    Route::post('/community-maintenance/refresh', [\App\Http\Controllers\Admin\CommunityMaintenanceController::class, 'refreshStatuses'])->name('community-maintenance.refresh');
+    Route::get('/community-maintenance/json', [\App\Http\Controllers\Admin\CommunityMaintenanceController::class, 'getRequestsJson'])->name('community-maintenance.json');
 
     // Facility Site Selection Integration (Urban Planning)
     Route::get('/facility-site-selection', [\App\Http\Controllers\Admin\FacilitySiteSelectionController::class, 'index'])->name('facility-site-selection.index');
