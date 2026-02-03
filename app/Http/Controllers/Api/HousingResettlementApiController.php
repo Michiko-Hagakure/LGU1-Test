@@ -230,6 +230,7 @@ class HousingResettlementApiController extends Controller
                 'base_rate' => 0, // Government inter-agency - no charge
                 'subtotal' => 0,
                 'total_amount' => 0,
+                'source_system' => 'Housing_Resettlement', // Required for admin UI to find this booking
                 'created_at' => now(),
                 'updated_at' => now(),
             ];
