@@ -225,11 +225,14 @@ class HousingResettlementApiController extends Controller
                 'facility_id' => $validated['facility_id'],
                 'start_time' => $startDateTime,
                 'end_time' => $endDateTime,
-                'user_name' => $validated['contact_person'] . ' (Housing & Resettlement)',
+                'user_name' => $validated['contact_person'] . ' | ' . $validated['contact_email'] . ' | ' . $validated['contact_phone'],
                 'status' => 'pending',
                 'base_rate' => 0, // Government inter-agency - no charge
                 'subtotal' => 0,
                 'total_amount' => 0,
+                'purpose' => $validated['event_name'] . ' - ' . ($validated['event_description'] ?? 'Housing and Resettlement'),
+                'expected_attendees' => $validated['expected_attendees'],
+                'special_requests' => $validated['special_requests'] ?? null,
                 'source_system' => 'Housing_Resettlement', // Required for admin UI to find this booking
                 'created_at' => now(),
                 'updated_at' => now(),

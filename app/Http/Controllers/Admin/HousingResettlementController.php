@@ -21,15 +21,11 @@ class HousingResettlementController extends Controller
             ->orderBy('bookings.created_at', 'desc')
             ->select(
                 'bookings.id',
-                'bookings.event_name',
-                'bookings.event_description',
+                'bookings.user_name',
                 'bookings.purpose',
                 'bookings.start_time',
                 'bookings.end_time',
                 'bookings.expected_attendees',
-                'bookings.applicant_name',
-                'bookings.applicant_email',
-                'bookings.applicant_phone',
                 'bookings.special_requests',
                 'bookings.status',
                 'bookings.created_at',
@@ -40,6 +36,15 @@ class HousingResettlementController extends Controller
             ->get()
             ->map(function ($request) {
                 $request->booking_reference = 'BK' . str_pad($request->id, 6, '0', STR_PAD_LEFT);
+                // Parse contact info from user_name (format: "Name | Email | Phone")
+                $parts = explode(' | ', $request->user_name ?? '');
+                $request->applicant_name = $parts[0] ?? 'N/A';
+                $request->applicant_email = $parts[1] ?? 'N/A';
+                $request->applicant_phone = $parts[2] ?? 'N/A';
+                // Extract event name from purpose
+                $purposeParts = explode(' - ', $request->purpose ?? '');
+                $request->event_name = $purposeParts[0] ?? 'N/A';
+                $request->event_description = $purposeParts[1] ?? null;
                 return $request;
             });
 
