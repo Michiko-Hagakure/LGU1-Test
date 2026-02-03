@@ -283,6 +283,7 @@ class HousingResettlementApiController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to submit facility request',
+                'debug_error' => $e->getMessage(),
                 'timestamp' => now()->toDateTimeString(),
             ], 500);
         }
