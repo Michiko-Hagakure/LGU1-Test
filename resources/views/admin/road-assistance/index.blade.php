@@ -191,10 +191,12 @@
                                 $outStatusClass = match(strtolower($outgoing->status)) {
                                     'approved' => 'status-approved',
                                     'rejected' => 'status-rejected',
+                                    'pending_sync' => 'bg-orange-100 text-orange-800 border border-orange-300',
                                     default => 'status-pending'
                                 };
+                                $statusLabel = $outgoing->status === 'pending_sync' ? 'Pending Sync' : ucfirst($outgoing->status);
                             @endphp
-                            <span class="status-badge {{ $outStatusClass }}">{{ ucfirst($outgoing->status) }}</span>
+                            <span class="status-badge {{ $outStatusClass }}">{{ $statusLabel }}</span>
                         </td>
                         <td class="px-4 py-3">
                             <p class="text-gray-500 text-small">{{ \Carbon\Carbon::parse($outgoing->created_at)->format('M d, Y g:i A') }}</p>
@@ -636,6 +638,19 @@
         title: 'Success!',
         text: '{{ session("success") }}',
         confirmButtonColor: '#16a34a',
+        customClass: {
+            popup: 'rounded-2xl',
+            confirmButton: 'rounded-lg px-6'
+        }
+    });
+    @endif
+
+    @if(session('warning'))
+    Swal.fire({
+        icon: 'warning',
+        title: 'Saved Locally',
+        text: '{{ session("warning") }}',
+        confirmButtonColor: '#f59e0b',
         customClass: {
             popup: 'rounded-2xl',
             confirmButton: 'rounded-lg px-6'

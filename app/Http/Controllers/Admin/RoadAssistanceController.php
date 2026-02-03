@@ -109,30 +109,34 @@ class RoadAssistanceController extends Controller
             'description' => $validated['description'],
         ]);
 
-        if ($result['success']) {
-            // Store local reference
-            DB::connection('facilities_db')->table('citizen_road_requests')->insert([
-                'user_id' => $adminId,
-                'external_request_id' => $result['request_id'],
-                'event_type' => $validated['event_type'],
-                'start_datetime' => $startDateTime,
-                'end_datetime' => $endDateTime,
-                'location' => $validated['location'],
-                'landmark' => $validated['landmark'],
-                'description' => $validated['description'],
-                'booking_id' => $validated['booking_id'],
-                'status' => 'pending',
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
-            ]);
+        // Store local reference regardless of API result
+        $externalRequestId = $result['success'] ? $result['request_id'] : null;
+        $status = $result['success'] ? 'pending' : 'pending_sync';
+        $remarks = $result['success'] ? null : 'Failed to sync with external system. Will retry later.';
 
+        DB::connection('facilities_db')->table('citizen_road_requests')->insert([
+            'user_id' => $adminId,
+            'external_request_id' => $externalRequestId,
+            'event_type' => $validated['event_type'],
+            'start_datetime' => $startDateTime,
+            'end_datetime' => $endDateTime,
+            'location' => $validated['location'],
+            'landmark' => $validated['landmark'],
+            'description' => $validated['description'],
+            'booking_id' => $validated['booking_id'],
+            'status' => $status,
+            'remarks' => $remarks,
+            'created_at' => Carbon::now(),
+            'updated_at' => Carbon::now(),
+        ]);
+
+        if ($result['success']) {
             return redirect()->route('admin.road-assistance.index')
                 ->with('success', 'Road assistance request sent successfully! External Request ID: ' . $result['request_id']);
         }
 
-        return redirect()->back()
-            ->withInput()
-            ->with('error', $result['error'] ?? 'Failed to send request to Road & Transportation system.');
+        return redirect()->route('admin.road-assistance.index')
+            ->with('warning', 'Request saved locally but could not sync with Road & Transportation system. It will be synced when their system is available.');
     }
 
     /**
