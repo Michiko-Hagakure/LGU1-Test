@@ -227,6 +227,7 @@ class HousingResettlementApiController extends Controller
                 'end_time' => $endDateTime,
                 'user_name' => $validated['contact_person'] . ' (Housing & Resettlement)',
                 'status' => 'pending',
+                'base_rate' => 0, // Government inter-agency - no charge
                 'created_at' => now(),
                 'updated_at' => now(),
             ];
