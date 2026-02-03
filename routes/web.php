@@ -1476,6 +1476,7 @@ Route::middleware(['auth', 'role:Admin'])->group(function () {
     // Admin Routes
     Route::get('/admin/payment-queue', [\App\Http\Controllers\Admin\PaymentVerificationController::class, 'index'])->name('admin.payment-queue');
     Route::get('/admin/bookings', [\App\Http\Controllers\Admin\BookingManagementController::class, 'index'])->name('admin.bookings.index');
+    Route::get('/admin/bookings/json', [\App\Http\Controllers\Admin\BookingManagementController::class, 'getBookingsJson'])->name('admin.bookings.json');
     Route::get('/admin/bookings/{id}/review', [\App\Http\Controllers\Admin\BookingManagementController::class, 'review'])->name('admin.bookings.review');
     Route::post('/admin/bookings/{id}/confirm-payment', [\App\Http\Controllers\Admin\PaymentVerificationController::class, 'confirmPayment'])->name('admin.bookings.confirm-payment');
     Route::post('/admin/bookings/{id}/reject-payment', [\App\Http\Controllers\Admin\PaymentVerificationController::class, 'rejectPayment'])->name('admin.bookings.reject-payment');
@@ -1688,6 +1689,7 @@ Route::middleware(['auth', 'role:Reservations Staff'])->prefix('staff')->name('s
 
     // Booking Verification Queue
     Route::get('/verification-queue', [\App\Http\Controllers\Staff\BookingVerificationController::class, 'verificationQueue'])->name('verification-queue');
+    Route::get('/verification-queue/json', [\App\Http\Controllers\Staff\BookingVerificationController::class, 'verificationQueueJson'])->name('verification-queue.json');
 
     // Review Specific Booking
     Route::get('/bookings/{id}/review', [\App\Http\Controllers\Staff\BookingVerificationController::class, 'review'])->name('bookings.review');

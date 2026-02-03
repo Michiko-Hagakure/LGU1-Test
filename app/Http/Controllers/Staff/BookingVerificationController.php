@@ -96,6 +96,42 @@ class BookingVerificationController extends Controller
     }
 
     /**
+     * Return verification queue as JSON for AJAX polling
+     */
+    public function verificationQueueJson(Request $request)
+    {
+        $query = Booking::with(['facility.lguCity'])
+            ->where('status', 'pending')
+            ->orderBy('created_at', 'asc');
+
+        if ($request->has('facility_id') && $request->facility_id != '') {
+            $query->where('facility_id', $request->facility_id);
+        }
+        if ($request->has('date_from') && $request->date_from != '') {
+            $query->whereDate('event_date', '>=', $request->date_from);
+        }
+        if ($request->has('date_to') && $request->date_to != '') {
+            $query->whereDate('event_date', '<=', $request->date_to);
+        }
+
+        $bookings = $query->limit(50)->get();
+
+        foreach ($bookings as $booking) {
+            $booking->booking_reference = 'BK' . str_pad($booking->id, 6, '0', STR_PAD_LEFT);
+            $booking->facility_name = $booking->facility->name ?? 'N/A';
+            $booking->start_formatted = Carbon::parse($booking->start_time)->format('M d, Y');
+            $booking->time_range = Carbon::parse($booking->start_time)->format('h:iA') . '-' . Carbon::parse($booking->end_time)->format('h:iA');
+        }
+
+        $stats = [
+            'pending' => Booking::where('status', 'pending')->count(),
+            'verified_today' => Booking::where('status', 'staff_verified')->whereDate('updated_at', Carbon::today())->count(),
+        ];
+
+        return response()->json(['data' => $bookings, 'stats' => $stats]);
+    }
+
+    /**
      * Show detailed review page for a specific booking
      */
     public function review($bookingId)

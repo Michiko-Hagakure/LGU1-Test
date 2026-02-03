@@ -153,7 +153,7 @@
                             <th class="px-gr-md py-gr-sm text-left text-small font-semibold">Actions</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-gray-200">
+                    <tbody id="bookings-tbody" class="divide-y divide-gray-200">
                         @foreach($bookings as $booking)
                             @php
                                 // Get citizen name from booking data (fallback for cross-database issues)
@@ -278,10 +278,45 @@
 </div>
 
 @push('scripts')
+<script src="{{ asset('js/ajax-refresh.js') }}"></script>
 <script>
-    // Initialize Lucide icons
     document.addEventListener('DOMContentLoaded', function() {
         lucide.createIcons();
+        
+        const statusConfig = {
+            'pending_staff_verification': { color: 'bg-yellow-100 text-yellow-800 border-yellow-300', icon: 'clock', label: 'Pending Verification' },
+            'staff_verified': { color: 'bg-green-100 text-green-800 border-green-300', icon: 'check-circle', label: 'Staff Verified' },
+            'paid': { color: 'bg-blue-100 text-blue-800 border-blue-300', icon: 'credit-card', label: 'Paid' },
+            'confirmed': { color: 'bg-purple-100 text-purple-800 border-purple-300', icon: 'check-check', label: 'Confirmed' },
+            'rejected': { color: 'bg-red-100 text-red-800 border-red-300', icon: 'x-circle', label: 'Rejected' },
+            'cancelled': { color: 'bg-gray-100 text-gray-800 border-gray-300', icon: 'ban', label: 'Cancelled' },
+            'expired': { color: 'bg-orange-100 text-orange-800 border-orange-300', icon: 'clock-alert', label: 'Expired' }
+        };
+
+        function renderBookingRow(b) {
+            const status = statusConfig[b.status] || { color: 'bg-gray-100 text-gray-800 border-gray-300', icon: 'help-circle', label: b.status };
+            const citizenName = b.user_name || b.applicant_name || 'Unknown';
+            const initial = citizenName.charAt(0).toUpperCase();
+            
+            return `<tr class="hover:bg-gray-50 transition-colors">
+                <td class="px-gr-md py-gr-sm"><span class="text-small font-mono font-semibold text-lgu-headline">${String(b.id).padStart(6, '0')}</span></td>
+                <td class="px-gr-md py-gr-sm"><div class="flex items-center gap-gr-xs"><div class="w-8 h-8 bg-lgu-button rounded-full flex items-center justify-center text-lgu-button-text font-semibold text-caption">${initial}</div><span class="text-small text-lgu-headline">${citizenName}</span></div></td>
+                <td class="px-gr-md py-gr-sm"><div><p class="text-small font-medium text-lgu-headline">${b.facility_name}</p></div></td>
+                <td class="px-gr-md py-gr-sm"><div><p class="text-small font-medium text-lgu-headline">${b.start_formatted}</p><p class="text-caption text-lgu-paragraph">${b.time_range}</p></div></td>
+                <td class="px-gr-md py-gr-sm"><span class="inline-flex items-center gap-1.5 px-gr-sm py-1 rounded-full border text-caption font-medium ${status.color}"><i data-lucide="${status.icon}" class="w-3.5 h-3.5"></i>${status.label}</span></td>
+                <td class="px-gr-md py-gr-sm"><span class="text-small font-semibold text-lgu-headline">₱${Number(b.total_amount).toLocaleString('en-PH', {minimumFractionDigits: 2})}</span></td>
+                <td class="px-gr-md py-gr-sm"><a href="/admin/bookings/${b.id}/review" class="inline-flex items-center gap-1.5 px-gr-sm py-1.5 bg-lgu-button hover:bg-lgu-highlight text-lgu-button-text text-caption font-medium rounded-lg transition-colors"><i data-lucide="eye" class="w-4 h-4"></i>View Details</a></td>
+            </tr>`;
+        }
+
+        const ajaxRefresh = new AjaxRefresh({
+            endpoint: '{{ route("admin.bookings.json") }}' + window.location.search,
+            interval: 5000,
+            tableBodyId: 'bookings-tbody',
+            initialCount: {{ $bookings->total() }},
+            renderRow: renderBookingRow
+        });
+        ajaxRefresh.start();
     });
 </script>
 @endpush

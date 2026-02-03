@@ -81,6 +81,59 @@ class BookingManagementController extends Controller
 
         return view('admin.bookings.index', compact('bookings', 'facilities'));
     }
+
+    /**
+     * Return bookings as JSON for AJAX polling
+     */
+    public function getBookingsJson(Request $request)
+    {
+        $query = Booking::with(['facility.lguCity', 'user']);
+
+        if ($request->filled('status') && $request->input('status') !== 'all') {
+            $query->where('status', $request->input('status'));
+        }
+        if ($request->filled('facility_id') && $request->input('facility_id') !== 'all') {
+            $query->where('facility_id', $request->input('facility_id'));
+        }
+        if ($request->filled('date_from')) {
+            $query->whereDate('start_time', '>=', $request->input('date_from'));
+        }
+        if ($request->filled('date_to')) {
+            $query->whereDate('start_time', '<=', $request->input('date_to'));
+        }
+        if ($request->filled('search')) {
+            $search = $request->input('search');
+            $query->where(function($q) use ($search) {
+                $q->where('id', 'LIKE', "%{$search}%")
+                  ->orWhere('applicant_name', 'LIKE', "%{$search}%");
+            });
+        }
+
+        $bookings = $query->orderBy('created_at', 'desc')->limit(50)->get();
+
+        foreach ($bookings as $booking) {
+            if ($booking->user_id) {
+                $user = \DB::connection('auth_db')->table('users')->where('id', $booking->user_id)->first();
+                $booking->user_name = $user ? $user->full_name : $booking->applicant_name;
+            } else {
+                $booking->user_name = $booking->applicant_name;
+            }
+            $booking->booking_reference = 'BK' . str_pad($booking->id, 6, '0', STR_PAD_LEFT);
+            $booking->facility_name = $booking->facility->name ?? 'N/A';
+            $booking->start_formatted = Carbon::parse($booking->start_time)->format('M d, Y');
+            $booking->time_range = Carbon::parse($booking->start_time)->format('h:iA') . '-' . Carbon::parse($booking->end_time)->format('h:iA');
+        }
+
+        $stats = [
+            'total' => Booking::count(),
+            'pending' => Booking::where('status', 'pending')->count(),
+            'confirmed' => Booking::where('status', 'confirmed')->count(),
+            'staff_verified' => Booking::where('status', 'staff_verified')->count(),
+        ];
+
+        return response()->json(['data' => $bookings, 'stats' => $stats]);
+    }
+
     // For Data
     public function show($id)
     {
