@@ -4,13 +4,21 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\RoadAssistanceRequest;
+use App\Services\RoadTransportApiService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Carbon\Carbon;
 
 class RoadAssistanceController extends Controller
 {
+    protected RoadTransportApiService $roadApi;
+
+    public function __construct(RoadTransportApiService $roadApi)
+    {
+        $this->roadApi = $roadApi;
+    }
     /**
      * Display all road assistance requests from Road and Transportation system
      */
@@ -36,7 +44,90 @@ class RoadAssistanceController extends Controller
             'rerouting' => 'Traffic Rerouting Plan',
         ];
 
-        return view('admin.road-assistance.index', compact('requests', 'stats', 'assistanceTypes'));
+        // Get upcoming confirmed bookings that might need road assistance
+        $upcomingBookings = DB::connection('facilities_db')
+            ->table('bookings')
+            ->join('facilities', 'bookings.facility_id', '=', 'facilities.facility_id')
+            ->leftJoin('lgu_cities', 'facilities.lgu_city_id', '=', 'lgu_cities.id')
+            ->where('bookings.status', 'confirmed')
+            ->where('bookings.start_time', '>=', Carbon::now())
+            ->select(
+                'bookings.*',
+                'facilities.name as facility_name',
+                'facilities.address as facility_address',
+                'lgu_cities.city_name'
+            )
+            ->orderBy('bookings.start_time')
+            ->limit(20)
+            ->get();
+
+        // Get outgoing requests sent to Road & Transportation
+        $outgoingRequests = DB::connection('auth_db')
+            ->table('citizen_road_requests')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return view('admin.road-assistance.index', compact('requests', 'stats', 'assistanceTypes', 'upcomingBookings', 'outgoingRequests'));
+    }
+
+    /**
+     * Send a road assistance request TO the Road & Transportation system
+     */
+    public function sendRequest(Request $request)
+    {
+        $validated = $request->validate([
+            'event_type' => 'required|string|max:100',
+            'start_date' => 'required|date',
+            'start_time' => 'required|string',
+            'end_date' => 'required|date',
+            'end_time' => 'required|string',
+            'location' => 'required|string|max:500',
+            'landmark' => 'nullable|string|max:255',
+            'description' => 'required|string|max:2000',
+            'booking_id' => 'nullable|integer',
+        ]);
+
+        $adminId = session('user_id') ?? auth()->id();
+
+        // Format dates with times
+        $startDateTime = Carbon::parse($validated['start_date'] . ' ' . $validated['start_time'])->format('Y-m-d H:i:s');
+        $endDateTime = Carbon::parse($validated['end_date'] . ' ' . $validated['end_time'])->format('Y-m-d H:i:s');
+
+        // Send to Road & Transportation API
+        $result = $this->roadApi->createRequest([
+            'user_id' => $adminId,
+            'event_type' => $validated['event_type'],
+            'start_date' => $startDateTime,
+            'end_date' => $endDateTime,
+            'location' => $validated['location'],
+            'landmark' => $validated['landmark'],
+            'description' => $validated['description'],
+        ]);
+
+        if ($result['success']) {
+            // Store local reference
+            DB::connection('auth_db')->table('citizen_road_requests')->insert([
+                'user_id' => $adminId,
+                'external_request_id' => $result['request_id'],
+                'event_type' => $validated['event_type'],
+                'start_datetime' => $startDateTime,
+                'end_datetime' => $endDateTime,
+                'location' => $validated['location'],
+                'landmark' => $validated['landmark'],
+                'description' => $validated['description'],
+                'booking_id' => $validated['booking_id'],
+                'status' => 'pending',
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now(),
+            ]);
+
+            return redirect()->route('admin.road-assistance.index')
+                ->with('success', 'Road assistance request sent successfully! External Request ID: ' . $result['request_id']);
+        }
+
+        return redirect()->back()
+            ->withInput()
+            ->with('error', $result['error'] ?? 'Failed to send request to Road & Transportation system.');
     }
 
     /**

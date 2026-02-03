@@ -78,16 +78,136 @@
 
     {{-- Integration Info --}}
     <div class="p-gr-md bg-orange-50 border border-orange-200 rounded-xl">
-        <div class="flex items-start gap-gr-sm">
-            <i data-lucide="traffic-cone" class="w-5 h-5 text-orange-600 flex-shrink-0 mt-0.5"></i>
-            <div>
-                <p class="text-orange-800 font-semibold">Road and Transportation Integration</p>
-                <p class="text-orange-700 text-small mt-1">Road assistance requests submitted from the Road and Transportation Infrastructure Monitoring system for events that may cause traffic congestion.</p>
+        <div class="flex items-start justify-between">
+            <div class="flex items-start gap-gr-sm">
+                <i data-lucide="traffic-cone" class="w-5 h-5 text-orange-600 flex-shrink-0 mt-0.5"></i>
+                <div>
+                    <p class="text-orange-800 font-semibold">Road and Transportation Integration</p>
+                    <p class="text-orange-700 text-small mt-1">Send road assistance requests for events that may cause traffic congestion.</p>
+                </div>
             </div>
+            <button onclick="openSendRequestModal()" class="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors flex items-center gap-2">
+                <i data-lucide="send" class="w-4 h-4"></i>
+                Send Request
+            </button>
         </div>
     </div>
 
-    {{-- Requests Table --}}
+    {{-- Upcoming Bookings That May Need Road Assistance --}}
+    @if(isset($upcomingBookings) && $upcomingBookings->count() > 0)
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+        <div class="bg-gradient-to-r from-blue-600 to-blue-700 px-gr-md py-gr-sm">
+            <h3 class="text-white font-semibold flex items-center gap-2">
+                <i data-lucide="calendar-check" class="w-5 h-5"></i>
+                Upcoming Confirmed Bookings (May Need Road Assistance)
+            </h3>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-4 py-3 text-left text-caption font-bold text-gray-600 uppercase">Booking</th>
+                        <th class="px-4 py-3 text-left text-caption font-bold text-gray-600 uppercase">Facility</th>
+                        <th class="px-4 py-3 text-left text-caption font-bold text-gray-600 uppercase">Date & Time</th>
+                        <th class="px-4 py-3 text-left text-caption font-bold text-gray-600 uppercase">Expected Attendees</th>
+                        <th class="px-4 py-3 text-center text-caption font-bold text-gray-600 uppercase">Action</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    @foreach($upcomingBookings as $booking)
+                    <tr class="hover:bg-gray-50 transition-colors">
+                        <td class="px-4 py-3">
+                            <p class="font-semibold text-gray-900">BK{{ str_pad($booking->id, 6, '0', STR_PAD_LEFT) }}</p>
+                            <p class="text-caption text-gray-500">{{ $booking->applicant_name ?? 'N/A' }}</p>
+                        </td>
+                        <td class="px-4 py-3">
+                            <p class="font-semibold text-gray-900">{{ $booking->facility_name }}</p>
+                            <p class="text-caption text-gray-500">{{ Str::limit($booking->facility_address, 40) }}</p>
+                        </td>
+                        <td class="px-4 py-3">
+                            <p class="font-semibold text-gray-900">{{ \Carbon\Carbon::parse($booking->start_time)->format('M d, Y') }}</p>
+                            <p class="text-caption text-gray-500">
+                                {{ \Carbon\Carbon::parse($booking->start_time)->format('g:i A') }} - {{ \Carbon\Carbon::parse($booking->end_time)->format('g:i A') }}
+                            </p>
+                        </td>
+                        <td class="px-4 py-3">
+                            <p class="text-gray-700">{{ $booking->expected_attendees ?? 'N/A' }}</p>
+                        </td>
+                        <td class="px-4 py-3 text-center">
+                            <button onclick="requestForBooking({{ json_encode($booking) }})" 
+                                    class="px-3 py-1.5 bg-blue-600 text-white text-small rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-1 mx-auto">
+                                <i data-lucide="truck" class="w-4 h-4"></i> Request Assistance
+                            </button>
+                        </td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+    </div>
+    @endif
+
+    {{-- Outgoing Requests Sent to Road & Transportation --}}
+    @if(isset($outgoingRequests) && count($outgoingRequests) > 0)
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+        <div class="bg-gradient-to-r from-green-600 to-green-700 px-gr-md py-gr-sm">
+            <h3 class="text-white font-semibold flex items-center gap-2">
+                <i data-lucide="send" class="w-5 h-5"></i>
+                Outgoing Requests (Sent to Road & Transportation)
+            </h3>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-4 py-3 text-left text-caption font-bold text-gray-600 uppercase">External ID</th>
+                        <th class="px-4 py-3 text-left text-caption font-bold text-gray-600 uppercase">Type</th>
+                        <th class="px-4 py-3 text-left text-caption font-bold text-gray-600 uppercase">Location</th>
+                        <th class="px-4 py-3 text-left text-caption font-bold text-gray-600 uppercase">Date & Time</th>
+                        <th class="px-4 py-3 text-center text-caption font-bold text-gray-600 uppercase">Status</th>
+                        <th class="px-4 py-3 text-left text-caption font-bold text-gray-600 uppercase">Sent At</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    @foreach($outgoingRequests as $outgoing)
+                    <tr class="hover:bg-gray-50 transition-colors">
+                        <td class="px-4 py-3">
+                            <p class="font-semibold text-gray-900">#{{ $outgoing->external_request_id ?? 'Pending' }}</p>
+                        </td>
+                        <td class="px-4 py-3">
+                            <p class="text-gray-700">{{ $outgoing->event_type }}</p>
+                        </td>
+                        <td class="px-4 py-3">
+                            <p class="text-gray-700">{{ Str::limit($outgoing->location, 30) }}</p>
+                        </td>
+                        <td class="px-4 py-3">
+                            <p class="font-semibold text-gray-900">{{ \Carbon\Carbon::parse($outgoing->start_datetime)->format('M d, Y') }}</p>
+                            <p class="text-caption text-gray-500">
+                                {{ \Carbon\Carbon::parse($outgoing->start_datetime)->format('g:i A') }} - {{ \Carbon\Carbon::parse($outgoing->end_datetime)->format('g:i A') }}
+                            </p>
+                        </td>
+                        <td class="px-4 py-3 text-center">
+                            @php
+                                $outStatusClass = match(strtolower($outgoing->status)) {
+                                    'approved' => 'status-approved',
+                                    'rejected' => 'status-rejected',
+                                    default => 'status-pending'
+                                };
+                            @endphp
+                            <span class="status-badge {{ $outStatusClass }}">{{ ucfirst($outgoing->status) }}</span>
+                        </td>
+                        <td class="px-4 py-3">
+                            <p class="text-gray-500 text-small">{{ \Carbon\Carbon::parse($outgoing->created_at)->format('M d, Y g:i A') }}</p>
+                        </td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+    </div>
+    @endif
+
+    {{-- Incoming Requests Table --}}
     <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
         <div class="bg-gradient-to-r from-lgu-headline to-lgu-stroke px-gr-md py-gr-sm">
             <h3 class="text-white font-semibold flex items-center gap-2">
@@ -202,6 +322,84 @@
     <input type="hidden" name="deployment_end_time" id="formDeploymentEndTime">
     <input type="hidden" name="admin_notes" id="formAdminNotes">
 </form>
+
+{{-- Send Request Modal --}}
+<div id="sendRequestModal" class="fixed inset-0 z-50 hidden overflow-y-auto">
+    <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:p-0">
+        <div class="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75" onclick="closeSendRequestModal()"></div>
+        
+        <div class="relative inline-block w-full max-w-2xl p-6 overflow-hidden text-left align-middle transition-all transform bg-white shadow-xl rounded-2xl">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-xl font-bold text-gray-900">Send Road Assistance Request</h3>
+                <button type="button" onclick="closeSendRequestModal()" class="text-gray-400 hover:text-gray-600">
+                    <i data-lucide="x" class="w-6 h-6"></i>
+                </button>
+            </div>
+
+            <form action="{{ route('admin.road-assistance.send') }}" method="POST" class="space-y-5">
+                @csrf
+                <input type="hidden" name="booking_id" id="send_booking_id">
+                
+                <div>
+                    <label for="send_event_type" class="block text-sm font-medium text-gray-700 mb-1">Type of Assistance <span class="text-red-500">*</span></label>
+                    <select name="event_type" id="send_event_type" required class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent">
+                        <option value="">Select type...</option>
+                        @foreach($assistanceTypes as $value => $label)
+                            <option value="{{ $value }}">{{ $label }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="send_start_date" class="block text-sm font-medium text-gray-700 mb-1">Start Date <span class="text-red-500">*</span></label>
+                        <input type="date" name="start_date" id="send_start_date" required min="{{ date('Y-m-d') }}" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent">
+                    </div>
+                    <div>
+                        <label for="send_start_time" class="block text-sm font-medium text-gray-700 mb-1">Start Time <span class="text-red-500">*</span></label>
+                        <input type="time" name="start_time" id="send_start_time" required class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="send_end_date" class="block text-sm font-medium text-gray-700 mb-1">End Date <span class="text-red-500">*</span></label>
+                        <input type="date" name="end_date" id="send_end_date" required min="{{ date('Y-m-d') }}" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent">
+                    </div>
+                    <div>
+                        <label for="send_end_time" class="block text-sm font-medium text-gray-700 mb-1">End Time <span class="text-red-500">*</span></label>
+                        <input type="time" name="end_time" id="send_end_time" required class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent">
+                    </div>
+                </div>
+
+                <div>
+                    <label for="send_location" class="block text-sm font-medium text-gray-700 mb-1">Location / Address <span class="text-red-500">*</span></label>
+                    <input type="text" name="location" id="send_location" required maxlength="500" placeholder="Enter the street or area requiring assistance" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent">
+                </div>
+
+                <div>
+                    <label for="send_landmark" class="block text-sm font-medium text-gray-700 mb-1">Nearby Landmark</label>
+                    <input type="text" name="landmark" id="send_landmark" maxlength="255" placeholder="e.g., Near City Hall" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent">
+                </div>
+
+                <div>
+                    <label for="send_description" class="block text-sm font-medium text-gray-700 mb-1">Description / Details <span class="text-red-500">*</span></label>
+                    <textarea name="description" id="send_description" required rows="4" maxlength="2000" placeholder="Describe the event, expected traffic impact, and assistance needed..." class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent resize-none"></textarea>
+                </div>
+
+                <div class="flex justify-end gap-3 pt-4 border-t">
+                    <button type="button" onclick="closeSendRequestModal()" class="px-6 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
+                        Cancel
+                    </button>
+                    <button type="submit" class="px-6 py-2.5 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors flex items-center gap-2">
+                        <i data-lucide="send" class="w-4 h-4"></i>
+                        Send to Road & Transportation
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
 @endsection
 
@@ -404,6 +602,32 @@
         });
         
         form.submit();
+    }
+
+    // Open Send Request Modal
+    function openSendRequestModal() {
+        document.getElementById('sendRequestModal').classList.remove('hidden');
+        document.body.classList.add('overflow-hidden');
+        lucide.createIcons();
+    }
+
+    function closeSendRequestModal() {
+        document.getElementById('sendRequestModal').classList.add('hidden');
+        document.body.classList.remove('overflow-hidden');
+    }
+
+    // Pre-fill from booking
+    function requestForBooking(booking) {
+        openSendRequestModal();
+        setTimeout(() => {
+            document.getElementById('send_booking_id').value = booking.id || '';
+            document.getElementById('send_location').value = booking.facility_address || '';
+            document.getElementById('send_start_date').value = booking.start_time ? booking.start_time.split(' ')[0] : '';
+            document.getElementById('send_start_time').value = booking.start_time ? booking.start_time.split(' ')[1]?.substring(0, 5) : '';
+            document.getElementById('send_end_date').value = booking.end_time ? booking.end_time.split(' ')[0] : '';
+            document.getElementById('send_end_time').value = booking.end_time ? booking.end_time.split(' ')[1]?.substring(0, 5) : '';
+            document.getElementById('send_description').value = `Road assistance needed for facility booking at ${booking.facility_name}. Expected attendees: ${booking.expected_attendees || 'N/A'}. Purpose: ${booking.purpose || 'N/A'}`;
+        }, 100);
     }
 
     @if(session('success'))

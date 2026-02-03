@@ -46,19 +46,6 @@
     </ul>
 </div>
 
-<!-- INTEGRATIONS SUBMODULE -->
-<div class="px-gr-md mb-gr-lg">
-    <h4 class="text-gray-400 text-caption font-semibold uppercase tracking-wider mb-gr-xs">Integrations</h4>
-    <ul class="space-y-gr-xs">
-        <li>
-            <a href="{{ route('citizen.road-assistance.index') }}" class="sidebar-link flex items-center px-gr-sm py-gr-xs text-small font-medium rounded-lg transition-colors duration-200 {{ request()->routeIs('citizen.road-assistance.*') ? 'active' : '' }}">
-                <i data-lucide="truck" class="w-5 h-5 mr-gr-xs flex-shrink-0"></i>
-                <span>Road Assistance</span>
-            </a>
-        </li>
-    </ul>
-</div>
-
 <!-- FACILITIES BROWSE SUBMODULE -->
 <div class="px-gr-md mb-gr-lg">
     <h4 class="text-gray-400 text-caption font-semibold uppercase tracking-wider mb-gr-xs">Facilities</h4>

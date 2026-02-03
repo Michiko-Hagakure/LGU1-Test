@@ -2084,4 +2084,6 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
         ->name('road-assistance.json');
     Route::post('/road-assistance/{id}/status', [\App\Http\Controllers\Admin\RoadAssistanceController::class, 'updateStatus'])
         ->name('road-assistance.update-status');
+    Route::post('/road-assistance/send', [\App\Http\Controllers\Admin\RoadAssistanceController::class, 'sendRequest'])
+        ->name('road-assistance.send');
 });
