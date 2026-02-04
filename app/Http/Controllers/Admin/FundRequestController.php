@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Booking;
 use App\Models\FundRequest;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
@@ -115,6 +117,11 @@ class FundRequestController extends Controller
         
         $fundRequest->save();
 
+        // Create a booking record when approved (for visibility in All Bookings)
+        if ($validated['status'] === 'Approved' && !empty($validated['assigned_facility']) && !empty($validated['scheduled_date'])) {
+            $this->createBookingFromFundRequest($fundRequest, $validated);
+        }
+
         // Send approval/rejection data to Energy Efficiency system
         $this->notifyEnergyEfficiency($fundRequest, $validated);
 
@@ -225,6 +232,80 @@ class FundRequestController extends Controller
         } catch (\Exception $e) {
             // Log error but don't fail the approval process
             Log::error('Energy Efficiency notification error', [
+                'fund_request_id' => $fundRequest->id,
+                'error' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    /**
+     * Create a booking record from an approved fund request
+     * This makes the event visible in "All Bookings" for scheduling purposes
+     */
+    private function createBookingFromFundRequest(FundRequest $fundRequest, array $validated): void
+    {
+        try {
+            // Get facility details
+            $facility = DB::connection('facilities_db')
+                ->table('facilities')
+                ->where('facility_id', $validated['assigned_facility'])
+                ->first();
+
+            if (!$facility) {
+                Log::warning('Cannot create booking: facility not found', [
+                    'fund_request_id' => $fundRequest->id,
+                    'facility_id' => $validated['assigned_facility'],
+                ]);
+                return;
+            }
+
+            // Parse seminar info for event details
+            $seminarInfo = $fundRequest->seminar_info ? json_decode($fundRequest->seminar_info, true) : [];
+            $eventName = $seminarInfo['title'] ?? $fundRequest->purpose ?? 'Energy Efficiency Seminar';
+            $expectedAttendees = $seminarInfo['expected_attendees'] ?? 50;
+
+            // Build start and end times
+            $startTime = Carbon::parse($validated['scheduled_date'] . ' ' . ($validated['scheduled_time'] ?? '09:00'));
+            $endTime = Carbon::parse($validated['scheduled_date'] . ' ' . ($validated['scheduled_end_time'] ?? '17:00'));
+
+            // Create the booking record (government program = free, confirmed status)
+            $booking = Booking::create([
+                'facility_id' => $validated['assigned_facility'],
+                'user_id' => null,
+                'user_name' => $fundRequest->requester_name,
+                'applicant_name' => $fundRequest->requester_name,
+                'applicant_email' => $seminarInfo['contact_email'] ?? null,
+                'applicant_phone' => $seminarInfo['contact_phone'] ?? null,
+                'event_name' => $eventName,
+                'event_description' => $fundRequest->purpose,
+                'start_time' => $startTime,
+                'end_time' => $endTime,
+                'purpose' => $fundRequest->purpose,
+                'expected_attendees' => $expectedAttendees,
+                'special_requests' => $validated['admin_notes'] ?? null,
+                'base_rate' => 0,
+                'extension_rate' => 0,
+                'equipment_total' => 0,
+                'subtotal' => 0,
+                'total_discount' => 0,
+                'total_amount' => 0, // Government program - free
+                'status' => 'confirmed',
+                'source_system' => 'Energy_Efficiency_Integration',
+                'external_reference_id' => 'EE-FR-' . $fundRequest->id,
+                'staff_notes' => 'Government Program: Energy Efficiency Seminar. Fund Request #' . $fundRequest->id . '. Approved Amount: ₱' . number_format($validated['approved_amount'] ?? $fundRequest->amount, 2),
+            ]);
+
+            // Link booking back to fund request
+            $fundRequest->booking_id = $booking->id;
+            $fundRequest->save();
+
+            Log::info('Booking created from fund request', [
+                'fund_request_id' => $fundRequest->id,
+                'booking_id' => $booking->id,
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Failed to create booking from fund request', [
                 'fund_request_id' => $fundRequest->id,
                 'error' => $e->getMessage(),
             ]);

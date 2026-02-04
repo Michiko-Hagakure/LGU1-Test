@@ -20,6 +20,7 @@ class FundRequest extends Model {
         'seminar_info',
         'seminar_image',
         'seminar_id',
+        'booking_id',
     ];
 
     protected $casts = [
