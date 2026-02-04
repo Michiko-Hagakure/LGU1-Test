@@ -312,7 +312,7 @@
     }
 
     // AJAX Polling for real-time updates
-    let lastTotal = {{ $paymentSlips->total() }};
+    let lastTotal = {{ $transactions->total() }};
     function refreshData() {
         fetch('{{ route("admin.transactions.json") }}' + window.location.search)
             .then(res => res.json())
