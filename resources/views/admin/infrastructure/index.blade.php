@@ -11,26 +11,6 @@
             <p class="text-gray-600">Track the status of your infrastructure project requests submitted to the Infrastructure PM system.</p>
         </div>
         <div class="flex items-center gap-3">
-            <form action="{{ URL::signedRoute('admin.infrastructure.projects.import') }}" method="POST" class="inline flex items-center gap-2">
-                @csrf
-                <input type="text" name="project_id" placeholder="PR-000005" 
-                       class="w-28 px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                <button type="submit" class="px-4 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors flex items-center gap-2">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
-                    </svg>
-                    Import
-                </button>
-            </form>
-            <form action="{{ URL::signedRoute('admin.infrastructure.projects.sync-all') }}" method="POST" class="inline">
-                @csrf
-                <button type="submit" class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors flex items-center gap-2">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
-                    </svg>
-                    Sync All Statuses
-                </button>
-            </form>
             <a href="{{ URL::signedRoute('admin.infrastructure.project-request') }}" class="px-4 py-2 bg-lgu-highlight text-white rounded-lg hover:bg-lgu-stroke transition-colors flex items-center gap-2">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
