@@ -116,7 +116,7 @@
                                     'completed' => 'bg-emerald-100 text-emerald-800',
                                 ];
                             @endphp
-                            <span class="inline-flex px-2 py-1 text-xs font-medium rounded-full {{ $statusColors[$request->status] ?? 'bg-gray-100 text-gray-800' }}">
+                            <span id="status-badge-{{ $request->id }}" class="inline-flex px-2 py-1 text-xs font-medium rounded-full {{ $statusColors[$request->status] ?? 'bg-gray-100 text-gray-800' }}" data-status="{{ $request->status }}">
                                 {{ ucwords(str_replace('_', ' ', $request->status)) }}
                             </span>
                         </td>
@@ -182,4 +182,70 @@
         </div>
     </div>
 </div>
+
+@push('scripts')
+<script>
+    const statusColors = {
+        'draft': 'bg-gray-100 text-gray-800',
+        'submitted': 'bg-blue-100 text-blue-800',
+        'received': 'bg-indigo-100 text-indigo-800',
+        'under_review': 'bg-purple-100 text-purple-800',
+        'approved': 'bg-green-100 text-green-800',
+        'rejected': 'bg-red-100 text-red-800',
+        'in_progress': 'bg-orange-100 text-orange-800',
+        'completed': 'bg-emerald-100 text-emerald-800',
+    };
+
+    function formatStatus(status) {
+        return status.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+    }
+
+    function updateStatusBadge(id, newStatus) {
+        const badge = document.getElementById('status-badge-' + id);
+        if (!badge) return;
+        
+        const currentStatus = badge.dataset.status;
+        if (currentStatus === newStatus) return;
+        
+        // Remove old color classes
+        Object.values(statusColors).forEach(colorClass => {
+            colorClass.split(' ').forEach(cls => badge.classList.remove(cls));
+        });
+        
+        // Add new color classes
+        const newColorClass = statusColors[newStatus] || 'bg-gray-100 text-gray-800';
+        newColorClass.split(' ').forEach(cls => badge.classList.add(cls));
+        
+        // Update text and data attribute
+        badge.textContent = formatStatus(newStatus);
+        badge.dataset.status = newStatus;
+        
+        // Add a brief highlight animation
+        badge.style.transform = 'scale(1.1)';
+        badge.style.transition = 'transform 0.3s ease';
+        setTimeout(() => {
+            badge.style.transform = 'scale(1)';
+        }, 300);
+    }
+
+    function pollStatuses() {
+        fetch('{{ URL::signedRoute("admin.infrastructure.projects.statuses-ajax") }}')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success && data.statuses) {
+                    Object.entries(data.statuses).forEach(([id, statusData]) => {
+                        updateStatusBadge(id, statusData.status);
+                    });
+                }
+            })
+            .catch(error => console.log('Status poll failed:', error));
+    }
+
+    // Poll every 30 seconds
+    setInterval(pollStatuses, 30000);
+    
+    // Initial poll after 5 seconds
+    setTimeout(pollStatuses, 5000);
+</script>
+@endpush
 @endsection

@@ -2005,6 +2005,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::post('/infrastructure/projects/{id}/refresh', [\App\Http\Controllers\Admin\InfrastructureProjectController::class, 'refreshStatus'])->name('infrastructure.projects.refresh');
     Route::post('/infrastructure/projects/sync-all', [\App\Http\Controllers\Admin\InfrastructureProjectController::class, 'syncAllStatuses'])->name('infrastructure.projects.sync-all');
     Route::post('/infrastructure/projects/import', [\App\Http\Controllers\Admin\InfrastructureProjectController::class, 'importProjects'])->name('infrastructure.projects.import');
+    Route::get('/infrastructure/projects/statuses/ajax', [\App\Http\Controllers\Admin\InfrastructureProjectController::class, 'getStatusesAjax'])->name('infrastructure.projects.statuses-ajax');
 
     // Community Infrastructure Maintenance Integration
     Route::get('/community-maintenance/request', [\App\Http\Controllers\Admin\CommunityMaintenanceController::class, 'create'])->name('community-maintenance.create');

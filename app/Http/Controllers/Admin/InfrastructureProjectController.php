@@ -549,6 +549,69 @@ class InfrastructureProjectController extends Controller
     }
 
     /**
+     * AJAX endpoint to fetch all project statuses for live updates
+     */
+    public function getStatusesAjax()
+    {
+        try {
+            $projects = DB::connection('facilities_db')
+                ->table('infrastructure_project_requests')
+                ->whereNotNull('external_project_id')
+                ->get();
+
+            $statuses = [];
+
+            foreach ($projects as $project) {
+                try {
+                    $statusData = $this->fetchProjectStatus($project->external_project_id);
+                    
+                    if ($statusData['success']) {
+                        $apiStatus = $statusData['data']['status'] 
+                            ?? $statusData['data']['overall_status'] 
+                            ?? $statusData['data']['project_status'] 
+                            ?? null;
+                        
+                        $bidStatus = $statusData['data']['bid_information']['bid_status'] ?? null;
+                        
+                        if ($apiStatus) {
+                            $newStatus = $this->mapApiStatus($apiStatus);
+                            
+                            // Update local record
+                            DB::connection('facilities_db')
+                                ->table('infrastructure_project_requests')
+                                ->where('id', $project->id)
+                                ->update([
+                                    'status' => $newStatus,
+                                    'bid_status' => $bidStatus,
+                                    'updated_at' => now(),
+                                ]);
+                            
+                            $statuses[$project->id] = [
+                                'status' => $newStatus,
+                                'bid_status' => $bidStatus,
+                            ];
+                        }
+                    }
+                } catch (\Exception $e) {
+                    // Skip failed individual requests
+                    continue;
+                }
+            }
+
+            return response()->json([
+                'success' => true,
+                'statuses' => $statuses,
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
      * Refresh status for a project and return updated view
      */
     public function refreshStatus($projectId)
