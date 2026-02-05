@@ -361,9 +361,9 @@ class AnalyticsController extends Controller
             ->limit(10)
             ->get();
 
-        // Get user details from auth_db
+        // Get user details from facilities_db
         $userIds = $topBookers->pluck('user_id')->toArray();
-        $users = DB::connection('auth_db')
+        $users = DB::connection('facilities_db')
             ->table('users')
             ->whereIn('id', $userIds)
             ->get()
