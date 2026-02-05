@@ -191,9 +191,19 @@
                 @foreach($documents as $doc)
                 @php
                     // Handle external URLs (from PF folder) vs local storage paths
-                    $docUrl = ($doc->is_external ?? false) 
-                        ? (str_starts_with($doc->path, '/') ? url($doc->path) : $doc->path)
-                        : asset('storage/' . $doc->path);
+                    if ($doc->is_external ?? false) {
+                        // External paths from PF folder need the main domain URL
+                        if (str_starts_with($doc->path, '/uploads/')) {
+                            // Use the main citizen portal domain for PF folder uploads
+                            $docUrl = 'https://local-government-unit-1-ph.com' . $doc->path;
+                        } elseif (str_starts_with($doc->path, 'http')) {
+                            $docUrl = $doc->path;
+                        } else {
+                            $docUrl = url($doc->path);
+                        }
+                    } else {
+                        $docUrl = asset('storage/' . $doc->path);
+                    }
                 @endphp
                 <button type="button" onclick="openDocumentModal('{{ $docUrl }}', '{{ $doc->type }}')"
                    class="flex items-center p-3 rounded-lg border border-gray-300 hover:border-lgu-button hover:bg-gray-50 transition-colors cursor-pointer">
