@@ -84,6 +84,9 @@ Route::prefix('facility-reservation')->group(function () {
     // GET https://facilities.local-government-unit-1-ph.com/api/facility-reservation/calendar-bookings
     Route::get('/calendar-bookings', [\App\Http\Controllers\Api\FacilityReservationApiController::class, 'calendarBookings']);
     
+    // GET https://facilities.local-government-unit-1-ph.com/api/facility-reservation/my-bookings?email=...
+    Route::get('/my-bookings', [\App\Http\Controllers\Api\FacilityReservationApiController::class, 'myBookings']);
+
     // GET https://facilities.local-government-unit-1-ph.com/api/facility-reservation/status/{reference}
     Route::get('/status/{reference}', [\App\Http\Controllers\Api\FacilityReservationApiController::class, 'checkStatus']);
     

@@ -507,6 +507,67 @@ class FacilityReservationApiController extends Controller
     }
 
     /**
+     * Get bookings by applicant email
+     * 
+     * GET /api/facility-reservation/my-bookings?email=user@example.com
+     */
+    public function myBookings(Request $request)
+    {
+        try {
+            $validated = $request->validate([
+                'email' => 'required|email|max:255',
+            ]);
+
+            $bookings = DB::connection('facilities_db')
+                ->table('bookings')
+                ->join('facilities', 'bookings.facility_id', '=', 'facilities.facility_id')
+                ->where('bookings.applicant_email', $validated['email'])
+                ->select(
+                    'bookings.id',
+                    'bookings.status',
+                    'bookings.start_time',
+                    'bookings.end_time',
+                    'bookings.total_amount',
+                    'bookings.applicant_name',
+                    'bookings.applicant_email',
+                    'bookings.rejected_reason',
+                    'bookings.created_at',
+                    'facilities.name as facility_name'
+                )
+                ->orderBy('bookings.created_at', 'desc')
+                ->limit(50)
+                ->get();
+
+            $data = $bookings->map(function ($booking) {
+                return [
+                    'booking_reference' => 'BK' . str_pad($booking->id, 6, '0', STR_PAD_LEFT),
+                    'facility_name' => $booking->facility_name,
+                    'booking_status' => $booking->status,
+                    'start_time' => Carbon::parse($booking->start_time)->format('Y-m-d h:i A'),
+                    'end_time' => Carbon::parse($booking->end_time)->format('Y-m-d h:i A'),
+                    'total_amount' => number_format($booking->total_amount, 2),
+                    'applicant_name' => $booking->applicant_name,
+                    'applicant_email' => $booking->applicant_email,
+                    'rejected_reason' => $booking->rejected_reason,
+                    'submitted_at' => Carbon::parse($booking->created_at)->format('Y-m-d h:i A'),
+                ];
+            });
+
+            return response()->json([
+                'status' => 'success',
+                'data' => $data,
+            ]);
+
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Validation failed.',
+                'errors' => $e->errors(),
+            ], 422);
+        }
+    }
+
+    /**
      * Calculate pricing for the booking
      */
     private function calculatePricing($facility, $validated, $startDateTime, $endDateTime)
