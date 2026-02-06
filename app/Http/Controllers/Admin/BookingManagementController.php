@@ -192,11 +192,11 @@ class BookingManagementController extends Controller
             ])->filter()->implode(', ');
         }
 
-        // Create standardized user object with fallbacks for API bookings (PF folder, Energy Efficiency, etc.)
+        // Create standardized user object with fallbacks for API bookings (PF folder, Housing & Resettlement, etc.)
         $user = (object) [
-            'name' => $booking->user_name ?? $booking->applicant_name ?? ($userFromDb->full_name ?? $userFromDb->name ?? null) ?? 'N/A',
-            'email' => ($userFromDb->email ?? null) ?? $booking->applicant_email ?? 'N/A',
-            'phone' => ($userFromDb->mobile_number ?? $userFromDb->phone ?? null) ?? $booking->applicant_phone ?? 'N/A',
+            'name' => ($userFromDb ? ($userFromDb->full_name ?? $userFromDb->name ?? null) : null) ?? $booking->applicant_name ?? $booking->user_name ?? 'N/A',
+            'email' => ($userFromDb ? ($userFromDb->email ?? null) : null) ?? $booking->applicant_email ?? 'N/A',
+            'phone' => ($userFromDb ? ($userFromDb->mobile_number ?? $userFromDb->phone ?? null) : null) ?? $booking->applicant_phone ?? 'N/A',
             'address' => $fullAddress ?: ($booking->applicant_address ?? 'N/A')
         ];
 

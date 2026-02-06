@@ -86,7 +86,8 @@ class Booking extends Model
         'admin_approved_by',
         'admin_approved_at',
         'admin_approval_notes',
-        'reserved_until'
+        'reserved_until',
+        'source_system'
     ];
 
     /**

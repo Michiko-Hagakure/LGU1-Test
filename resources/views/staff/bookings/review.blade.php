@@ -236,6 +236,13 @@
             <!-- Pricing Summary -->
             <div class="bg-white rounded-xl shadow-sm border border-lgu-stroke p-gr-md">
                 <h3 class="text-h4 font-bold text-gray-900 mb-gr-md">Pricing Summary</h3>
+                @if($booking->source_system === 'Housing_Resettlement' || $booking->total_amount == 0)
+                <div class="bg-blue-50 border-2 border-blue-200 rounded-lg p-gr-md text-center">
+                    <i data-lucide="shield-check" class="w-10 h-10 text-blue-600 mx-auto mb-2"></i>
+                    <p class="text-body font-bold text-blue-900">Free - Government Inter-Agency</p>
+                    <p class="text-small text-blue-700">No payment required</p>
+                </div>
+                @else
                 <div class="space-y-2 mb-4">
                     <div class="flex justify-between text-small">
                         <span class="text-gray-600">Facility Fee</span>
@@ -277,6 +284,7 @@
                         <span class="text-h4 font-bold text-lgu-button">₱{{ number_format($booking->total_amount, 2) }}</span>
                     </div>
                 </div>
+                @endif
             </div>
 
             <!-- Schedule Conflict Warning -->

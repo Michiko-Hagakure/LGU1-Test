@@ -189,7 +189,11 @@
             </div>
             @endif
 
-            <!-- Uploaded Documents -->
+            <!-- Uploaded Documents (hide for Housing & Resettlement or when no documents) -->
+            @php
+                $hasDocuments = collect($documents)->filter()->isNotEmpty();
+            @endphp
+            @if($hasDocuments)
             <div class="bg-white rounded-xl shadow-sm border border-lgu-stroke p-gr-lg">
                 <h2 class="text-h3 font-bold text-lgu-headline mb-gr-md flex items-center gap-2">
                     <i data-lucide="file-check" class="w-6 h-6"></i>
@@ -197,13 +201,16 @@
                 </h2>
                 <div class="grid grid-cols-3 gap-gr-md">
                     @foreach($documents as $key => $path)
+                        @if($path)
                         <div class="border-2 border-lgu-stroke rounded-lg p-gr-sm hover:border-lgu-highlight cursor-pointer transition-colors" onclick="openDocumentModal('{{ asset('storage/' . $path) }}', '{{ ucwords(str_replace('_', ' ', $key)) }}')">
                             <img src="{{ asset('storage/' . $path) }}" alt="{{ $key }}" class="w-full h-32 object-cover rounded-lg mb-gr-xs">
                             <p class="text-caption text-center text-lgu-paragraph">{{ ucwords(str_replace('_', ' ', $key)) }}</p>
                         </div>
+                        @endif
                     @endforeach
                 </div>
             </div>
+            @endif
 
         </div>
 
@@ -213,6 +220,13 @@
             <!-- Payment Summary -->
             <div class="bg-white rounded-xl shadow-sm border border-lgu-stroke p-gr-lg sticky top-4">
                 <h3 class="text-h4 font-bold text-lgu-headline mb-gr-md">Payment Summary</h3>
+                @if($booking->source_system === 'Housing_Resettlement' || $booking->total_amount == 0)
+                <div class="bg-blue-50 border-2 border-blue-200 rounded-lg p-gr-md text-center">
+                    <i data-lucide="shield-check" class="w-10 h-10 text-blue-600 mx-auto mb-2"></i>
+                    <p class="text-body font-bold text-blue-900">Free - Government Inter-Agency</p>
+                    <p class="text-small text-blue-700">No payment required</p>
+                </div>
+                @else
                 <div class="space-y-gr-sm">
                     <div class="flex justify-between text-small">
                         <span class="text-lgu-paragraph">Base Rate</span>
@@ -237,6 +251,7 @@
                         </div>
                     </div>
                 </div>
+                @endif
 
                 <!-- Action Buttons -->
                 <div class="mt-gr-lg space-y-gr-sm">
