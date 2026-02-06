@@ -33,22 +33,42 @@ Route::get('/', function () {
 
 // Temporary Paymongo diagnostic - REMOVE after debugging
 Route::get('/debug-paymongo', function () {
-    $service = new \App\Services\PaymongoService();
+    $secretKey = config('payment.paymongo_secret_key');
     $result = [
-        'enabled' => $service->isEnabled(),
-        'config' => [
-            'paymongo_enabled' => config('payment.paymongo_enabled'),
-            'has_secret_key' => !empty(config('payment.paymongo_secret_key')),
-            'secret_key_prefix' => substr(config('payment.paymongo_secret_key', ''), 0, 15) . '...',
-            'has_public_key' => !empty(config('payment.paymongo_public_key')),
-        ],
+        'secret_key_prefix' => substr($secretKey, 0, 15) . '...',
     ];
 
-    if ($service->isEnabled()) {
-        $testSlip = (object)['id' => 999, 'booking_id' => 999, 'slip_number' => 'TEST-001', 'amount_due' => 100.00];
-        $testBooking = (object)['facility_name' => 'Test Facility'];
-        $checkoutResult = $service->createCheckoutSession($testSlip, $testBooking, url('/success'), url('/cancel'));
-        $result['checkout_test'] = $checkoutResult;
+    $methods = ['card', 'gcash', 'paymaya', 'grab_pay', 'qrph'];
+    foreach ($methods as $method) {
+        $response = \Illuminate\Support\Facades\Http::withBasicAuth($secretKey, '')
+            ->timeout(15)
+            ->withOptions(['verify' => false])
+            ->post('https://api.paymongo.com/v1/checkout_sessions', [
+                'data' => [
+                    'attributes' => [
+                        'send_email_receipt' => false,
+                        'show_line_items' => true,
+                        'success_url' => url('/success'),
+                        'cancel_url' => url('/cancel'),
+                        'line_items' => [[
+                            'currency' => 'PHP',
+                            'amount' => 10000,
+                            'name' => 'Test',
+                            'quantity' => 1,
+                        ]],
+                        'payment_method_types' => [$method],
+                        'description' => 'Test',
+                        'metadata' => ['test' => 'true'],
+                    ]
+                ]
+            ]);
+
+        if ($response->successful()) {
+            $result['methods'][$method] = 'OK';
+        } else {
+            $err = $response->json();
+            $result['methods'][$method] = $err['errors'][0]['detail'] ?? 'FAILED';
+        }
     }
 
     return response()->json($result, 200, [], JSON_PRETTY_PRINT);
