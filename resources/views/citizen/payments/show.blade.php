@@ -303,7 +303,7 @@
                                     <span class="text-sm font-bold text-blue-800">Instant Payment</span>
                                 </div>
                                 <p class="text-sm text-gray-700 mb-3">
-                                    Pay instantly via GCash, Maya, GrabPay, or Card. No reference number needed - payment is automatically confirmed!
+                                    Pay instantly via QR Ph. No reference number needed - payment is automatically confirmed!
                                 </p>
                                 <a href="{{ URL::signedRoute('citizen.payment-slips.paymongo', $paymentSlip->id) }}"
                                    class="w-full bg-lgu-button text-lgu-button-text font-bold py-4 rounded-lg hover:bg-lgu-highlight transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2">
