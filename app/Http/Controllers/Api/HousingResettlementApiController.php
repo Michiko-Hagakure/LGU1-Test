@@ -230,7 +230,7 @@ class HousingResettlementApiController extends Controller
                 'applicant_email' => $validated['contact_email'],
                 'applicant_phone' => $validated['contact_phone'],
                 'event_name' => $validated['event_name'],
-                'status' => 'confirmed', // Government inter-agency - auto-confirmed, no staff verification needed
+                'status' => 'paid', // Government inter-agency - skip staff verification, go directly to admin for confirmation
                 'base_rate' => 0, // Government inter-agency - no charge
                 'subtotal' => 0,
                 'total_amount' => 0,
@@ -272,8 +272,8 @@ class HousingResettlementApiController extends Controller
                     'event_name' => $validated['event_name'],
                     'scheduled_date' => $validated['requested_date'],
                     'scheduled_time' => $validated['start_time'] . ' - ' . $validated['end_time'],
-                    'status' => 'confirmed',
-                    'next_steps' => 'Your request has been automatically confirmed as a government inter-agency booking.',
+                    'status' => 'paid',
+                    'next_steps' => 'Your request has been submitted and is awaiting admin confirmation.',
                 ],
                 'timestamp' => now()->toDateTimeString(),
             ], 201);

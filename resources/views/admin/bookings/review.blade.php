@@ -280,6 +280,11 @@
                             </button>
                         </form>
 
+                        <button onclick="openRejectModal()" class="w-full px-gr-lg py-gr-md bg-red-600 hover:bg-red-700 text-white font-bold rounded-lg transition-colors flex items-center justify-center gap-2">
+                            <i data-lucide="x-circle" class="w-5 h-5"></i>
+                            Reject Booking
+                        </button>
+
                     @elseif($booking->status === 'confirmed')
                         <div class="bg-green-50 border-2 border-green-200 rounded-lg p-gr-md text-center">
                             <i data-lucide="check-circle" class="w-12 h-12 text-green-600 mx-auto mb-2"></i>
