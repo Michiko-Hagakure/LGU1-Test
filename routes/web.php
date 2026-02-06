@@ -31,6 +31,17 @@ Route::get('/', function () {
     return view('welcome');
 })->name('welcome');
 
+// Storage file access route (for shared hosting where storage symlink doesn't work)
+Route::get('/storage/{path}', function ($path) {
+    $fullPath = storage_path('app/public/' . $path);
+    
+    if (!file_exists($fullPath)) {
+        abort(404);
+    }
+    
+    return response()->file($fullPath);
+})->where('path', '.*')->name('storage.serve');
+
 // CSRF Token Refresh Endpoint - For preventing stale token issues
 Route::get('/csrf-token', function () {
     return response()->json([
