@@ -290,7 +290,7 @@
                 </div>
 
                 @if($booking->facility_image)
-                    <img src="{{ asset('storage/' . $booking->facility_image) }}" 
+                    <img src="{{ url('/files/' . $booking->facility_image) }}" 
                          alt="{{ $booking->facility_name }}" 
                          class="w-full h-64 object-cover">
                 @else
@@ -375,7 +375,7 @@
                             </div>
                         </div>
                         @if($booking->valid_id_front_path)
-                            <a href="{{ asset('storage/' . $booking->valid_id_front_path) }}" target="_blank"
+                            <a href="{{ url('/files/' . $booking->valid_id_front_path) }}" target="_blank"
                                class="px-4 py-2 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition text-sm font-medium">
                                 View
                             </a>
@@ -398,7 +398,7 @@
                             </div>
                         </div>
                         @if($booking->valid_id_back_path)
-                            <a href="{{ asset('storage/' . $booking->valid_id_back_path) }}" target="_blank"
+                            <a href="{{ url('/files/' . $booking->valid_id_back_path) }}" target="_blank"
                                class="px-4 py-2 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition text-sm font-medium">
                                 View
                             </a>
@@ -421,7 +421,7 @@
                             </div>
                         </div>
                         @if($booking->valid_id_selfie_path)
-                            <a href="{{ asset('storage/' . $booking->valid_id_selfie_path) }}" target="_blank"
+                            <a href="{{ url('/files/' . $booking->valid_id_selfie_path) }}" target="_blank"
                                class="px-4 py-2 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition text-sm font-medium">
                                 View
                             </a>
@@ -463,7 +463,7 @@
                                     Same as Valid ID
                                 </span>
                             @elseif($booking->special_discount_id_path)
-                                <a href="{{ asset('storage/' . $booking->special_discount_id_path) }}" target="_blank"
+                                <a href="{{ url('/files/' . $booking->special_discount_id_path) }}" target="_blank"
                                    class="px-4 py-2 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition text-sm font-medium">
                                     View
                                 </a>
@@ -487,7 +487,7 @@
                             </div>
                         </div>
                         @if($booking->supporting_doc_path)
-                            <a href="{{ asset('storage/' . $booking->supporting_doc_path) }}" target="_blank"
+                            <a href="{{ url('/files/' . $booking->supporting_doc_path) }}" target="_blank"
                                class="px-4 py-2 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition text-sm font-medium">
                                 View
                             </a>

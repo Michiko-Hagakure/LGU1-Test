@@ -18,7 +18,7 @@
             <div class="bg-white rounded-lg shadow-md overflow-hidden">
                 <!-- Event Image -->
                 @if($event->image_path)
-                <img src="{{ asset('storage/' . $event->image_path) }}" alt="{{ $event->title }}" class="w-full h-96 object-cover">
+                <img src="{{ url('/files/' . $event->image_path) }}" alt="{{ $event->title }}" class="w-full h-96 object-cover">
                 @else
                 <div class="w-full h-96 bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
                     <svg class="w-32 h-32 text-white opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">

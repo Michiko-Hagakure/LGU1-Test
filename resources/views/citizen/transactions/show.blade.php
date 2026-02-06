@@ -64,7 +64,7 @@
                 @if($transaction->proof_of_payment)
                 <div class="mt-gr-md pt-gr-md border-t border-gray-200">
                     <p class="text-caption text-gray-600 mb-gr-sm">Proof of Payment</p>
-                    <a href="{{ asset('storage/' . $transaction->proof_of_payment) }}" target="_blank" class="inline-flex items-center text-lgu-green hover:text-lgu-green-dark font-medium">
+                    <a href="{{ url('/files/' . $transaction->proof_of_payment) }}" target="_blank" class="inline-flex items-center text-lgu-green hover:text-lgu-green-dark font-medium">
                         <i data-lucide="image" class="w-4 h-4 mr-gr-xs"></i>
                         View Uploaded Proof
                     </a>

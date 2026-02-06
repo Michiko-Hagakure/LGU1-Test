@@ -121,7 +121,7 @@
                         <!-- Facility Image -->
                         <div class="md:w-96 h-64 md:h-auto bg-gray-200 flex-shrink-0 relative group">
                             @if($booking->facility_image)
-                                <img src="{{ asset('storage/' . $booking->facility_image) }}" 
+                                <img src="{{ url('/files/' . $booking->facility_image) }}" 
                                      alt="{{ $booking->facility_name }}" 
                                      class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
                             @else

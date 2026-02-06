@@ -202,7 +202,7 @@
                             $docUrl = url($doc->path);
                         }
                     } else {
-                        $docUrl = asset('storage/' . $doc->path);
+                        $docUrl = url('/files/' . $doc->path);
                     }
                 @endphp
                 <button type="button" onclick="openDocumentModal('{{ $docUrl }}', '{{ $doc->type }}')"

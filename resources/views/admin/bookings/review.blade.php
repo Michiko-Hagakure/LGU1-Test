@@ -202,8 +202,8 @@
                 <div class="grid grid-cols-3 gap-gr-md">
                     @foreach($documents as $key => $path)
                         @if($path)
-                        <div class="border-2 border-lgu-stroke rounded-lg p-gr-sm hover:border-lgu-highlight cursor-pointer transition-colors" onclick="openDocumentModal('{{ asset('storage/' . $path) }}', '{{ ucwords(str_replace('_', ' ', $key)) }}')">
-                            <img src="{{ asset('storage/' . $path) }}" alt="{{ $key }}" class="w-full h-32 object-cover rounded-lg mb-gr-xs">
+                        <div class="border-2 border-lgu-stroke rounded-lg p-gr-sm hover:border-lgu-highlight cursor-pointer transition-colors" onclick="openDocumentModal('{{ url('/files/' . $path) }}', '{{ ucwords(str_replace('_', ' ', $key)) }}')">
+                            <img src="{{ url('/files/' . $path) }}" alt="{{ $key }}" class="w-full h-32 object-cover rounded-lg mb-gr-xs">
                             <p class="text-caption text-center text-lgu-paragraph">{{ ucwords(str_replace('_', ' ', $key)) }}</p>
                         </div>
                         @endif

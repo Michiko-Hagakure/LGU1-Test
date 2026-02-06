@@ -19,9 +19,9 @@
             {{-- Facility Image --}}
             <div class="flex-shrink-0">
                 @if($review->facility_image)
-                    <img src="{{ asset('storage/' . $review->facility_image) }}" alt="{{ $review->facility_name }}" 
+                    <img src="{{ url('/files/' . $review->facility_image) }}" alt="{{ $review->facility_name }}" 
                         class="w-32 h-32 object-cover rounded-lg cursor-pointer hover:opacity-90 transition-opacity"
-                        onclick="Swal.fire({ imageUrl: '{{ asset('storage/' . $review->facility_image) }}', imageAlt: '{{ $review->facility_name }}', showCloseButton: true, showConfirmButton: false, width: 'auto' })">
+                        onclick="Swal.fire({ imageUrl: '{{ url('/files/' . $review->facility_image) }}', imageAlt: '{{ $review->facility_name }}', showCloseButton: true, showConfirmButton: false, width: 'auto' })">
                 @else
                     <div class="w-32 h-32 bg-gray-100 rounded-lg flex items-center justify-center">
                         <i data-lucide="building-2" class="w-12 h-12 text-gray-400"></i>

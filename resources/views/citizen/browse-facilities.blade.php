@@ -758,10 +758,10 @@
                     <!-- Facility Image -->
                     <div class="relative h-48 bg-gray-200">
                         @if($facility->image_path)
-                        <img src="{{ asset('storage/' . $facility->image_path) }}" 
+                        <img src="{{ url('/files/' . $facility->image_path) }}" 
                              alt="{{ $facility->name }}" 
                              class="w-full h-full object-cover cursor-pointer hover:opacity-90 transition-opacity"
-                             onclick="showFullImage('{{ asset('storage/' . $facility->image_path) }}', '{{ $facility->name }}')">
+                             onclick="showFullImage('{{ url('/files/' . $facility->image_path) }}', '{{ $facility->name }}')">
                         @else
                         <div class="w-full h-full flex items-center justify-center bg-primary-100">
                             <svg class="w-16 h-16 text-primary-400" fill="currentColor" viewBox="0 0 20 20">

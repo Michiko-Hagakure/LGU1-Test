@@ -38,7 +38,7 @@
             <div class="relative group">
                 <div class="w-32 h-32 rounded-full overflow-hidden border-4 border-white shadow-xl">
                     @if($avatarPath)
-                        <img id="avatarPreview" src="{{ asset('storage/' . $avatarPath) }}" alt="Avatar" class="w-full h-full object-cover">
+                        <img id="avatarPreview" src="{{ url('/files/' . $avatarPath) }}" alt="Avatar" class="w-full h-full object-cover">
                     @else
                         <div id="avatarPreview" class="w-full h-full bg-lgu-highlight flex items-center justify-center text-4xl font-bold">
                             {{ $initials }}

@@ -29,7 +29,7 @@
             <div class="bg-white shadow rounded-lg overflow-hidden">
                 <div class="relative">
                     @if($facility->image_path)
-                        <img id="mainImage" src="{{ asset('storage/' . $facility->image_path) }}" 
+                        <img id="mainImage" src="{{ url('/files/' . $facility->image_path) }}" 
                              alt="{{ $facility->name }}" 
                              class="w-full h-96 object-cover">
                         
@@ -97,7 +97,7 @@
                 <div class="bg-gray-50 p-4">
                     <div class="flex gap-2 overflow-x-auto">
                         <button onclick="changeImage(0)" class="thumbnail-btn flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 border-lgu-button transition-all">
-                            <img src="{{ asset('storage/' . $facility->image_path) }}" alt="View 1" class="w-full h-full object-cover">
+                            <img src="{{ url('/files/' . $facility->image_path) }}" alt="View 1" class="w-full h-full object-cover">
                         </button>
                         <!-- Additional photos would go here if available -->
                         @for($i = 1; $i < 4; $i++)
@@ -118,7 +118,7 @@
             <script>
             // Virtual Tour / Photo Gallery
             let currentImageIndex = 0;
-            const images = ['{{ asset('storage/' . $facility->image_path) }}']; // In production, this would be an array of all facility photos
+            const images = ['{{ url('/files/' . $facility->image_path) }}']; // In production, this would be an array of all facility photos
 
             function changeImage(index) {
                 currentImageIndex = index;

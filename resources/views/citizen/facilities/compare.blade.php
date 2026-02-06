@@ -54,7 +54,7 @@
                                 <td class="px-gr-lg py-gr-md text-center">
                                     <div class="relative h-48 bg-gray-200 rounded-lg overflow-hidden mx-auto">
                                         @if($facility->photos && $facility->photos->first())
-                                            <img src="{{ asset('storage/' . $facility->photos->first()->photo_path) }}" 
+                                            <img src="{{ url('/files/' . $facility->photos->first()->photo_path) }}" 
                                                  alt="{{ $facility->facility_name }}" 
                                                  class="w-full h-full object-cover">
                                         @else

@@ -31,8 +31,8 @@ Route::get('/', function () {
     return view('welcome');
 })->name('welcome');
 
-// Storage file access route (for shared hosting where storage symlink doesn't work)
-Route::get('/storage/{path}', function ($path) {
+// Storage file access route (for shared hosting where /storage/ conflicts with real directory)
+Route::get('/files/{path}', function ($path) {
     $fullPath = storage_path('app/public/' . $path);
     
     if (!file_exists($fullPath)) {

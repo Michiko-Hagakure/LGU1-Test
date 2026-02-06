@@ -60,7 +60,7 @@ use Illuminate\Support\Facades\Storage;
                                         <!-- Equipment Image -->
                                         <div class="relative h-48 bg-gray-100 overflow-hidden">
                                             @if($item->image_path && Storage::disk('public')->exists($item->image_path))
-                                                <img src="{{ asset('storage/' . $item->image_path) }}" 
+                                                <img src="{{ url('/files/' . $item->image_path) }}" 
                                                      alt="{{ $item->name }}" 
                                                      class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300">
                                             @else

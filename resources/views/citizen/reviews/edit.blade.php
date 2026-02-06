@@ -27,7 +27,7 @@
         <div class="p-6">
             <div class="flex gap-6">
                 @if($review->facility_image)
-                    <img src="{{ asset('storage/' . $review->facility_image) }}" 
+                    <img src="{{ url('/files/' . $review->facility_image) }}" 
                          alt="{{ $review->facility_name }}" 
                          class="w-32 h-32 object-cover rounded-lg shadow-md">
                 @else

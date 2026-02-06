@@ -391,7 +391,7 @@
                                 @endif
                             </div>
                         </div>
-                        <a href="{{ asset('storage/' . $paymentSlip->payment_receipt_url) }}" target="_blank"
+                        <a href="{{ url('/files/' . $paymentSlip->payment_receipt_url) }}" target="_blank"
                            class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition text-sm font-medium">
                             View
                         </a>

@@ -253,7 +253,7 @@ class ProfileController extends Controller
         return response()->json([
             'success' => true, 
             'message' => 'Avatar updated successfully!',
-            'avatar_url' => asset('storage/' . $avatarPath)
+            'avatar_url' => url('/files/' . $avatarPath)
         ]);
     }
 

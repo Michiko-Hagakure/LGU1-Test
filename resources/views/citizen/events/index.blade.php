@@ -47,7 +47,7 @@
             @foreach($featuredEvents as $event)
             <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg shadow-lg overflow-hidden text-white">
                 @if($event->image_path)
-                <img src="{{ asset('storage/' . $event->image_path) }}" alt="{{ $event->title }}" class="w-full h-48 object-cover opacity-90">
+                <img src="{{ url('/files/' . $event->image_path) }}" alt="{{ $event->title }}" class="w-full h-48 object-cover opacity-90">
                 @else
                 <div class="w-full h-48 bg-blue-700 flex items-center justify-center">
                     <svg class="w-16 h-16 text-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -83,7 +83,7 @@
             @foreach($events as $event)
             <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition duration-200">
                 @if($event->image_path)
-                <img src="{{ asset('storage/' . $event->image_path) }}" alt="{{ $event->title }}" class="w-full h-48 object-cover">
+                <img src="{{ url('/files/' . $event->image_path) }}" alt="{{ $event->title }}" class="w-full h-48 object-cover">
                 @else
                 <div class="w-full h-48 bg-gray-200 flex items-center justify-center">
                     <svg class="w-16 h-16 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -84,7 +84,7 @@
                     <!-- Small Avatar -->
                     <div class="w-10 h-10 rounded-full overflow-hidden shadow-md border-2 border-lgu-button transition-transform duration-300 group-hover:scale-110">
                         @if($citizenAvatar)
-                            <img src="{{ asset('storage/' . $citizenAvatar) }}" alt="Avatar" class="w-full h-full object-cover">
+                            <img src="{{ url('/files/' . $citizenAvatar) }}" alt="Avatar" class="w-full h-full object-cover">
                         @else
                             <div class="w-full h-full bg-lgu-highlight flex items-center justify-center">
                                 <span class="text-lgu-button-text font-bold text-body">{{ $citizenInitials }}</span>
@@ -112,7 +112,7 @@
                 <!-- Large Centered Citizen Avatar -->
                 <div class="w-24 h-24 rounded-full overflow-hidden mx-auto mb-4 shadow-lg border-4 border-lgu-button">
                     @if($citizenAvatar)
-                        <img src="{{ asset('storage/' . $citizenAvatar) }}" alt="Avatar" class="w-full h-full object-cover">
+                        <img src="{{ url('/files/' . $citizenAvatar) }}" alt="Avatar" class="w-full h-full object-cover">
                     @else
                         <div class="w-full h-full bg-lgu-highlight flex items-center justify-center">
                             <span class="text-lgu-button-text font-bold text-3xl">{{ $citizenInitials }}</span>

@@ -83,7 +83,7 @@
             <label class="block text-sm font-medium text-gray-700 mb-2">Current Screenshots</label>
             <div class="grid grid-cols-4 gap-4">
                 @foreach(json_decode($article->screenshots, true) as $screenshot)
-                <img src="{{ asset('storage/' . $screenshot) }}" alt="Screenshot" class="w-full h-24 object-cover rounded-lg">
+                <img src="{{ url('/files/' . $screenshot) }}" alt="Screenshot" class="w-full h-24 object-cover rounded-lg">
                 @endforeach
             </div>
         </div>
