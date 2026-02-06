@@ -362,19 +362,17 @@ class AnalyticsController extends Controller
 
 
 
-        // 1. Fetch RAW booking data for AI Training (Cross-Database Join)
+        // 1. Fetch RAW booking data for AI Training (separate queries to avoid cross-DB permission issues)
 
         $aiTrainingData = DB::connection('facilities_db')
 
             ->table('bookings')
 
-            ->join('lgu1_auth.users', 'bookings.user_id', '=', 'lgu1_auth.users.id')
-
             ->selectRaw('
 
-            bookings.facility_id, 
+            bookings.facility_id,
 
-            lgu1_auth.users.full_name as user_name, 
+            bookings.user_id,
 
             MONTH(bookings.created_at) as month_index, 
 
@@ -389,6 +387,36 @@ class AnalyticsController extends Controller
             ->whereIn('bookings.status', ['paid', 'confirmed', 'completed'])
 
             ->get();
+
+
+
+        // Fetch user names from auth_db separately
+
+        $userIds = $aiTrainingData->pluck('user_id')->unique()->toArray();
+
+        $users = DB::connection('auth_db')
+
+            ->table('users')
+
+            ->whereIn('id', $userIds)
+
+            ->get()
+
+            ->keyBy('id');
+
+
+
+        // Merge user names into training data
+
+        $aiTrainingData->transform(function ($item) use ($users) {
+
+            $user = $users->get($item->user_id);
+
+            $item->user_name = $user->full_name ?? 'Unknown';
+
+            return $item;
+
+        });
 
 
 
