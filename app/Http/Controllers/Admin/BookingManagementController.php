@@ -200,12 +200,24 @@ class BookingManagementController extends Controller
             'address' => $fullAddress ?: ($booking->applicant_address ?? 'N/A')
         ];
 
-        // Get uploaded documents
-        $documents = [
-            'id_front' => $booking->valid_id_front_path,
-            'id_back' => $booking->valid_id_back_path,
-            'selfie_with_id' => $booking->valid_id_selfie_path,
+        // Get uploaded documents - handle both local storage paths and external URLs (from PF folder API)
+        $documents = [];
+        $docFields = [
+            'valid_id_front_path' => 'id_front',
+            'valid_id_back_path' => 'id_back',
+            'valid_id_selfie_path' => 'selfie_with_id',
         ];
+        
+        foreach ($docFields as $field => $key) {
+            if ($booking->$field) {
+                $path = $booking->$field;
+                $isExternal = str_starts_with($path, 'http://') || str_starts_with($path, 'https://') || str_starts_with($path, '/uploads/');
+                $documents[$key] = (object)[
+                    'path' => $path,
+                    'is_external' => $isExternal,
+                ];
+            }
+        }
 
         // Get equipment with pricing
         $equipment = $booking->equipmentItems;
