@@ -91,37 +91,47 @@
     </div>
 
     <div class="overflow-x-auto">
-        <table class="w-full">
+        <table class="w-full table-fixed">
+            <colgroup>
+                <col class="w-[10%]">
+                <col class="w-[20%]">
+                <col class="w-[12%]">
+                <col class="w-[14%]">
+                <col class="w-[12%]">
+                <col class="w-[12%]">
+                <col class="w-[12%]">
+                <col class="w-[8%]">
+            </colgroup>
             <thead class="bg-gray-50">
                 <tr>
-                    <th class="px-gr-sm py-gr-xs text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Reference</th>
-                    <th class="px-gr-sm py-gr-xs text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Applicant</th>
-                    <th class="px-gr-sm py-gr-xs text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Facility</th>
-                    <th class="px-gr-sm py-gr-xs text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Amount</th>
-                    <th class="px-gr-sm py-gr-xs text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Method</th>
-                    <th class="px-gr-sm py-gr-xs text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Status</th>
-                    <th class="px-gr-sm py-gr-xs text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Date</th>
-                    <th class="px-gr-sm py-gr-xs text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">Action</th>
+                    <th class="px-2 py-gr-xs text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Reference</th>
+                    <th class="px-2 py-gr-xs text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Applicant</th>
+                    <th class="px-2 py-gr-xs text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Facility</th>
+                    <th class="px-2 py-gr-xs text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Amount</th>
+                    <th class="px-2 py-gr-xs text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Method</th>
+                    <th class="px-2 py-gr-xs text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Status</th>
+                    <th class="px-2 py-gr-xs text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Date</th>
+                    <th class="px-2 py-gr-xs text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">Action</th>
                 </tr>
             </thead>
             <tbody class="divide-y divide-gray-200" id="refund-table-body">
                 @forelse($refunds as $refund)
                 <tr class="hover:bg-gray-50 transition-colors">
-                    <td class="px-gr-sm py-gr-xs whitespace-nowrap">
-                        <span class="text-body font-bold text-lgu-button">{{ $refund->booking_reference }}</span>
+                    <td class="px-2 py-gr-xs">
+                        <span class="text-small font-bold text-lgu-button">{{ $refund->booking_reference }}</span>
                     </td>
-                    <td class="px-gr-sm py-gr-xs">
-                        <div class="text-body font-semibold text-gray-900">{{ $refund->applicant_name }}</div>
-                        <div class="text-small text-gray-500">{{ $refund->applicant_email ?? 'N/A' }}</div>
+                    <td class="px-2 py-gr-xs">
+                        <div class="text-small font-semibold text-gray-900 truncate">{{ $refund->applicant_name }}</div>
+                        <div class="text-xs text-gray-500 truncate">{{ $refund->applicant_email ?? 'N/A' }}</div>
                     </td>
-                    <td class="px-gr-sm py-gr-xs">
-                        <span class="text-body text-gray-700">{{ $refund->facility_name ?? 'N/A' }}</span>
+                    <td class="px-2 py-gr-xs">
+                        <span class="text-small text-gray-700">{{ $refund->facility_name ?? 'N/A' }}</span>
                     </td>
-                    <td class="px-gr-sm py-gr-xs whitespace-nowrap">
-                        <div class="text-body font-bold text-green-700">₱{{ number_format($refund->refund_amount, 2) }}</div>
-                        <div class="text-small text-gray-500">{{ number_format($refund->refund_percentage, 0) }}% of ₱{{ number_format($refund->original_amount, 2) }}</div>
+                    <td class="px-2 py-gr-xs">
+                        <div class="text-small font-bold text-green-700">₱{{ number_format($refund->refund_amount, 2) }}</div>
+                        <div class="text-xs text-gray-500">{{ number_format($refund->refund_percentage, 0) }}% of ₱{{ number_format($refund->original_amount, 2) }}</div>
                     </td>
-                    <td class="px-gr-sm py-gr-xs whitespace-nowrap">
+                    <td class="px-2 py-gr-xs">
                         @if($refund->refund_method)
                             <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold
                                 @if($refund->refund_method === 'cash') bg-amber-100 text-amber-800
@@ -138,7 +148,7 @@
                             <span class="text-small text-gray-400 italic">Not yet selected</span>
                         @endif
                     </td>
-                    <td class="px-gr-sm py-gr-xs whitespace-nowrap">
+                    <td class="px-2 py-gr-xs">
                         @php
                             $statusColors = [
                                 'pending_method' => 'bg-yellow-100 text-yellow-800',
@@ -159,12 +169,12 @@
                             {{ $statusLabels[$refund->status] ?? ucfirst($refund->status) }}
                         </span>
                     </td>
-                    <td class="px-gr-sm py-gr-xs whitespace-nowrap">
-                        <span class="text-small text-gray-600">{{ $refund->created_at->format('M d, Y') }}</span>
-                        <div class="text-small text-gray-400">{{ $refund->created_at->format('h:i A') }}</div>
+                    <td class="px-2 py-gr-xs">
+                        <span class="text-xs text-gray-600">{{ $refund->created_at->format('M d, Y') }}</span>
+                        <div class="text-xs text-gray-400">{{ $refund->created_at->format('h:i A') }}</div>
                     </td>
-                    <td class="px-gr-sm py-gr-xs text-center">
-                        <a href="{{ route('treasurer.refunds.show', $refund->id) }}" class="inline-flex items-center px-gr-sm py-1 bg-lgu-button hover:bg-lgu-highlight text-white text-xs font-semibold rounded-lg transition-all">
+                    <td class="px-2 py-gr-xs text-center">
+                        <a href="{{ route('treasurer.refunds.show', $refund->id) }}" class="inline-flex items-center px-2 py-1 bg-lgu-button hover:bg-lgu-highlight text-white text-xs font-semibold rounded-lg transition-all">
                             <i data-lucide="eye" class="w-3.5 h-3.5 mr-1"></i>
                             View
                         </a>
