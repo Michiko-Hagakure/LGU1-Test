@@ -374,43 +374,76 @@
     </div>
 </div>
 
+<!-- Print-only payment slip -->
+<div id="print-slip-only" style="display:none;">
+    <div style="max-width:600px;margin:0 auto;padding:40px;font-family:Arial,sans-serif;">
+        <div style="text-align:center;margin-bottom:30px;">
+            <h2 style="font-size:14px;color:#666;margin:0 0 5px 0;font-weight:normal;">Local Government Unit 1</h2>
+            <h1 style="font-size:18px;color:#333;margin:0 0 5px 0;">Payment Slip</h1>
+            <p style="font-size:12px;color:#999;margin:0;">{{ now()->format('m/d/Y, h:i A') }}</p>
+        </div>
+        <div style="text-align:center;margin:40px 0;">
+            <h1 style="font-size:42px;font-weight:bold;color:#1f2937;margin:0;">Slip # {{ $paymentSlip->slip_number }}</h1>
+        </div>
+        <table style="width:100%;border-collapse:collapse;margin:30px 0;font-size:14px;">
+            <tr style="border-bottom:1px solid #eee;">
+                <td style="padding:10px 0;color:#666;width:40%;">Applicant</td>
+                <td style="padding:10px 0;font-weight:bold;color:#333;">{{ $paymentSlip->applicant_name }}</td>
+            </tr>
+            <tr style="border-bottom:1px solid #eee;">
+                <td style="padding:10px 0;color:#666;">Facility</td>
+                <td style="padding:10px 0;font-weight:bold;color:#333;">{{ $paymentSlip->facility_name }}</td>
+            </tr>
+            <tr style="border-bottom:1px solid #eee;">
+                <td style="padding:10px 0;color:#666;">Event Date</td>
+                <td style="padding:10px 0;font-weight:bold;color:#333;">{{ \Carbon\Carbon::parse($paymentSlip->start_time)->format('F d, Y') }}</td>
+            </tr>
+            <tr style="border-bottom:1px solid #eee;">
+                <td style="padding:10px 0;color:#666;">Time</td>
+                <td style="padding:10px 0;font-weight:bold;color:#333;">{{ \Carbon\Carbon::parse($paymentSlip->start_time)->format('g:i A') }} - {{ \Carbon\Carbon::parse($paymentSlip->end_time)->format('g:i A') }}</td>
+            </tr>
+            <tr style="border-bottom:1px solid #eee;">
+                <td style="padding:10px 0;color:#666;">Payment Deadline</td>
+                <td style="padding:10px 0;font-weight:bold;color:#333;">{{ \Carbon\Carbon::parse($paymentSlip->payment_deadline)->format('F d, Y g:i A') }}</td>
+            </tr>
+            <tr style="border-bottom:2px solid #333;">
+                <td style="padding:12px 0;color:#666;font-size:16px;">Amount Due</td>
+                <td style="padding:12px 0;font-weight:bold;color:#333;font-size:24px;">₱{{ number_format($paymentSlip->amount_due, 2) }}</td>
+            </tr>
+            <tr>
+                <td style="padding:10px 0;color:#666;">Status</td>
+                <td style="padding:10px 0;font-weight:bold;color:{{ $paymentSlip->status === 'paid' ? '#16a34a' : '#ea580c' }};">{{ $paymentSlip->status === 'paid' ? 'Verified' : ucfirst($paymentSlip->status) }}</td>
+            </tr>
+            @if($paymentSlip->status === 'paid' && $paymentSlip->transaction_reference)
+            <tr>
+                <td style="padding:10px 0;color:#666;">Official Receipt</td>
+                <td style="padding:10px 0;font-weight:bold;color:#16a34a;">{{ $paymentSlip->transaction_reference }}</td>
+            </tr>
+            @endif
+        </table>
+        <div style="text-align:center;margin-top:40px;padding-top:20px;border-top:1px solid #eee;">
+            <p style="font-size:11px;color:#999;">{{ request()->url() }}</p>
+        </div>
+    </div>
+</div>
+
 @push('scripts')
 <style>
 @media print {
-    /* Hide everything by default */
-    body * {
-        visibility: hidden;
-    }
-    
-    /* Show only the payment slip details */
-    #payment-slip-details,
-    #payment-slip-details * {
-        visibility: visible;
-    }
-    
-    /* Position the payment slip details */
-    #payment-slip-details {
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 100%;
-        padding: 40px;
-    }
-    
-    /* Hide the print button in print view */
-    #payment-slip-details button {
-        display: none !important;
-    }
-    
-    /* Center the heading */
-    #payment-slip-details h3 {
-        text-align: center;
-        font-size: 24px;
-        margin-bottom: 30px;
-    }
+    body * { display: none !important; }
+    #print-slip-only, #print-slip-only * { display: block !important; }
+    #print-slip-only { position: absolute; top: 0; left: 0; width: 100%; }
+    #print-slip-only table { display: table !important; }
+    #print-slip-only tr { display: table-row !important; }
+    #print-slip-only td { display: table-cell !important; }
 }
 </style>
 <script>
+// Global print function - accessible from onclick
+function printSlipDetails() {
+    window.print();
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('verifyPaymentForm');
     
@@ -506,11 +539,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             });
         });
-    }
-    
-    // Simplified print function - just use window.print(), CSS handles the rest
-    function printSlipDetails() {
-        window.print();
     }
     
     // Initialize Lucide icons
