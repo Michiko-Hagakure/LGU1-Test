@@ -213,6 +213,19 @@ class PaymentVerificationController extends Controller
                 \Log::error('Failed to send rejection+refund notification: ' . $e->getMessage());
             }
 
+            // 4. Notify treasurers about the new refund request
+            try {
+                $treasurers = \App\Models\User::where('subsystem_role_id', 5)
+                    ->where('subsystem_id', 4)
+                    ->get();
+
+                foreach ($treasurers as $treasurer) {
+                    $treasurer->notify(new \App\Notifications\RefundRequestCreated($refund));
+                }
+            } catch (\Exception $e) {
+                \Log::error('Failed to send refund created notification to treasurers: ' . $e->getMessage());
+            }
+
             return redirect()
                 ->route('admin.bookings.review', $bookingId)
                 ->with('warning', 'Booking rejected. A refund of ₱' . number_format($refundAmount, 2) . ' has been queued. The citizen will be notified to choose their refund method.');
