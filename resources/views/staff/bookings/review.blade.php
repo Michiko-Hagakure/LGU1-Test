@@ -52,12 +52,14 @@
                 </div>
                 <div>
                     <label class="text-caption font-semibold text-gray-500 uppercase">Event Purpose</label>
-                    <p class="text-body font-semibold text-gray-900 mt-1">{{ $booking->event_name ?? 'N/A' }}</p>
+                    <p class="text-body font-semibold text-gray-900 mt-1">{{ $booking->event_name ?? $booking->purpose ?? 'N/A' }}</p>
                 </div>
+                @if($booking->event_name && $booking->purpose)
                 <div class="md:col-span-2">
                     <label class="text-caption font-semibold text-gray-500 uppercase">Event Description</label>
-                    <p class="text-body text-gray-700 mt-1">{{ $booking->purpose ?? 'No description provided' }}</p>
+                    <p class="text-body text-gray-700 mt-1">{{ $booking->purpose }}</p>
                 </div>
+                @endif
             </div>
         </div>
 
