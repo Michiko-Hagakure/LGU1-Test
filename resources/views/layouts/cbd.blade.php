@@ -146,7 +146,5 @@
 
 @include('components.sidebar.cbd-script')
 
-@stack('scripts')
-
 @endsection
 

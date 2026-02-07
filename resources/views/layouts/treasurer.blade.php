@@ -145,7 +145,5 @@
 
 @include('components.sidebar.treasurer-script')
 
-@stack('scripts')
-
 @endsection
 

@@ -22,7 +22,8 @@ class AutoExpireBookings
         // Only run on GET requests (page loads, not form submissions)
         if ($request->isMethod('get')) {
             // Throttle: only check once every 15 minutes
-            $cacheKey = 'auto_expire_bookings_last_run';
+            // Version key ensures new deployments run fresh
+            $cacheKey = 'auto_expire_bookings_v3';
             
             if (!Cache::has($cacheKey)) {
                 try {
