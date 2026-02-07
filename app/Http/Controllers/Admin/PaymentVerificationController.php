@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Booking;
+use App\Models\RefundRequest;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
 class PaymentVerificationController extends Controller
@@ -102,7 +104,7 @@ class PaymentVerificationController extends Controller
     }
 
     /**
-     * Reject payment for a booking
+     * Reject payment for a booking (staff_verified status - payment not yet received)
      * Keeps status as staff_verified but adds rejection notes
      */
     public function rejectPayment(Request $request, $bookingId)
@@ -135,6 +137,91 @@ class PaymentVerificationController extends Controller
         return redirect()
             ->route('admin.bookings.review', $bookingId)
             ->with('warning', 'Payment rejected. Citizen will be notified to resubmit payment proof.');
+    }
+
+    /**
+     * Reject a booking that has already been paid.
+     * Sets status to 'rejected' and creates a 100% refund request.
+     */
+    public function rejectBooking(Request $request, $bookingId)
+    {
+        $request->validate([
+            'rejection_reason' => 'required|string|max:500',
+        ]);
+
+        $userId = session('user_id');
+
+        if (!$userId) {
+            return redirect()->route('login')->with('error', 'Please login to continue.');
+        }
+
+        $booking = Booking::with('facility')->findOrFail($bookingId);
+
+        // Only allow rejecting paid or confirmed bookings
+        if (!in_array($booking->status, ['paid', 'confirmed'])) {
+            return back()->with('error', 'Only paid or confirmed bookings can be rejected with a refund.');
+        }
+
+        $reason = $request->input('rejection_reason');
+        $bookingReference = 'BK' . str_pad($booking->id, 6, '0', STR_PAD_LEFT);
+
+        DB::connection('facilities_db')->beginTransaction();
+
+        try {
+            // 1. Update booking status to rejected
+            $booking->status = 'rejected';
+            $booking->rejected_reason = $reason;
+            $booking->save();
+
+            // 2. Create 100% refund request (admin rejection = always 100%)
+            $refundPercentage = RefundRequest::calculateRefundPercentage('admin_rejected', $booking->start_time);
+            $refundAmount = round(($booking->total_amount * $refundPercentage) / 100, 2);
+
+            $refund = RefundRequest::create([
+                'booking_id' => $booking->id,
+                'user_id' => $booking->user_id,
+                'booking_reference' => $bookingReference,
+                'applicant_name' => $booking->applicant_name ?? $booking->user_name ?? 'N/A',
+                'applicant_email' => $booking->applicant_email,
+                'applicant_phone' => $booking->applicant_phone,
+                'facility_name' => $booking->facility->name ?? 'N/A',
+                'original_amount' => $booking->total_amount,
+                'refund_percentage' => $refundPercentage,
+                'refund_amount' => $refundAmount,
+                'refund_type' => 'admin_rejected',
+                'reason' => $reason,
+                'status' => 'pending_method', // Waiting for citizen to choose refund method
+                'initiated_by' => $userId,
+            ]);
+
+            DB::connection('facilities_db')->commit();
+
+            // 3. Send notification to citizen
+            try {
+                $user = \App\Models\User::find($booking->user_id);
+                $bookingData = DB::connection('facilities_db')
+                    ->table('bookings')
+                    ->join('facilities', 'bookings.facility_id', '=', 'facilities.facility_id')
+                    ->where('bookings.id', $bookingId)
+                    ->selectRaw('bookings.*, facilities.name as facility_name, CONCAT("BK", LPAD(bookings.id, 6, "0")) as booking_reference')
+                    ->first();
+
+                if ($user && $bookingData) {
+                    $user->notify(new \App\Notifications\BookingRejectedWithRefund($bookingData, $reason, $refund));
+                }
+            } catch (\Exception $e) {
+                \Log::error('Failed to send rejection+refund notification: ' . $e->getMessage());
+            }
+
+            return redirect()
+                ->route('admin.bookings.review', $bookingId)
+                ->with('warning', 'Booking rejected. A refund of ₱' . number_format($refundAmount, 2) . ' has been queued. The citizen will be notified to choose their refund method.');
+
+        } catch (\Exception $e) {
+            DB::connection('facilities_db')->rollBack();
+            \Log::error('Failed to reject booking with refund: ' . $e->getMessage());
+            return back()->with('error', 'Failed to process rejection: ' . $e->getMessage());
+        }
     }
 }
 

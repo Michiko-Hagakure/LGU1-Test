@@ -300,7 +300,7 @@
                             </button>
                         </form>
 
-                        <button onclick="openRejectModal()" class="w-full px-gr-lg py-gr-md bg-red-600 hover:bg-red-700 text-white font-bold rounded-lg transition-colors flex items-center justify-center gap-2">
+                        <button onclick="openRejectBookingModal()" class="w-full px-gr-lg py-gr-md bg-red-600 hover:bg-red-700 text-white font-bold rounded-lg transition-colors flex items-center justify-center gap-2">
                             <i data-lucide="x-circle" class="w-5 h-5"></i>
                             Reject Booking
                         </button>
@@ -355,6 +355,34 @@
                 </button>
                 <button type="submit" class="flex-1 px-gr-lg py-gr-sm bg-red-600 hover:bg-red-700 text-white font-bold rounded-lg transition-colors">
                     Reject Payment
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Reject Booking Modal (for paid/confirmed bookings - triggers refund) -->
+<div id="rejectBookingModal" class="hidden fixed inset-0 bg-black bg-opacity-75 z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-md w-full p-gr-lg">
+        <h3 class="text-h3 font-bold text-red-600 mb-gr-sm">Reject Booking</h3>
+        <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-gr-sm mb-gr-md">
+            <p class="text-small text-yellow-800">
+                <i data-lucide="alert-triangle" class="w-4 h-4 inline-block mr-1"></i>
+                <strong>This booking has been paid.</strong> Rejecting it will automatically create a <strong>100% refund (₱{{ number_format($booking->total_amount, 2) }})</strong> for the citizen. The refund will be processed within 1-3 business days.
+            </p>
+        </div>
+        <form method="POST" action="{{ URL::signedRoute('admin.bookings.reject-booking', $booking->id) }}">
+            @csrf
+            <div class="mb-gr-md">
+                <label class="block text-small font-medium text-lgu-paragraph mb-gr-xs">Rejection Reason <span class="text-red-500">*</span></label>
+                <textarea name="rejection_reason" rows="4" required class="w-full px-gr-md py-gr-sm border border-lgu-stroke rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500" placeholder="Explain why this booking is being rejected..."></textarea>
+            </div>
+            <div class="flex gap-gr-sm">
+                <button type="button" onclick="closeRejectBookingModal()" class="flex-1 px-gr-lg py-gr-sm bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold rounded-lg transition-colors">
+                    Cancel
+                </button>
+                <button type="submit" class="flex-1 px-gr-lg py-gr-sm bg-red-600 hover:bg-red-700 text-white font-bold rounded-lg transition-colors">
+                    Reject & Issue Refund
                 </button>
             </div>
         </form>
@@ -416,11 +444,21 @@ function closeRejectModal() {
     document.getElementById('rejectModal').classList.add('hidden');
 }
 
+function openRejectBookingModal() {
+    document.getElementById('rejectBookingModal').classList.remove('hidden');
+    lucide.createIcons();
+}
+
+function closeRejectBookingModal() {
+    document.getElementById('rejectBookingModal').classList.add('hidden');
+}
+
 // Close modals on escape key
 document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') {
         closeDocumentModal();
         closeRejectModal();
+        closeRejectBookingModal();
     }
 });
 

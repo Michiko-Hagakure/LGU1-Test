@@ -99,6 +99,18 @@
                 <span>Transaction History</span>
             </a>
         </li>
+        <li>
+            <a href="{{ route('citizen.refunds.index') }}" class="sidebar-link flex items-center px-gr-sm py-gr-xs text-small font-medium rounded-lg transition-colors duration-200 {{ request()->routeIs('citizen.refunds.*') ? 'active' : '' }}">
+                <i data-lucide="undo-2" class="w-5 h-5 mr-gr-xs flex-shrink-0"></i>
+                <span>My Refunds</span>
+                @php
+                    $pendingCitizenRefunds = \App\Models\RefundRequest::where('user_id', session('user_id'))->where('status', 'pending_method')->count();
+                @endphp
+                @if($pendingCitizenRefunds > 0)
+                    <span class="ml-auto bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">{{ $pendingCitizenRefunds }}</span>
+                @endif
+            </a>
+        </li>
     </ul>
 </div>
 

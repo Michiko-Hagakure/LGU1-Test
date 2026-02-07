@@ -98,6 +98,12 @@ Route::prefix('facility-reservation')->group(function () {
     
     // POST https://facilities.local-government-unit-1-ph.com/api/facility-reservation/submit-cashless-payment
     Route::post('/submit-cashless-payment', [\App\Http\Controllers\Api\FacilityReservationApiController::class, 'submitCashlessPayment']);
+
+    // GET https://facilities.local-government-unit-1-ph.com/api/facility-reservation/refunds?email=...
+    Route::get('/refunds', [\App\Http\Controllers\Api\FacilityReservationApiController::class, 'getRefunds']);
+
+    // POST https://facilities.local-government-unit-1-ph.com/api/facility-reservation/refunds/{id}/select-method
+    Route::post('/refunds/{id}/select-method', [\App\Http\Controllers\Api\FacilityReservationApiController::class, 'selectRefundMethod']);
 });
 
 /*

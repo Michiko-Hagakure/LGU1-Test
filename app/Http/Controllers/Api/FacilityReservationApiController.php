@@ -911,4 +911,105 @@ class FacilityReservationApiController extends Controller
             ], 500);
         }
     }
+
+    /**
+     * Get refund requests for a citizen by email.
+     *
+     * GET /api/facility-reservation/refunds?email=...
+     */
+    public function getRefunds(Request $request)
+    {
+        try {
+            $request->validate([
+                'email' => 'required|email',
+            ]);
+
+            $email = $request->get('email');
+
+            $refunds = DB::connection('facilities_db')
+                ->table('refund_requests')
+                ->where('applicant_email', $email)
+                ->orderBy('created_at', 'desc')
+                ->get();
+
+            return response()->json([
+                'status' => 'success',
+                'data' => $refunds,
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Validation failed.',
+                'errors' => $e->errors(),
+            ], 422);
+        }
+    }
+
+    /**
+     * Submit refund method selection from PF folder citizen.
+     *
+     * POST /api/facility-reservation/refunds/{id}/select-method
+     */
+    public function selectRefundMethod(Request $request, $id)
+    {
+        try {
+            $validated = $request->validate([
+                'email' => 'required|email',
+                'refund_method' => 'required|in:cash,gcash,maya,bank_transfer',
+                'account_name' => 'required_unless:refund_method,cash|nullable|string|max:255',
+                'account_number' => 'required_unless:refund_method,cash|nullable|string|max:50',
+                'bank_name' => 'required_if:refund_method,bank_transfer|nullable|string|max:255',
+            ]);
+
+            $refund = DB::connection('facilities_db')
+                ->table('refund_requests')
+                ->where('id', $id)
+                ->where('applicant_email', $validated['email'])
+                ->first();
+
+            if (!$refund) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Refund request not found.',
+                ], 404);
+            }
+
+            if ($refund->status !== 'pending_method') {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Refund method has already been selected.',
+                ], 400);
+            }
+
+            $updateData = [
+                'refund_method' => $validated['refund_method'],
+                'status' => 'pending_processing',
+                'updated_at' => now(),
+            ];
+
+            if ($validated['refund_method'] !== 'cash') {
+                $updateData['account_name'] = $validated['account_name'];
+                $updateData['account_number'] = $validated['account_number'];
+                if ($validated['refund_method'] === 'bank_transfer') {
+                    $updateData['bank_name'] = $validated['bank_name'];
+                }
+            }
+
+            DB::connection('facilities_db')
+                ->table('refund_requests')
+                ->where('id', $id)
+                ->update($updateData);
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Refund method selected successfully. Your refund will be processed within 1-3 business days.',
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Validation failed.',
+                'errors' => $e->errors(),
+            ], 422);
+        }
+    }
 }

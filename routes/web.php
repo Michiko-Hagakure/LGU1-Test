@@ -1495,6 +1495,7 @@ Route::middleware(['auth', 'role:Admin', 'auto.expire'])->group(function () {
     Route::get('/admin/bookings/{id}/review', [\App\Http\Controllers\Admin\BookingManagementController::class, 'review'])->name('admin.bookings.review');
     Route::post('/admin/bookings/{id}/confirm-payment', [\App\Http\Controllers\Admin\PaymentVerificationController::class, 'confirmPayment'])->name('admin.bookings.confirm-payment');
     Route::post('/admin/bookings/{id}/reject-payment', [\App\Http\Controllers\Admin\PaymentVerificationController::class, 'rejectPayment'])->name('admin.bookings.reject-payment');
+    Route::post('/admin/bookings/{id}/reject-booking', [\App\Http\Controllers\Admin\PaymentVerificationController::class, 'rejectBooking'])->name('admin.bookings.reject-booking');
     Route::post('/admin/bookings/{id}/final-confirm', [\App\Http\Controllers\Admin\BookingManagementController::class, 'finalConfirm'])->name('admin.bookings.final-confirm');
     Route::get('/admin/calendar', [\App\Http\Controllers\Admin\CalendarController::class, 'index'])->name('admin.calendar');
     Route::get('/admin/calendar/events', [\App\Http\Controllers\Admin\CalendarController::class, 'getEvents'])->name('admin.calendar.events');
@@ -1774,6 +1775,12 @@ Route::middleware(['auth', 'role:Treasurer'])->prefix('treasurer')->name('treasu
     Route::get('/official-receipts/{id}', [\App\Http\Controllers\Treasurer\OfficialReceiptController::class, 'show'])->name('official-receipts.show');
     Route::get('/official-receipts/{id}/print', [\App\Http\Controllers\Treasurer\OfficialReceiptController::class, 'print'])->name('official-receipts.print');
 
+    // Refund Queue
+    Route::get('/refunds', [\App\Http\Controllers\Treasurer\RefundController::class, 'index'])->name('refunds.index');
+    Route::get('/refunds/json', [\App\Http\Controllers\Treasurer\RefundController::class, 'getRefundsJson'])->name('refunds.json');
+    Route::get('/refunds/{id}', [\App\Http\Controllers\Treasurer\RefundController::class, 'show'])->name('refunds.show');
+    Route::post('/refunds/{id}/process', [\App\Http\Controllers\Treasurer\RefundController::class, 'process'])->name('refunds.process');
+
     // Reports
     Route::get('/reports/daily-collections', [\App\Http\Controllers\Treasurer\ReportController::class, 'dailyCollections'])->name('reports.daily-collections');
     Route::get('/reports/daily-collections/export', [\App\Http\Controllers\Treasurer\ReportController::class, 'exportDailyCollections'])->name('reports.daily-collections.export');
@@ -1851,6 +1858,11 @@ Route::middleware(['auth', 'role:citizen', \App\Http\Middleware\CheckSessionTime
     Route::get('/citizen/reservations/{id}', [\App\Http\Controllers\Citizen\ReservationController::class, 'show'])->name('citizen.reservations.show');
     Route::post('/citizen/reservations/{id}/cancel', [\App\Http\Controllers\Citizen\ReservationController::class, 'cancel'])->name('citizen.reservations.cancel');
     Route::post('/citizen/reservations/{id}/upload', [\App\Http\Controllers\Citizen\ReservationController::class, 'uploadDocument'])->name('citizen.reservations.upload');
+
+    // Refunds
+    Route::get('/citizen/refunds', [\App\Http\Controllers\Citizen\RefundController::class, 'index'])->name('citizen.refunds.index');
+    Route::get('/citizen/refunds/{id}', [\App\Http\Controllers\Citizen\RefundController::class, 'show'])->name('citizen.refunds.show');
+    Route::post('/citizen/refunds/{id}/select-method', [\App\Http\Controllers\Citizen\RefundController::class, 'selectMethod'])->name('citizen.refunds.select-method');
 
     // Booking Conflicts (City Events)
     Route::get('/citizen/booking-conflicts', [\App\Http\Controllers\Citizen\BookingConflictController::class, 'index'])->name('citizen.conflicts.index');
@@ -1987,6 +1999,7 @@ Route::middleware(['auth', 'role:admin', 'auto.expire'])->prefix('admin')->name(
     Route::get('/bookings/{id}/review', [\App\Http\Controllers\Admin\BookingManagementController::class, 'review'])->name('bookings.review');
     Route::post('/bookings/{id}/confirm-payment', [\App\Http\Controllers\Admin\PaymentVerificationController::class, 'confirmPayment'])->name('bookings.confirm-payment');
     Route::post('/bookings/{id}/reject-payment', [\App\Http\Controllers\Admin\PaymentVerificationController::class, 'rejectPayment'])->name('bookings.reject-payment');
+    Route::post('/bookings/{id}/reject-booking', [\App\Http\Controllers\Admin\PaymentVerificationController::class, 'rejectBooking'])->name('bookings.reject-booking');
     Route::post('/bookings/{id}/final-confirm', [\App\Http\Controllers\Admin\BookingManagementController::class, 'finalConfirm'])->name('bookings.final-confirm');
     Route::get('/bookings/{id}', [\App\Http\Controllers\Admin\BookingManagementController::class, 'show'])->name('bookings.show');
 
