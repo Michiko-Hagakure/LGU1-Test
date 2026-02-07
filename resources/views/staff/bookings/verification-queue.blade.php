@@ -123,7 +123,7 @@
                                                 <path d="M16 13H8"/>
                                                 <path d="M16 17H8"/>
                                             </svg>
-                                            {{ $booking->purpose ?? 'N/A' }}
+                                            {{ $booking->event_name ?? 'N/A' }}
                                         </div>
                                     </div>
                                 </div>
